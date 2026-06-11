@@ -1,7 +1,4 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import dotenv from 'dotenv';
-
-dotenv.config();
 
 const GROQ_API_KEY = process.env.GROQ_API_KEY || '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';
 
@@ -39,9 +36,23 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         messages: [
           {
             role: 'system',
-            content: `You are an AI quiz compiler. Create exactly ${questionsCount} high-quality quiz questions.`
+            content: `You are an AI quiz compiler. Create exactly ${questionsCount} high-quality multiple choice quiz questions about the given topic.
+
+Output ONLY valid JSON matching this exact structure:
+{
+  "topic": "The quiz topic name",
+  "difficulty": "easy" | "medium" | "hard",
+  "questions": [
+    {
+      "question": "The question text",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correctAnswer": "Option A",
+      "explanation": "Why this answer is correct"
+    }
+  ]
+}`
           },
-          { role: 'user', content: `Quiz about: "${topic}"` }
+          { role: 'user', content: `Generate a ${questionsCount}-question quiz about: "${topic}"` }
         ],
         temperature: 0.3
       })
