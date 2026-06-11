@@ -1,0 +1,6 @@
+{
+  "name": "SCI FORGE AI",
+  "description": "An AI-powered STEM Workbench that turns learning into interactive scientific exploration.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
