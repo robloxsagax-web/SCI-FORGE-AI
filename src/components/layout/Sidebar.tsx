@@ -21,6 +21,7 @@ const NAV_ITEMS = [
   { id: "dependencymap", label: "Concept Dependency Map", icon: Network, color: "text-[#FFB547]" },
   { id: "progress", label: "Academic Propulsion", icon: GraduationCap, color: "text-[#FF7A00]" },
   { id: "portfolio", label: "Research Portfolio", icon: FolderArchive, color: "text-[#A1A1AA]" },
+  { id: "settings", label: "Settings", icon: Settings, color: "text-[#A1A1AA]" },
 ] as const;
 
 export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseMobile }: SidebarProps) {
@@ -75,11 +76,16 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
         {/* Navigation Items */}
         <div className="flex-1 overflow-y-auto py-4 px-3">
           <div className="space-y-1">
-            {NAV_ITEMS.map((item) => {
+            {NAV_ITEMS.map((item, idx) => {
               const isActive = activeModule === item.id;
               return (
-                <button
+                <motion.button
                   key={item.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: idx * 0.03, duration: 0.2 }}
+                  whileHover={{ x: 4 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={() => handleItemClick(item.id as ModuleType)}
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group relative",
@@ -98,45 +104,32 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
                       <div className="absolute inset-0 rounded-xl border border-[#FF7A00]/20" />
                     </>
                   )}
-                  <item.icon className={cn("w-5 h-5 shrink-0", isActive ? item.color : "text-current group-hover:text-white")} />
+                  <motion.div
+                    whileHover={{ rotate: isActive ? 0 : 5 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <item.icon className={cn("w-5 h-5 shrink-0", isActive ? item.color : "text-current group-hover:text-white")} />
+                  </motion.div>
                   <span className={cn(isActive ? "text-white font-medium" : "")}>{item.label}</span>
-                </button>
+                </motion.button>
               );
             })}
           </div>
         </div>
 
         {/* Bottom Actions */}
-        <div className="p-3 border-t border-white/8 space-y-1">
-          {/* Settings */}
-          <button
-            onClick={() => handleItemClick("settings")}
-            className={cn(
-              "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group relative",
-              activeModule === "settings" 
-                ? "bg-[#FF7A00]/10 text-white" 
-                : "text-[#A1A1AA] hover:text-white hover:bg-white/5"
-            )}
-          >
-            {activeModule === "settings" && (
-              <motion.div
-                layoutId="active-nav-indicator-settings"
-                className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#FF7A00] rounded-r-full"
-                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-              />
-            )}
-            <Settings className="w-5 h-5 shrink-0" />
-            <span>Settings</span>
-          </button>
-
+        <div className="p-3 border-t border-white/8">
           {/* Sign Out */}
-          <button
+          <motion.button
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
             onClick={handleSignOut}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#71717A] hover:text-[#EF4444] hover:bg-[#EF4444]/5 transition-all duration-200 group"
           >
             <LogOut className="w-5 h-5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
             <span>Sign Out</span>
-          </button>
+          </motion.button>
         </div>
       </div>
     </>

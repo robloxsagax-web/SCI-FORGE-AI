@@ -184,10 +184,15 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
     
     // Restore conversation state and route
     if (session.state) {
-      onTransferToWorkspace(targetModule, { restoredSession: session });
+      // Store the session state to be picked up by the target workspace
+      localStorage.setItem("sciforge_restored_session", JSON.stringify({
+        module: targetModule,
+        state: session.state,
+        title: session.title
+      }));
     }
     onRoute(targetModule);
-  }, [onRoute, onTransferToWorkspace]);
+  }, [onRoute]);
 
   // Handle clipboard paste - auto-route to scribble or notes
   const handleClipboardPaste = useCallback((text: string) => {
@@ -271,15 +276,16 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
               key={stat.label}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
+              whileHover={{ scale: 1.02, y: -2 }}
               transition={{ duration: 0.4, delay: 0.1 + idx * 0.05 }}
-              className="bg-[#111111] border border-white/5 rounded-2xl p-5 hover:border-white/10 transition-all duration-300 group"
+              className="bg-[#111111] border border-white/5 rounded-2xl p-5 hover:border-white/10 transition-all duration-300 group cursor-pointer"
             >
               <div className="flex items-center gap-3 mb-3">
                 <div 
-                  className="w-10 h-10 rounded-xl flex items-center justify-center"
+                  className="w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
                   style={{ backgroundColor: `${stat.color}15` }}
                 >
-                  <stat.icon className="w-5 h-5" style={{ color: stat.color }} />
+                  <stat.icon className="w-5 h-5 transition-colors duration-300" style={{ color: stat.color }} />
                 </div>
               </div>
               <motion.div 
@@ -362,7 +368,9 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                     : "bg-white/5 text-[#71717A] cursor-not-allowed"
                 )}
               >
-                <ArrowRight className="w-5 h-5" />
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="ml-0.5">
+                  <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
               </motion.button>
             </div>
 
@@ -554,7 +562,7 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
               <h3 className="text-sm font-heading font-semibold text-white">Recent Conversations</h3>
               <button 
                 onClick={onViewConversations}
-                className="text-xs text-[#FF7A00] hover:text-[#FFB547] transition-colors"
+                className="text-xs text-[#FF7A00] hover:text-[#FFB547] transition-colors duration-200"
               >
                 View all
               </button>
@@ -565,18 +573,28 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                   key={idx}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 + idx * 0.05 }}
+                  whileHover={{ scale: 1.02, x: 4 }}
+                  transition={{ delay: 0.4 + idx * 0.05, duration: 0.2 }}
                   onClick={() => handleRecentChatClick(session)}
                   className="group flex-shrink-0 flex items-center gap-3 p-3 bg-[#111111] hover:bg-[#1a1a1a] border border-white/5 hover:border-[#FF7A00]/30 rounded-xl transition-all duration-200"
                 >
-                  <div className="w-8 h-8 rounded-lg bg-[#FF7A00]/10 flex items-center justify-center">
+                  <motion.div 
+                    className="w-8 h-8 rounded-lg bg-[#FF7A00]/10 flex items-center justify-center"
+                    whileHover={{ rotate: 5 }}
+                    transition={{ duration: 0.2 }}
+                  >
                     <MessageSquare className="w-4 h-4 text-[#FF7A00]" />
-                  </div>
+                  </motion.div>
                   <div className="text-left min-w-0">
                     <p className="text-sm text-white font-medium truncate max-w-[120px]">{session.title}</p>
                     <p className="text-[10px] text-[#71717A]">{formatTimeAgo(session.timestamp)}</p>
                   </div>
-                  <ChevronRight className="w-4 h-4 text-[#71717A] group-hover:text-[#FF7A00] transition-colors shrink-0" />
+                  <motion.div
+                    whileHover={{ x: 4 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronRight className="w-4 h-4 text-[#71717A] group-hover:text-[#FF7A00] transition-colors shrink-0" />
+                  </motion.div>
                 </motion.button>
               ))}
             </div>
@@ -596,6 +614,8 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                 key={card.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
+                whileHover={{ y: -4, scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 transition={{ duration: 0.4, delay: 0.5 + idx * 0.05 }}
                 onClick={() => onRoute(card.id)}
                 className={cn(
@@ -611,12 +631,14 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                 />
                 
                 <div className="relative z-10">
-                  <div 
-                    className="w-11 h-11 rounded-xl flex items-center justify-center mb-4 transition-transform duration-300 group-hover:scale-110"
+                  <motion.div 
+                    className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
                     style={{ backgroundColor: `${card.color}15` }}
+                    whileHover={{ scale: 1.1, rotate: 5 }}
+                    transition={{ duration: 0.3 }}
                   >
-                    <card.icon className="w-5 h-5" style={{ color: card.color }} />
-                  </div>
+                    <card.icon className="w-5 h-5 transition-transform duration-300" style={{ color: card.color }} />
+                  </motion.div>
                   
                   <h4 className="text-sm font-semibold text-white mb-1.5 group-hover:text-white transition-colors">
                     {card.title}
@@ -629,14 +651,17 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                 <motion.div
                   initial={{ opacity: 0, x: -5 }}
                   whileHover={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.2 }}
                   className="absolute top-4 right-4"
                 >
                   <ChevronRight className="w-4 h-4" style={{ color: card.color }} />
                 </motion.div>
                 
-                <div 
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-current to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                <motion.div 
+                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-current to-transparent opacity-0"
                   style={{ color: card.color }}
+                  whileHover={{ opacity: 1 }}
+                  transition={{ duration: 0.3 }}
                 />
               </motion.button>
             ))}

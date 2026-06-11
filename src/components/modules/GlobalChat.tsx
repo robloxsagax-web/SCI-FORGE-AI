@@ -15,6 +15,8 @@ interface GlobalChatProps {
   onSetStatusMessage?: (msg: string | null) => void;
   showWorkspaceUINav?: boolean;
   onToggleWorkspaceUINav?: (show: boolean) => void;
+  pendingMessage?: string | null;
+  onPendingMessageConsumed?: () => void;
 }
 
 const SCIENTIFIC_SUGGESTIONS = [
@@ -31,11 +33,25 @@ export function GlobalChat({
   onAddMessage, 
   onSetStatusMessage,
   showWorkspaceUINav = false,
-  onToggleWorkspaceUINav
+  onToggleWorkspaceUINav,
+  pendingMessage,
+  onPendingMessageConsumed
 }: GlobalChatProps) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Handle pending message from homepage
+  useEffect(() => {
+    if (pendingMessage) {
+      // Small delay to ensure component is mounted and ready
+      const timer = setTimeout(() => {
+        handleSend(pendingMessage);
+        onPendingMessageConsumed?.();
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [pendingMessage]);
 
   // Read and poll from central scientific telemetry
   const [telemetry, setTelemetry] = useState(getTelemetry());
