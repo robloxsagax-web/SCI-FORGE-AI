@@ -15,6 +15,7 @@ import { ResearchPortfolio } from "./components/modules/ResearchPortfolio";
 import { ModuleType, LearningMode, ChatMessage } from "./types";
 import { Settings as SettingsIcon, Sparkles, Menu } from "lucide-react";
 import { updateTelemetryOnAction } from "./lib/telemetry";
+import { cn } from "./lib/utils";
 
 export default function App() {
   const [activeModule, setActiveModule] = useState<ModuleType>("home");
@@ -294,9 +295,10 @@ export default function App() {
 
   const showSidebar = activeModule !== "home" || showWorkspaceUINav || true;
   const showTopBar = activeModule !== "home" && activeModule !== "settings" && activeModule !== "progress" && activeModule !== "portfolio";
+  const isHomePage = activeModule === "home";
 
   return (
-    <div className={`flex h-screen w-full bg-[#050505] text-white overflow-hidden relative ${isLightMode ? "light-mode" : ""} ${highContrast ? "contrast-125 saturate-150" : ""}`}>
+    <div className={`flex h-screen w-full bg-[#050505] text-white relative ${isLightMode ? "light-mode" : ""} ${highContrast ? "contrast-125 saturate-150" : ""}`}>
       
       {systemAlert && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-[#FF7A00]/10 border border-[#FF7A00]/40 backdrop-blur-md shadow-[0_0_20px_rgba(255,122,0,0.25)] flex items-center gap-2.5 text-xs font-mono font-bold text-[#FF7A00] z-50 animate-bounce">
@@ -313,7 +315,10 @@ export default function App() {
         />
       )}
       
-      <div className="flex flex-col flex-1 min-w-0 h-full relative">
+      <div className={cn(
+        "flex flex-col min-w-0 h-full relative",
+        isHomePage ? "overflow-hidden" : "flex-1"
+      )}>
         {activeModule !== "home" && (
           <div className="px-5 py-2.5 bg-[#111111] border-b border-white/8 shrink-0 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
