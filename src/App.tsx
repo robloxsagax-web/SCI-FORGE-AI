@@ -64,6 +64,7 @@ export default function App() {
   const [highContrast, setHighContrast] = useState(false);
   const [tts, setTts] = useState(false);
   const [isLightMode, setIsLightMode] = useState(false);
+  const [customCursor, setCustomCursor] = useState(false);
 
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [pendingChatMessage, setPendingChatMessage] = useState<string | null>(null);
@@ -78,22 +79,36 @@ export default function App() {
         setHighContrast(parsed.highContrast || false);
         setTts(parsed.tts || false);
         setIsLightMode(parsed.isLightMode || false);
+        setCustomCursor(parsed.customCursor || false);
       } catch (err) {
         console.error(err);
       }
     }
   }, []);
 
-  const saveAccessibility = (updatedDyslexia: boolean, updatedContrast: boolean, updatedTts: boolean, updatedLight: boolean) => {
+  // Apply custom cursor class to body
+  useEffect(() => {
+    if (customCursor) {
+      document.body.classList.add("custom-cursor-enabled");
+    } else {
+      document.body.classList.remove("custom-cursor-enabled");
+    }
+  }, [customCursor]);
+
+  const saveAccessibility = (updatedDyslexia: boolean, updatedContrast: boolean, updatedTts: boolean, updatedLight: boolean, updatedCursor?: boolean) => {
     setDyslexiaMode(updatedDyslexia);
     setHighContrast(updatedContrast);
     setTts(updatedTts);
     setIsLightMode(updatedLight);
+    if (updatedCursor !== undefined) {
+      setCustomCursor(updatedCursor);
+    }
     localStorage.setItem("sciforge_accessibility", JSON.stringify({
       dyslexiaFont: updatedDyslexia,
       highContrast: updatedContrast,
       tts: updatedTts,
-      isLightMode: updatedLight
+      isLightMode: updatedLight,
+      customCursor: updatedCursor ?? customCursor
     }));
   };
 
@@ -283,6 +298,19 @@ export default function App() {
                   className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${isLightMode ? "bg-[#FF7A00]" : "bg-white/10"}`}
                 >
                   <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${isLightMode ? "left-7" : "left-1"}`} />
+                </button>
+              </div>
+              {/* Custom Pen Cursor */}
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <span className="text-sm font-bold text-white block">Custom Pen Cursor</span>
+                  <span className="text-xs text-[#71717A] block">Stylish pen cursor for interactive elements.</span>
+                </div>
+                <button 
+                  onClick={() => saveAccessibility(dyslexiaMode, highContrast, tts, isLightMode, !customCursor)}
+                  className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${customCursor ? "bg-[#FF7A00]" : "bg-white/10"}`}
+                >
+                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${customCursor ? "left-7" : "left-1"}`} />
                 </button>
               </div>
             </div>

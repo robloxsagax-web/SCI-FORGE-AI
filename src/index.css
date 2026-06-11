@@ -185,3 +185,116 @@ body.dyslexia-mode {
     display: none !important;
   }
 }
+
+/* Custom Pen Cursor */
+.custom-pen-cursor {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23FF7A00' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3E%3Cpath d='m15 5 4 4'/%3E%3C/svg%3E") 0 24, auto;
+}
+
+/* Custom Cursor States */
+.cursor-pen {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23FF7A00' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3E%3Cpath d='m15 5 4 4'/%3E%3C/svg%3E") 0 24, auto;
+}
+
+.cursor-pen-hover:hover {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='none' stroke='%23FFB547' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3E%3Cpath d='m15 5 4 4'/%3E%3C/svg%3E") 0 24, auto;
+}
+
+/* Global Custom Cursor */
+body.custom-cursor-enabled * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='%23FF7A00' stroke='%23FF7A00' stroke-width='1'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3C/svg%3E") 12 12, auto;
+}
+
+body.custom-cursor-enabled a,
+body.custom-cursor-enabled button,
+body.custom-cursor-enabled [role="button"],
+body.custom-cursor-enabled [onClick],
+body.custom-cursor-enabled input,
+body.custom-cursor-enabled textarea {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23FF7A00' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3E%3Cpath d='m15 5 4 4'/%3E%3C/svg%3E") 0 24, pointer;
+}
+
+body.custom-cursor-enabled a:hover,
+body.custom-cursor-enabled button:hover,
+body.custom-cursor-enabled [role="button"]:hover,
+body.custom-cursor-enabled [onClick]:hover {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='none' stroke='%23FFB547' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3E%3Cpath d='m15 5 4 4'/%3E%3C/svg%3E") 0 24, pointer;
+}
+
+/* Light mode enhancements for Settings */
+.light-mode .bg-\[\#111111\] {
+  background-color: #F8FAFC !important;
+}
+
+.light-mode .bg-\[\#1a1a1a\] {
+  background-color: #F1F5F9 !important;
+}
+
+.light-mode .bg-\[\#050505\] {
+  background-color: #FFFFFF !important;
+}
+
+.light-mode .border-white\/5 {
+  border-color: rgba(17, 17, 17, 0.1) !important;
+}
+
+.light-mode .border-white\/8 {
+  border-color: rgba(17, 17, 17, 0.08) !important;
+}
+
+.light-mode .border-white\/10 {
+  border-color: rgba(17, 17, 17, 0.1) !important;
+}
+
+.light-mode .shadow-lg {
+  box-shadow: 0 10px 15px -3px rgba(17, 17, 17, 0.1) !important;
+}
+
+.light-mode .shadow-xl {
+  box-shadow: 0 20px 25px -5px rgba(17, 17, 17, 0.1) !important;
+}
+
+.light-mode .text-\[\#71717A\] {
+  color: #71717A !important;
+}
+
+.light-mode .text-white\/40 {
+  color: rgba(17, 17, 17, 0.4) !important;
+}
+
+.light-mode .text-white\/60 {
+  color: rgba(17, 17, 17, 0.6) !important;
+}
+
+.light-mode .text-white\/70 {
+  color: rgba(17, 17, 17, 0.7) !important;
+}
+
+.light-mode .bg-white\/5 {
+  background-color: rgba(17, 17, 17, 0.05) !important;
+}
+
+.light-mode .bg-white\/10 {
+  background-color: rgba(17, 17, 17, 0.1) !important;
+}
+
+.light-mode .hover\:bg-white\/10:hover {
+  background-color: rgba(17, 17, 17, 0.1) !important;
+}
+
+.light-mode .ring-white\/10 {
+  --tw-ring-color: rgba(17, 17, 17, 0.1) !important;
+}
+
+.light-mode .ring-white\/20 {
+  --tw-ring-color: rgba(17, 17, 17, 0.2) !important;
+}
+
+/* Light mode sidebar */
+.light-mode .bg-\[\#0a0a0a\] {
+  background-color: #F1F5F9 !important;
+}
+
+.light-mode .bg-gradient-to-b {
+  background: linear-gradient(to bottom, #FFFFFF, #F8FAFC) !important;
+}
