@@ -11,7 +11,7 @@ import { cn } from "../../lib/utils";
 import { ModuleType, ChatMessage } from "../../types";
 import { updateTelemetryOnAction, getTelemetry } from "../../lib/telemetry";
 
-// Premium Custom SVG Icons
+// Premium Custom SVG Icons for Workspace Cards
 const PremiumIcons = {
   chat: ({ className, color }: { className?: string; color: string }) => (
     <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -139,6 +139,72 @@ const PremiumIcons = {
 } as const;
 
 type WorkspaceIconKey = keyof typeof PremiumIcons;
+
+// Premium Custom SVG Icons for Telemetry/Stats Cards
+const PremiumStatsIcons = {
+  questionsSolved: ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="statsChatGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FF7A00" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#FF7A00" stopOpacity="0.05" />
+        </linearGradient>
+        <filter id="statsChatGlow">
+          <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <rect x="2" y="4" width="20" height="14" rx="3" fill="url(#statsChatGrad)" />
+      <path d="M6 8h12M6 12h8" stroke="#FF7A00" strokeWidth="1.5" strokeLinecap="round" filter="url(#statsChatGlow)" />
+      <circle cx="18" cy="10" r="1" fill="#FF7A00" />
+      <path d="M20 16l2 2-2 2" stroke="#FF7A00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" filter="url(#statsChatGlow)" />
+    </svg>
+  ),
+  notesGenerated: ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="statsNotesGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFB547" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#FFB547" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <rect x="4" y="2" width="16" height="18" rx="2" fill="url(#statsNotesGrad)" />
+      <path d="M8 7h8M8 11h6M8 15h4" stroke="#FFB547" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M16 2V6H20" stroke="#FFB547" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="19" cy="4" r="1" fill="#FFB547" />
+    </svg>
+  ),
+  quizzesCompleted: ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="statsQuizGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFB547" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#FFB547" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="12" r="9" fill="url(#statsQuizGrad)" />
+      <text x="12" y="16" textAnchor="middle" fill="#FFB547" fontSize="11" fontWeight="bold">?</text>
+      <circle cx="12" cy="12" r="9" stroke="#FFB547" strokeWidth="1" strokeOpacity="0.5" />
+    </svg>
+  ),
+  researchProjects: ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="statsAtomGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFB547" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#FFB547" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="12" r="3" fill="#FFB547" fillOpacity="0.3" />
+      <ellipse cx="12" cy="12" rx="9" ry="4" stroke="#FFB547" strokeWidth="1.2" strokeOpacity="0.6" />
+      <ellipse cx="12" cy="12" rx="9" ry="4" stroke="#FFB547" strokeWidth="1.2" strokeOpacity="0.6" transform="rotate(60 12 12)" />
+      <ellipse cx="12" cy="12" rx="9" ry="4" stroke="#FFB547" strokeWidth="1.2" strokeOpacity="0.6" transform="rotate(120 12 12)" />
+      <circle cx="12" cy="12" r="2" fill="#FFB547" />
+    </svg>
+  ),
+} as const;
+
+type StatsIconKey = keyof typeof PremiumStatsIcons;
 
 interface HomeDashboardProps {
   onRoute: (module: ModuleType) => void;
@@ -367,10 +433,10 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
   };
 
   const stats = [
-    { label: "Questions Solved", value: telemetry.quizCorrectAnswers || 0, icon: Target, color: "#FF7A00" },
-    { label: "Notes Generated", value: telemetry.notesGeneratedCount || 0, icon: BookMarked, color: "#FFB547" },
-    { label: "Quizzes Completed", value: telemetry.quizzesCompletedCount || 0, icon: HelpCircle, color: "#22C55E" },
-    { label: "Research Projects", value: telemetry.researchInvestigationsCount || 0, icon: FlaskConical, color: "#A1A1AA" },
+    { label: "Questions Solved", value: telemetry.quizCorrectAnswers || 0, iconKey: "questionsSolved" as StatsIconKey, color: "#FF7A00" },
+    { label: "Notes Generated", value: telemetry.notesGeneratedCount || 0, iconKey: "notesGenerated" as StatsIconKey, color: "#FFB547" },
+    { label: "Quizzes Completed", value: telemetry.quizzesCompletedCount || 0, iconKey: "quizzesCompleted" as StatsIconKey, color: "#FFB547" },
+    { label: "Research Projects", value: telemetry.researchInvestigationsCount || 0, iconKey: "researchProjects" as StatsIconKey, color: "#A1A1AA" },
   ];
 
   const formatTimeAgo = (timestamp: string | number | null | undefined) => {
@@ -472,7 +538,7 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                   className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
                   style={{ backgroundColor: `${stat.color}15` }}
                 >
-                  <stat.icon className="w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300" style={{ color: stat.color }} />
+                  {PremiumStatsIcons[stat.iconKey]({ className: "w-4 h-4 sm:w-5 sm:h-5" })}
                 </div>
               </div>
               <motion.div 
