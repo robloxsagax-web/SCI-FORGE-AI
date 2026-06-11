@@ -4,7 +4,7 @@ import {
   GraduationCap, FolderArchive, Sparkles, ChevronRight, Clock, 
   FileText, BrainCircuit, ArrowRight, Target, TrendingUp, BookMarked, 
   FlaskConical, Zap, Activity as ActivityIcon, Flame, Check, Upload,
-  PanelLeft, Clock3, DoorOpen
+  PanelLeft, Clock3, DoorOpen, ArrowUp, Menu
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "../../lib/utils";
@@ -113,8 +113,10 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
   const [showStreakBurst, setShowStreakBurst] = useState(false);
   const [clipboardText, setClipboardText] = useState("");
   const [isDragOver, setIsDragOver] = useState(false);
+  const [showBackToTop, setShowBackToTop] = useState(false);
   
   const inputRef = useRef<HTMLInputElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   const getGreeting = () => {
     const hour = new Date().getHours();
@@ -138,6 +140,25 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
     }, 2000);
     
     return () => clearInterval(interval);
+  }, []);
+
+  // Handle scroll for back-to-top button visibility
+  const handleScroll = useCallback(() => {
+    if (scrollContainerRef.current) {
+      const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
+      // Show button when scrolled more than 300px
+      setShowBackToTop(scrollTop > 300);
+    }
+  }, []);
+
+  // Scroll to top function
+  const scrollToTop = useCallback(() => {
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
   }, []);
 
   // Handle suggestion click - fill input and route to chat
@@ -239,18 +260,24 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
   };
 
   return (
-    <div className="flex-1 overflow-y-auto bg-[#050505]">
-      {/* Main Content Container */}
-      <div className="max-w-5xl mx-auto px-6 py-8">
+    <div className="flex-1 flex flex-col relative bg-[#050505]">
+      {/* Scrollable Content */}
+      <div 
+        ref={scrollContainerRef}
+        onScroll={handleScroll}
+        className="flex-1 overflow-y-auto scroll-smooth"
+      >
+        {/* Main Content Container */}
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         
         {/* Welcome Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-          className="mb-8"
+          className="mb-6 sm:mb-8"
         >
-          <h1 className="text-4xl font-heading font-bold text-white mb-2 tracking-tight">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-heading font-bold text-white mb-2 tracking-tight">
             {getGreeting()} 👋
           </h1>
           <div className="flex items-center gap-2 mb-1">
@@ -269,7 +296,7 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6 sm:mb-8"
         >
           {stats.map((stat, idx) => (
             <motion.div
@@ -278,25 +305,25 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
               animate={{ opacity: 1, scale: 1 }}
               whileHover={{ scale: 1.02, y: -2 }}
               transition={{ duration: 0.4, delay: 0.1 + idx * 0.05 }}
-              className="bg-[#111111] border border-white/5 rounded-2xl p-5 hover:border-white/10 transition-all duration-300 group cursor-pointer"
+              className="bg-[#111111] border border-white/5 rounded-2xl p-4 sm:p-5 hover:border-white/10 transition-all duration-300 group cursor-pointer"
             >
               <div className="flex items-center gap-3 mb-3">
                 <div 
-                  className="w-10 h-10 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
                   style={{ backgroundColor: `${stat.color}15` }}
                 >
-                  <stat.icon className="w-5 h-5 transition-colors duration-300" style={{ color: stat.color }} />
+                  <stat.icon className="w-4 h-4 sm:w-5 sm:h-5 transition-colors duration-300" style={{ color: stat.color }} />
                 </div>
               </div>
               <motion.div 
-                className="text-3xl font-heading font-bold text-white mb-1"
+                className="text-2xl sm:text-3xl font-heading font-bold text-white mb-1"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
               >
                 {stat.value}
               </motion.div>
-              <div className="text-xs text-[#71717A] font-medium">{stat.label}</div>
+              <div className="text-[10px] sm:text-xs text-[#71717A] font-medium">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>
@@ -306,37 +333,37 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="bg-[#111111] border border-white/5 rounded-3xl p-8 mb-6 relative overflow-hidden"
+          className="bg-[#111111] border border-white/5 rounded-2xl sm:rounded-3xl p-5 sm:p-8 mb-6 relative overflow-hidden"
         >
           {/* Background Glow */}
-          <div className="absolute top-0 right-0 w-96 h-64 bg-gradient-to-br from-[#FF7A00]/5 to-transparent rounded-full blur-3xl" />
+          <div className="absolute top-0 right-0 w-64 sm:w-96 h-48 sm:h-64 bg-gradient-to-br from-[#FF7A00]/5 to-transparent rounded-full blur-3xl" />
           
           <div className="relative z-10">
             {/* Mentor Header */}
-            <div className="flex items-center gap-3 mb-5">
+            <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
               <div className="relative">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#FF7A00] to-[#FFB547] flex items-center justify-center shadow-lg shadow-[#FF7A00]/20">
-                  <Sparkles className="w-6 h-6 text-white" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#FF7A00] to-[#FFB547] flex items-center justify-center shadow-lg shadow-[#FF7A00]/20">
+                  <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                 </div>
                 <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-[#22C55E] rounded-full border-2 border-[#111111]" />
               </div>
               <div>
-                <div className="flex items-center gap-2">
-                  <h2 className="text-xl font-heading font-semibold text-white">SciForge Adaptive Mentor</h2>
-                  <span className="text-xs text-[#22C55E] flex items-center gap-1">
+                <div className="flex items-center gap-1 sm:gap-2">
+                  <h2 className="text-lg sm:text-xl font-heading font-semibold text-white">SciForge Adaptive Mentor</h2>
+                  <span className="text-[10px] sm:text-xs text-[#22C55E] flex items-center gap-1">
                     <span className="w-1.5 h-1.5 bg-[#22C55E] rounded-full animate-pulse" />
                     Mentor Online
                   </span>
                 </div>
-                <p className="text-sm text-[#71717A]">Your AI-powered STEM companion</p>
+                <p className="text-xs sm:text-sm text-[#71717A]">Your AI-powered STEM companion</p>
               </div>
             </div>
 
             {/* Clean Input Area - Send Button Outside */}
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <div 
                 className={cn(
-                  "flex-1 bg-[#1a1a1a] rounded-full px-6 py-4 border transition-all duration-300",
+                  "flex-1 bg-[#1a1a1a] rounded-full px-4 sm:px-6 py-3 sm:py-4 border transition-all duration-300",
                   isInputFocused 
                     ? "border-[#FF7A00]/50 shadow-[0_0_20px_rgba(255,122,0,0.15)]" 
                     : "border-white/5 hover:border-white/10"
@@ -350,8 +377,8 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                   onFocus={() => setIsInputFocused(true)}
                   onBlur={() => setIsInputFocused(false)}
                   onKeyDown={handleKeyDown}
-                  placeholder="Ask a question, request notes, generate quizzes, or say 'teach me Kepler's laws'..."
-                  className="w-full bg-transparent text-white placeholder:text-[#71717A] text-sm outline-none"
+                  placeholder="Ask a question..."
+                  className="w-full bg-transparent text-white text-sm sm:text-base placeholder:text-[#71717A] outline-none"
                 />
               </div>
 
@@ -362,20 +389,20 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                 onClick={handleSendMessage}
                 disabled={!chatInput.trim()}
                 className={cn(
-                  "w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shrink-0",
+                  "w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-300 shrink-0",
                   chatInput.trim() 
                     ? "bg-[#FF7A00] hover:bg-[#FF8C1A] shadow-lg shadow-[#FF7A00]/30 text-white" 
                     : "bg-white/5 text-[#71717A] cursor-not-allowed"
                 )}
               >
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="ml-0.5">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="sm:w-5 sm:h-5">
                   <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </motion.button>
             </div>
 
             {/* Quick Action Suggestion Pills */}
-            <div className="flex flex-wrap gap-2 mt-4">
+            <div className="flex flex-wrap gap-2 mt-3 sm:mt-4">
               {SUGGESTIONS.map((suggestion, i) => (
                 <motion.button
                   key={i}
@@ -608,7 +635,7 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
           transition={{ duration: 0.6, delay: 0.5 }}
         >
           <h3 className="text-sm font-heading font-semibold text-white mb-4">Workspace Hub</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {WORKSPACE_CARDS.map((card, idx) => (
               <motion.button
                 key={card.id}
@@ -670,7 +697,26 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
 
         {/* Bottom Spacing */}
         <div className="h-8" />
+        </div>
       </div>
+
+      {/* Back to Top Button */}
+      <AnimatePresence>
+        {showBackToTop && (
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={scrollToTop}
+            className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#FF7A00] text-white flex items-center justify-center shadow-lg shadow-[#FF7A00]/30 z-50 cursor-pointer"
+            aria-label="Scroll to top"
+          >
+            <ArrowUp className="w-5 h-5" />
+          </motion.button>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
