@@ -221,6 +221,47 @@ body.custom-cursor-enabled [onClick]:hover {
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='none' stroke='%23FFB547' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3E%3Cpath d='m15 5 4 4'/%3E%3C/svg%3E") 0 24, pointer;
 }
 
+/* Scribble Analysis Lab Canvas - Sharp Pen Cursor */
+.scribble-canvas,
+.scribble-analysis-area,
+.canvas-container,
+textarea[data-scribble],
+input[data-scribble] {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23FF7A00' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3E%3Cpath d='m15 5 4 4'/%3E%3C/svg%3E") 0 24, crosshair !important;
+}
+
+/* Workspace Card Premium Hover Effects */
+.workspace-card-premium {
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.workspace-card-premium:hover {
+  transform: scale(1.02) translateY(-4px);
+  box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.4);
+}
+
+.workspace-card-premium:hover .card-icon-container {
+  transform: scale(1.1) translateY(-2px);
+  filter: drop-shadow(0 4px 12px rgba(255, 122, 0, 0.4));
+}
+
+.workspace-card-premium:hover .card-glow {
+  opacity: 1;
+}
+
+/* Premium Spring Animation for Workspace Cards */
+@keyframes cardHover {
+  0% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.02) translateY(-4px); }
+  100% { transform: scale(1.02) translateY(-4px); }
+}
+
+@keyframes iconGlow {
+  0% { filter: drop-shadow(0 0 0 rgba(255, 122, 0, 0)); }
+  50% { filter: drop-shadow(0 0 8px rgba(255, 122, 0, 0.6)); }
+  100% { filter: drop-shadow(0 4px 12px rgba(255, 122, 0, 0.4)); }
+}
+
 /* Light mode enhancements for Settings */
 .light-mode .bg-\[\#111111\] {
   background-color: #F8FAFC !important;

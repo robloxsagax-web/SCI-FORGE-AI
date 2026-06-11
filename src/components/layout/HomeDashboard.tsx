@@ -11,6 +11,135 @@ import { cn } from "../../lib/utils";
 import { ModuleType, ChatMessage } from "../../types";
 import { updateTelemetryOnAction, getTelemetry } from "../../lib/telemetry";
 
+// Premium Custom SVG Icons
+const PremiumIcons = {
+  chat: ({ className, color }: { className?: string; color: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="chatGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+        <filter id="chatGlow">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge>
+            <feMergeNode in="coloredBlur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+      </defs>
+      <rect x="2" y="4" width="20" height="14" rx="3" fill="url(#chatGrad)" />
+      <path d="M6 8h12M6 12h8" stroke={color} strokeWidth="1.5" strokeLinecap="round" filter="url(#chatGlow)" />
+      <circle cx="18" cy="10" r="1" fill={color} />
+      <circle cx="18" cy="14" r="1" fill={color} opacity="0.6" />
+      <path d="M20 16l2 2-2 2" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" filter="url(#chatGlow)" />
+    </svg>
+  ),
+  scribble: ({ className, color }: { className?: string; color: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="brainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="0.4" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <rect x="4" y="4" width="16" height="16" rx="3" fill="url(#brainGrad)" />
+      <path d="M12 6C9 6 7 8 7 10.5c0 1.5.5 2.5 1.5 3.5l-1 4 2.5-2c.5.5 1 .5 2 .5s1.5 0 2-.5l2.5 2-1-4c1-1 1.5-2 1.5-3.5 0-2.5-2-4.5-5-4.5z" stroke={color} strokeWidth="1.2" fill={color} fillOpacity="0.2" />
+      <path d="M17 3L21 7M19 1L23 5" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  ),
+  scientist: ({ className, color }: { className?: string; color: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="atomGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="0.4" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="12" r="3" fill={color} fillOpacity="0.3" />
+      <ellipse cx="12" cy="12" rx="9" ry="4" stroke={color} strokeWidth="1.2" strokeOpacity="0.6" />
+      <ellipse cx="12" cy="12" rx="9" ry="4" stroke={color} strokeWidth="1.2" strokeOpacity="0.6" transform="rotate(60 12 12)" />
+      <ellipse cx="12" cy="12" rx="9" ry="4" stroke={color} strokeWidth="1.2" strokeOpacity="0.6" transform="rotate(120 12 12)" />
+      <circle cx="12" cy="12" r="2" fill={color} />
+      <circle cx="12" cy="8" r="0.8" fill={color} />
+      <circle cx="15.5" cy="14" r="0.8" fill={color} />
+      <circle cx="8.5" cy="14" r="0.8" fill={color} />
+    </svg>
+  ),
+  notes: ({ className, color }: { className?: string; color: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="notesGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="0.4" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <rect x="4" y="3" width="16" height="18" rx="2" fill="url(#notesGrad)" />
+      <path d="M8 8h8M8 12h6M8 16h4" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M16 3V7H20" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="19" cy="5" r="1" fill={color} />
+    </svg>
+  ),
+  quiz: ({ className, color }: { className?: string; color: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="quizGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="0.4" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="12" r="9" fill="url(#quizGrad)" stroke={color} strokeWidth="1.2" />
+      <text x="12" y="16" textAnchor="middle" fill={color} fontSize="10" fontWeight="bold">?</text>
+      <path d="M9 9l6 6M15 9l-6 6" stroke={color} strokeWidth="1.2" strokeLinecap="round" opacity="0.5" />
+    </svg>
+  ),
+  dependencymap: ({ className, color }: { className?: string; color: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="mapGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="0.4" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <rect x="3" y="3" width="18" height="18" rx="3" fill="url(#mapGrad)" />
+      <circle cx="12" cy="6" r="2" fill={color} />
+      <circle cx="6" cy="12" r="2" fill={color} />
+      <circle cx="18" cy="12" r="2" fill={color} />
+      <circle cx="9" cy="18" r="2" fill={color} />
+      <circle cx="15" cy="18" r="2" fill={color} />
+      <path d="M12 8v2M10 12l-2-2M14 12l2-2M9 14v2M15 14v2M11 16l-1 1M13 16l1 1" stroke={color} strokeWidth="1" strokeLinecap="round" />
+    </svg>
+  ),
+  progress: ({ className, color }: { className?: string; color: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="progressGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="0.4" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d="M4 21V10L12 3L20 10V21H14V14H10V21H4Z" fill="url(#progressGrad)" stroke={color} strokeWidth="1.2" />
+      <path d="M12 3L12 10" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="12" cy="8" r="2" fill={color} />
+    </svg>
+  ),
+  portfolio: ({ className, color }: { className?: string; color: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="portfolioGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor={color} stopOpacity="0.4" />
+          <stop offset="100%" stopColor={color} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d="M3 7C3 5.89543 3.89543 5 5 5H9L11 7H19C20.1046 7 21 7.89543 21 9V17C21 18.1046 20.1046 19 19 19H5C3.89543 19 3 18.1046 3 17V7Z" fill="url(#portfolioGrad)" stroke={color} strokeWidth="1.2" />
+      <path d="M8 7V5C8 3.89543 8.89543 3 10 3H14C15.1046 3 16 3.89543 16 5V7" stroke={color} strokeWidth="1.2" />
+      <path d="M3 12H21" stroke={color} strokeWidth="1" opacity="0.5" />
+    </svg>
+  ),
+} as const;
+
+type WorkspaceIconKey = keyof typeof PremiumIcons;
+
 interface HomeDashboardProps {
   onRoute: (module: ModuleType) => void;
   onStartChat: (initialMessage?: string) => void;
@@ -23,7 +152,7 @@ interface WorkspaceCard {
   id: ModuleType;
   title: string;
   description: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: React.ComponentType<{ className?: string; color: string }>;
   color: string;
   hoverColor: string;
 }
@@ -33,7 +162,7 @@ const WORKSPACE_CARDS: WorkspaceCard[] = [
     id: "chat",
     title: "Core Intelligence Console",
     description: "Collaborate with your adaptive STEM mentor",
-    icon: MessageSquare,
+    icon: PremiumIcons.chat,
     color: "#FF7A00",
     hoverColor: "hover:border-[#FF7A00]"
   },
@@ -41,7 +170,7 @@ const WORKSPACE_CARDS: WorkspaceCard[] = [
     id: "scribble",
     title: "Scribble Analysis Lab",
     description: "Detailed reasoning and error correction",
-    icon: BrainCircuit,
+    icon: PremiumIcons.scribble,
     color: "#22C55E",
     hoverColor: "hover:border-[#22C55E]"
   },
@@ -49,7 +178,7 @@ const WORKSPACE_CARDS: WorkspaceCard[] = [
     id: "scientist",
     title: "Quantum Research Engine",
     description: "Deep academic investigations",
-    icon: Database,
+    icon: PremiumIcons.scientist,
     color: "#22C55E",
     hoverColor: "hover:border-[#22C55E]"
   },
@@ -57,7 +186,7 @@ const WORKSPACE_CARDS: WorkspaceCard[] = [
     id: "notes",
     title: "Notes Generator",
     description: "Revision notes and exam prep",
-    icon: BookOpen,
+    icon: PremiumIcons.notes,
     color: "#FFB547",
     hoverColor: "hover:border-[#FFB547]"
   },
@@ -65,7 +194,7 @@ const WORKSPACE_CARDS: WorkspaceCard[] = [
     id: "quiz",
     title: "Quiz Generator",
     description: "Custom quizzes with difficulty levels",
-    icon: HelpCircle,
+    icon: PremiumIcons.quiz,
     color: "#FFB547",
     hoverColor: "hover:border-[#FFB547]"
   },
@@ -73,7 +202,7 @@ const WORKSPACE_CARDS: WorkspaceCard[] = [
     id: "dependencymap",
     title: "Concept Dependency Map",
     description: "Visualize concept relationships",
-    icon: Network,
+    icon: PremiumIcons.dependencymap,
     color: "#FFB547",
     hoverColor: "hover:border-[#FFB547]"
   },
@@ -81,7 +210,7 @@ const WORKSPACE_CARDS: WorkspaceCard[] = [
     id: "progress",
     title: "Academic Propulsion",
     description: "Personalized study roadmaps",
-    icon: GraduationCap,
+    icon: PremiumIcons.progress,
     color: "#FF7A00",
     hoverColor: "hover:border-[#FF7A00]"
   },
@@ -89,7 +218,7 @@ const WORKSPACE_CARDS: WorkspaceCard[] = [
     id: "portfolio",
     title: "Research Portfolio",
     description: "All your artifacts in one place",
-    icon: FolderArchive,
+    icon: PremiumIcons.portfolio,
     color: "#A1A1AA",
     hoverColor: "hover:border-[#A1A1AA]"
   },
@@ -244,18 +373,50 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
     { label: "Research Projects", value: telemetry.researchInvestigationsCount || 0, icon: FlaskConical, color: "#A1A1AA" },
   ];
 
-  const formatTimeAgo = (timestamp: string) => {
+  const formatTimeAgo = (timestamp: string | number | null | undefined) => {
+    // Handle null, undefined, or invalid timestamps - show "Just now"
+    if (!timestamp) {
+      return "Just now";
+    }
+    
+    // Convert to number if string
+    const ts = typeof timestamp === 'string' ? parseInt(timestamp, 10) : timestamp;
+    
+    // Check if timestamp is a valid number (not NaN, not 0, not negative in the future)
+    if (isNaN(ts) || ts <= 0) {
+      return "Just now";
+    }
+    
     const now = new Date();
-    const date = new Date(timestamp);
+    const date = new Date(ts);
+    
+    // Validate the date object
+    if (isNaN(date.getTime())) {
+      return "Just now";
+    }
+    
     const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
+    
+    // If date is in the future, return "Just now"
+    if (diffMs < 0) {
+      return "Just now";
+    }
+    
+    const diffSecs = Math.floor(diffMs / 1000);
+    const diffMins = Math.floor(diffSecs / 60);
     const diffHours = Math.floor(diffMins / 60);
     const diffDays = Math.floor(diffHours / 24);
+    const diffWeeks = Math.floor(diffDays / 7);
+    const diffMonths = Math.floor(diffDays / 30);
     
+    if (diffSecs < 60) return "Just now";
     if (diffMins < 60) return `${diffMins}m ago`;
     if (diffHours < 24) return `${diffHours}h ago`;
     if (diffDays === 1) return "Yesterday";
-    return `${diffDays}d ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    if (diffWeeks < 4) return `${diffWeeks}w ago`;
+    if (diffMonths < 12) return `${diffMonths}mo ago`;
+    return "Over a year ago";
   };
 
   return (
@@ -664,51 +825,78 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                 animate={{ opacity: 1, y: 0 }}
                 whileHover={{ y: -4, scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                transition={{ duration: 0.4, delay: 0.5 + idx * 0.05 }}
+                transition={{ duration: 0.4, delay: 0.5 + idx * 0.05, ease: [0.16, 1, 0.3, 1] }}
                 onClick={() => onRoute(card.id)}
                 className={cn(
-                  "group relative bg-[#111111] border border-white/5 rounded-2xl p-5 text-left overflow-hidden transition-all duration-300",
-                  card.hoverColor
+                  "group relative bg-[#111111] rounded-2xl p-5 text-left overflow-hidden transition-all duration-300 workspace-card-premium",
+                  card.hoverColor,
+                  "border border-white/5 hover:border-opacity-100"
                 )}
               >
+                {/* Glow Background */}
                 <div 
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 card-glow"
                   style={{ 
-                    background: `linear-gradient(135deg, ${card.color}08 0%, transparent 50%)` 
+                    background: `radial-gradient(circle at 50% 0%, ${card.color}20 0%, transparent 70%)`,
+                    boxShadow: `inset 0 0 40px ${card.color}10`
                   }} 
                 />
                 
+                {/* Animated Border Glow */}
+                <motion.div 
+                  className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  style={{ 
+                    background: `linear-gradient(135deg, ${card.color}30 0%, transparent 50%, ${card.color}20 100%)`,
+                    padding: '1px'
+                  }}
+                >
+                  <div className="w-full h-full rounded-2xl bg-[#111111]" />
+                </motion.div>
+                
                 <div className="relative z-10">
+                  {/* Premium Icon Container with Glow */}
                   <motion.div 
-                    className="w-11 h-11 rounded-xl flex items-center justify-center mb-4"
+                    className="card-icon-container w-12 h-12 rounded-xl flex items-center justify-center mb-4 relative"
                     style={{ backgroundColor: `${card.color}15` }}
-                    whileHover={{ scale: 1.1, rotate: 5 }}
-                    transition={{ duration: 0.3 }}
+                    whileHover={{ scale: 1.1, rotate: 3 }}
+                    transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
                   >
-                    <card.icon className="w-5 h-5 transition-transform duration-300" style={{ color: card.color }} />
+                    {/* Icon Glow Effect */}
+                    <div 
+                      className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                      style={{ 
+                        boxShadow: `0 0 20px ${card.color}40, inset 0 0 15px ${card.color}20`,
+                        filter: `blur(8px)`
+                      }} 
+                    />
+                    <card.icon className="w-6 h-6 transition-transform duration-300 relative z-10" color={card.color} />
                   </motion.div>
                   
                   <h4 className="text-sm font-semibold text-white mb-1.5 group-hover:text-white transition-colors">
                     {card.title}
                   </h4>
-                  <p className="text-xs text-[#71717A] leading-relaxed">
+                  <p className="text-xs text-[#71717A] leading-relaxed group-hover:text-white/70 transition-colors">
                     {card.description}
                   </p>
                 </div>
                 
+                {/* Animated Arrow */}
                 <motion.div
                   initial={{ opacity: 0, x: -5 }}
                   whileHover={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.2 }}
                   className="absolute top-4 right-4"
                 >
-                  <ChevronRight className="w-4 h-4" style={{ color: card.color }} />
+                  <ChevronRight className="w-5 h-5 transition-colors duration-300" style={{ color: card.color }} />
                 </motion.div>
                 
+                {/* Bottom Glow Line */}
                 <motion.div 
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-current to-transparent opacity-0"
-                  style={{ color: card.color }}
-                  whileHover={{ opacity: 1 }}
+                  className="absolute bottom-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100"
+                  style={{ 
+                    background: `linear-gradient(90deg, transparent, ${card.color}, transparent)`,
+                    boxShadow: `0 0 10px ${card.color}`
+                  }}
                   transition={{ duration: 0.3 }}
                 />
               </motion.button>
