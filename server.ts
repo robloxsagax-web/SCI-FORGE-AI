@@ -7,7 +7,6 @@ import { GoogleGenAI } from "@google/genai";
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
 
 app.use(express.json());
 
@@ -23,7 +22,12 @@ const ai_gemini = process.env.GEMINI_API_KEY
     })
   : null;
 
-const GROQ_API_KEY = "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";
+// Load API keys from environment variables
+const GROQ_API_KEY = process.env.GROQ_API_KEY || "";
+
+if (!GROQ_API_KEY && process.env.NODE_ENV !== "production") {
+  console.warn("[SciForge AI] WARNING: GROQ_API_KEY not found in environment variables");
+}
 
 // Route: Neural Academic Companion with emotional tutor capabilities and routing directives
 app.post("/api/chat", async (req, res) => {
@@ -36,14 +40,14 @@ app.post("/api/chat", async (req, res) => {
 CRITICAL BEHAVIOR RULES:
 
 1. NATURAL CONVERSATION MODE (DEFAULT STATE):
-If the user says: "hello", "hi", "hey", "ayo", or any casual greeting, you MUST respond like a natural human academic mentor in brief, clean, warm paragraphs (do not include any system headers, dashboards, list of workspaces, metrics, quizzes or guides). Simply talk naturally, friendly, and briefly helpful.
+If the user says: "hello", "hi", "hey", "ayo", or any casual greeting, you MUST respond like a natural human academic mentor in brief, clean, warm paragraphs (do not include any system headers, da[...]
 Example style:
 "Hey, good to see you. What are you working on today? I can help you with science, math, or anything you're stuck on."
 When in Natural Conversation Mode, set "type" in the JSON to "natural_conversation".
 
 2. EXPLANATION MODE (ONLY WHEN TRIGGERED):
-You ONLY switch into structured teaching mode when the user says phrases like "teach me", "explain", "how does", "why does", "break down", "I want to learn", or when they ask any academic/STEM question.
-When this happens, set "type" in the JSON to "explanation". Your "directMessage" MUST be structured EXACTLY in this format, word-for-word, utilizing clean paragraphs with no markdown bold stars (**) or hashtags (#) inside:
+You ONLY switch into structured teaching mode when the user says phrases like "teach me", "explain", "how does", "why does", "break down", "I want to learn", or when they ask any academic/STEM que[...]
+When this happens, set "type" in the JSON to "explanation". Your "directMessage" MUST be structured EXACTLY in this format, word-for-word, utilizing clean paragraphs with no markdown bold stars (*[...]
 
 SCI-FORGE ADAPTIVE INSTRUCTOR
 
@@ -104,7 +108,15 @@ Strictly output ONLY valid JSON matching this exact typescript interface structu
 
 CRITICAL RULES:
 1. Do NOT include any markdown markup like asterisks (**), hashtags (#), or code block backticks inside any text field in the JSON structure.
-2. If the user query is a greeting, set "type" to "natural_conversation" and topic, journey, explanationStyles, mission to null or empty. Only provide natural human response paragraphs in "directMessage".`;
+2. If the user query is a greeting, set "type" to "natural_conversation" and topic, journey, explanationStyles, mission to null or empty. Only provide natural human response paragraphs in "direct[...]
+`;
+
+    if (!GROQ_API_KEY) {
+      return res.status(500).json({
+        error: "GROQ_API_KEY not configured in environment",
+        fallback: true
+      });
+    }
 
     console.log("[SciForge AI] Querying Groq Llama-3.3 for structured learning flow...");
     const groqMessages = [
@@ -150,6 +162,10 @@ app.post("/api/simulate", async (req, res) => {
   try {
     const promptText = String(req.body.prompt || "");
     
+    if (!GROQ_API_KEY) {
+      return res.status(500).json({ error: "GROQ_API_KEY not configured" });
+    }
+
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -199,7 +215,6 @@ Strictly output ONLY valid JSON matching this exact blueprint, do not wrap in ma
     res.json(JSON.parse(jsonStr));
   } catch (error: any) {
     console.error("Simulation generation error:", error);
-    // Dynamic fallback payload corresponding with real prompt requests
     const promptText = String(req.body?.prompt || "");
     const isOrbit = promptText.toLowerCase().includes("orbit") || promptText.toLowerCase().includes("satellite");
     const isWave = promptText.toLowerCase().includes("wave") || promptText.toLowerCase().includes("frequency");
@@ -231,6 +246,10 @@ app.post("/api/analyze-scribble", async (req, res) => {
   try {
     const { rawText } = req.body;
     
+    if (!GROQ_API_KEY) {
+      return res.status(500).json({ error: "GROQ_API_KEY not configured" });
+    }
+
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -246,7 +265,7 @@ app.post("/api/analyze-scribble", async (req, res) => {
             content: `You are an expert multi-disciplinary school worksheet, logic, and formula grader supporting all topics:
 mathematics, physics, chemistry, biology, computer science, and logic.
 Detect subject automatically and evaluate correctness (if user solution exists).
-Identify errors and why wrong, solve step-by-step, explain concept clearly (both simple & deep) with a real-world analogy, provide an alternative method to solve the same problem (e.g., graphical, dimensional analysis, energy conservation, simplified shortcut, etc.), and generate 2 practice questions.
+Identify errors and why wrong, solve step-by-step, explain concept clearly (both simple & deep) with a real-world analogy, provide an alternative method to solve the same problem (e.g., graphical[...]
 Never output markdown or outer explanations. Only output valid JSON matching this exact schema:
 {
   "subject": "The specific field / subject matter detected",
@@ -286,7 +305,6 @@ Never output markdown or outer explanations. Only output valid JSON matching thi
     const data = await response.json();
     res.json(JSON.parse(data.choices?.[0]?.message?.content));
   } catch (err: any) {
-    // Elegant fallback based on subject keys
     res.json({
       subject: "Mathematics & Mechanics",
       problem_understanding: "Isolating acceleration 'a' from the dynamics worksheet F = m * a given raw values F = 20N and m = 5kg.",
@@ -304,11 +322,11 @@ Never output markdown or outer explanations. Only output valid JSON matching thi
         "Execute calculation division to acquire solution: a = 4 m/s²"
       ],
       final_answer: "a = 4 m/s²",
-      alternative_method: "Using Dimensional Analysis is an elegant shortcut. The dimensions of Force are [M L T^-2] (kg·m/s²) and Mass is [M] (kg). Dividing Force dimensions by Mass dimensions directly isolates Acceleration [L T^-2] (m/s²). Hence, dividing 20 kg·m/s² by 5 kg directly yields 4 m/s² without needing to re-arrange Newton's formulas algebraically on paper first.",
+      alternative_method: "Using Dimensional Analysis is an elegant shortcut. The dimensions of Force are [M L T^-2] (kg·m/s²) and Mass is [M] (kg). Dividing Force dimensions by Mass dimensions[...]",
       concept_teaching: {
         simple_explanation: "To find acceleration, divide the net force acting on the body by its raw mass scalar. Think of it as how fast a certain push forces a specific weight to move.",
-        deep_explanation: "Acceleration represents the rate of velocity vector modification over time. Derived from Newton's second law, dividing the net force vector by internal inertial mass scalar isolates the linear acceleration component (a = F/m).",
-        real_world_analogy: "If you push a massive couch, it will move extremely slowly. If you push a small skateboard with the exact same strength, it will accelerate instantly because of its small mass."
+        deep_explanation: "Acceleration represents the rate of velocity vector modification over time. Derived from Newton's second law, dividing the net force vector by internal inertial mass sc[...]",
+        real_world_analogy: "If you push a massive couch, it will move extremely slowly. If you push a small skateboard with the exact same strength, it will accelerate instantly because of its s[...]"
       },
       practice_questions: [
         "Calculate the force required to accelerate a 15 kg particle at 4 m/s².",
@@ -324,6 +342,10 @@ app.post("/api/science-design", async (req, res) => {
   try {
     const { prompt } = req.body;
     
+    if (!GROQ_API_KEY) {
+      return res.status(500).json({ error: "GROQ_API_KEY not configured" });
+    }
+
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -341,7 +363,7 @@ Generate extremely long, detailed, and high-caliber response. Make sure the expl
 Strictly output ONLY valid JSON matching this exact schema:
 {
   "research_topic": "Fluently formatted research topic name",
-  "explanation": "A highly comprehensive, premium educational explanation covering molecular/physical interactions, mechanics, equations, and historical development (length MUST be between 400 and 700 words).",
+  "explanation": "A highly comprehensive, premium educational explanation covering molecular/physical interactions, mechanics, equations, and historical development (length MUST be between 400 an[...]",
   "principles": [
     { "title": "Key Principle 1", "detail": "Detailed theoretical mechanism and physics/chemistry/biology explanation" },
     { "title": "Key Principle 2", "detail": "Detailed theoretical mechanism and physics/chemistry/biology explanation" },
@@ -372,7 +394,7 @@ Strictly output ONLY valid JSON matching this exact schema:
   } catch (err: any) {
     res.json({
       research_topic: "Enzyme Kinetics and Thermal Throttling",
-      explanation: "Biocatalytic proteins accelerate chemical reactions by lowering activation barriers. According to collision theory, increasing heat energy increases the velocity of molecular systems, causing an elevation in absolute collision frequency. However, because enzymes are delicate tertiary protein chains held together by fragile hydrogen bonds, excessive temperature surges disrupt these bonds. This disruption triggers denaturation, permanently distorting active site coordinates and rendering Catalase non-functional. At the molecular scale, hydrogen bonding networks undergo phase changes under physical heat stress. This disrupts the structural integrity of enzyme matrices. Thus, a precise parabolic profile governs overall enzymatic turnover speed up to a denaturing thermal maximum.",
+      explanation: "Biocatalytic proteins accelerate chemical reactions by lowering activation barriers. According to collision theory, increasing heat energy increases the velocity of molecular [...]",
       principles: [
         { title: "Arrhenius Rate Scaling", detail: "Kinetic rates scale exponentially with thermal levels up to the optimal catalytic activation energy." },
         { title: "Active Site Steric Bounds", detail: "Three-dimensional orientation of functional groups determines exact substrate specificity thresholds." },
@@ -383,7 +405,7 @@ Strictly output ONLY valid JSON matching this exact schema:
         { title: "Bio-remediation & Waste Filtration", detail: "Employing thermophilic bacterial arrays to degrade heavy chemical synthetics in high temperature thermal waste spills." }
       ],
       limitations: "Classical Arrhenius equations fail near physical phase change thresholds or extreme high pressures where solvent densities fluctuate.",
-      misconceptions: "Students mistakenly assume enzymes are dead molecules that dissolve or simply 'wear out' after one reaction. Enzymes are reusable physical accelerators; heat merely denatures their three-dimensional folding conformation shape.",
+      misconceptions: "Students mistakenly assume enzymes are dead molecules that dissolve or simply 'wear out' after one reaction. Enzymes are reusable physical accelerators; heat merely denatur[...]",
       related_fields: [
         "Biochemistry and Macromolecular Crystallography",
         "Thermodynamic Non-equilibrium Chemical Kinetics"
@@ -399,6 +421,10 @@ app.post("/api/quiz", async (req, res) => {
     const { topic, count } = req.body;
     const questionsCount = count || 4;
     
+    if (!GROQ_API_KEY) {
+      return res.status(500).json({ error: "GROQ_API_KEY not configured" });
+    }
+
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -463,6 +489,10 @@ app.post("/api/notes", async (req, res) => {
   try {
     const { topic } = req.body;
     
+    if (!GROQ_API_KEY) {
+      return res.status(500).json({ error: "GROQ_API_KEY not configured" });
+    }
+
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -481,7 +511,7 @@ Strictly output JSON in this exact schema, do not wrap in markdown:
 {
   "topic": "Clean capitalized topic name",
   "overview": "Sleek and professional abstract overview paragraph describing the topic context.",
-  "fullLectureNotes": "Exhaustive, deeply descriptive textbook draft between 600-1200 words covering major historical contexts, deep mathematical laws, and contemporary physical paradigms. High academic caliber.",
+  "fullLectureNotes": "Exhaustive, deeply descriptive textbook draft between 600-1200 words covering major historical contexts, deep mathematical laws, and contemporary physical paradigms. High a[...]",
   "conceptBreakdown": [
     {
       "concept": "Subconcept Name",
@@ -523,7 +553,7 @@ Strictly output JSON in this exact schema, do not wrap in markdown:
     res.json({
       topic: "Principles of Nuclear Fission and Criticality",
       overview: "Nuclear fission is the primary mechanical event where massive atomic nuclei split apart, producing daughter products and generating large kinetic discharges.",
-      fullLectureNotes: "Nuclear physics and energy mechanics rest upon the delicate nuclear force structures. Fission represents a structural split of heavy element atoms such as Uranium-235 or Plutonium-239. When an unstable heavy nuclide successfully captures an incoming slow thermal neutron, it undergoes transition into a highly excited compound atomic state. This excited configuration enters spatial oscillations, forming a stretched neck structure that local forces fail to bind together. The repellent electrostatic forces eventually overcome the short-range strong nuclear bonds, splitting the assembly into daughter nuclei (typically Rubidium and Cesium) while releasing multiple high-energy neutrons and approximately 200 MeV of radiative energy. The free neutrons then trigger successive fission events in adjacent nucleide groups, manifesting self-sustaining thermal chains. Controlling this reaction involves using moderators to decelerate swift neutrons to thermal speeds, and safety rods to absorb excess particles.",
+      fullLectureNotes: "Nuclear physics and energy mechanics rest upon the delicate nuclear force structures. Fission represents a structural split of heavy element atoms such as Uranium-235 or [...]",
       conceptBreakdown: [
         {
           "concept": "Neutron Cross-Section Tuning",
@@ -562,6 +592,10 @@ app.post("/api/dependency-map", async (req, res) => {
       return res.status(400).json({ error: "Concept name is required." });
     }
     
+    if (!GROQ_API_KEY) {
+      return res.status(500).json({ error: "GROQ_API_KEY not configured" });
+    }
+
     console.log(`[SciForge AI] Generating Dynamic Concept Dependency Map for: ${concept}`);
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
@@ -575,7 +609,7 @@ app.post("/api/dependency-map", async (req, res) => {
         messages: [
           {
             role: "system",
-            content: `You are an expert STEM Curriculum Designer. Compile a sequential 4-node Concept Dependency Map tracking milestones from foundational basics to advanced mastery for the entered concept.
+            content: `You are an expert STEM Curriculum Designer. Compile a sequential 4-node Concept Dependency Map tracking milestones from foundational basics to advanced mastery for the enter[...]
 Each node in the path must link sequentially and recommend cross-connections inside the SciForge AI dashboard.
 No markdown formatting inside text fields. Only output valid JSON matching this exact schema:
 {
@@ -590,10 +624,10 @@ No markdown formatting inside text fields. Only output valid JSON matching this 
       "difficulty": "Beginner",
       "prerequisites": ["Related general prerequisite"],
       "related": ["Friction dynamics or similar related fields"],
-      "recommendedNotes": "Query text for Notes Generator, e.g. Basics of classical mechanics",
-      "recommendedQuizzes": "Query text for Quiz Generator, e.g. Classical net forces",
-      "recommendedResearch": "Query text for Research Engine, e.g. Friction values in alloy plates",
-      "recommendedExplorer": "Query text for ProjectMate, e.g. Friction forces calibration",
+      "recommendedNotes": "Query text for Notes Generator, e.g Basics of classical mechanics",
+      "recommendedQuizzes": "Query text for Quiz Generator, e.g Classical net forces",
+      "recommendedResearch": "Query text for Research Engine, e.g Friction values in alloy plates",
+      "recommendedExplorer": "Query text for ProjectMate, e.g Friction forces calibration",
       "recommendedExplorerId": "friction_sys"
     },
     {
@@ -635,7 +669,6 @@ No markdown formatting inside text fields. Only output valid JSON matching this 
     const data = await response.json();
     res.json(JSON.parse(data.choices?.[0]?.message?.content));
   } catch (err: any) {
-    // Rich fallback payload matching the queried concept
     const concept = String(req.body.concept || "Thermodynamics");
     res.json({
       subject: concept,
@@ -693,6 +726,10 @@ app.post("/api/summarize-session", async (req, res) => {
     const minutesVal = minutes || 45;
     const activitiesList = activities && activities.length > 0 ? activities : ["Theoretical Concept review and calibration"];
 
+    if (!GROQ_API_KEY) {
+      return res.status(500).json({ error: "GROQ_API_KEY not configured" });
+    }
+
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -711,7 +748,7 @@ Output JSON ONLY in this precise format:
   "session_duration": "${minutesVal} Minutes",
   "cognitive_efficiency": 95,
   "executive_summary": "1-2 sentence high-level synthesis of what was completed and its neurological impact.",
-  "scientific_analysis": "Detailed 150-250 word scientific analysis of the cognitive focus phase. Reference neurologically sound concepts like alpha/beta band transition, neocortical memory consolidation, synaptic plasticity, or the Pomodoro metabolic efficiency bounds.",
+  "scientific_analysis": "Detailed 150-250 word scientific analysis of the cognitive focus phase. Reference neurologically sound concepts like alpha/beta band transition, neocortical memory conso[...]",
   "actions_completed": [
     "Academic action 1 based on actual user activity",
     "Academic action 2 based on actual user activity"
@@ -734,7 +771,7 @@ Output JSON ONLY in this precise format:
       session_duration: `${minutesVal} Minutes`,
       cognitive_efficiency: 92,
       executive_summary: `Completed a rigorous ${minutesVal}-minute focused study cycle, successfully committing active concept traces to hippocampal structures.`,
-      scientific_analysis: `This ${minutesVal}-minute study segment represents an optimal metabolic efficiency block. In this phase, neuronal networks maintain sustained theta and high-alpha wave patterns (8-12 Hz) across the prefrontal cortex, which optimalizes working memory bandwidth. As a result, newly encoded cognitive schemas are systematically processed, preparing them for long-term neocortical consolidation. This process prevents the cognitive fatigue thresholds typical of non-structured focus cycles.`,
+      scientific_analysis: `This ${minutesVal}-minute study segment represents an optimal metabolic efficiency block. In this phase, neuronal networks maintain sustained theta and high-alpha wave[...]",
       actions_completed: req.body.activities && req.body.activities.length > 0 
         ? req.body.activities.map((a: string) => `Executed systematic task review: ${a}`)
         : [
@@ -752,6 +789,10 @@ app.post("/api/study-plan", async (req, res) => {
     const { topic } = req.body;
     if (!topic || !topic.trim()) {
       return res.status(400).json({ error: "Topic is required" });
+    }
+
+    if (!GROQ_API_KEY) {
+      return res.status(500).json({ error: "GROQ_API_KEY not configured" });
     }
 
     const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
@@ -851,25 +892,14 @@ Output strictly single valid JSON with this exact schema:
   }
 });
 
-async function main() {
-  // Mount Vite middleware for dev mode or service from /dist in production
-  if (process.env.NODE_ENV !== "production") {
-    const vite = await createViteServer({
-      server: { middlewareMode: true },
-      appType: "spa",
-    });
-    app.use(vite.middlewares);
-  } else {
-    const distPath = path.join(process.cwd(), "dist");
-    app.use(express.static(distPath));
-    app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
-    });
-  }
-
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`[SciForge AI] Server running smoothly on http://localhost:${PORT}`);
+// Serve frontend in production
+if (process.env.NODE_ENV === "production") {
+  const distPath = path.join(process.cwd(), "dist");
+  app.use(express.static(distPath));
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
   });
 }
 
-main().catch(console.error);
+// Export as serverless function for Vercel
+export default app;
