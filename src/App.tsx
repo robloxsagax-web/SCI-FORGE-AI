@@ -114,8 +114,26 @@ export default function App() {
     setActiveModule("chat");
   };
 
-  const handleStartChat = () => {
+  const handleStartChat = (initialMessage?: string) => {
     setActiveModule("chat");
+    if (initialMessage) {
+      // Add the initial message to chat
+      const userMsg: ChatMessage = {
+        id: crypto.randomUUID(),
+        sender: "user",
+        text: initialMessage,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      };
+      setChatMessages(prev => [...prev, userMsg]);
+    }
+  };
+
+  // Transfer data to specific workspace
+  const handleTransferToWorkspace = (workspace: ModuleType, data?: any) => {
+    // Store transfer data for workspace to consume
+    if (data) {
+      localStorage.setItem("sciforge_workspace_transfer", JSON.stringify({ workspace, ...data }));
+    }
   };
 
   const renderModule = () => {
@@ -127,6 +145,7 @@ export default function App() {
             onStartChat={handleStartChat}
             chatMessages={chatMessages}
             onViewConversations={handleStartChat}
+            onTransferToWorkspace={handleTransferToWorkspace}
           />
         );
       case "chat":
