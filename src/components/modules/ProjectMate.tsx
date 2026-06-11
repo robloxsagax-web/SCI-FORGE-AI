@@ -578,7 +578,7 @@ export function ProjectMate({ isRightPanelOpen, setIsRightPanelOpen, onUpdateInt
 
                 <div className="p-4 bg-accent-cyan/[0.01] border border-accent-cyan/10 rounded-2xl text-[10px] font-sans text-white/50 leading-relaxed space-y-1">
                   <span className="font-mono text-[9px] text-accent-cyan uppercase tracking-wider font-extrabold block">Alpha State Rules:</span>
-                  <p>Consolidated 45-minute workspaces matches professional neural memory retention spikes. Finish each cycle complete to register study hours in telemetry matrix.</p>
+                  <p>Consolidated {minutes}-minute workspaces matches professional neural memory retention spikes. Finish each cycle complete to register study hours in telemetry matrix.</p>
                 </div>
               </div>
             </div>
