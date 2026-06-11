@@ -56,15 +56,15 @@ CONDITION B: ACADEMIC / STEM QUESTIONS
 Trigger words: "explain", "teach me", "what is", "how does", "why does", "describe", "break down", "define", "analyze", "understand", "help me learn", "tell me about", OR any specific STEM topic question
 
 When triggered:
-1. MUST output this exact block at the TOP of your response, BEFORE anything else:
+1. MUST output this exact block at the TOP of your response, BEFORE the JSON:
 
 SCI-FORGE ADAPTIVE INSTRUCTOR
 Choose your learning style:
-• Simple Explanation
-• Step-by-Step Breakdown
-• Real-Life Analogy
-• Exam Revision Notes
-• Deep Academic Explanation
+1. Simple Explanation
+2. Step-by-Step Breakdown
+3. Real-Life Analogy
+4. Exam Revision Notes
+5. Deep Academic Explanation
 
 (Defaulting to Step-by-Step Breakdown below unless specified)
 
@@ -107,7 +107,7 @@ Output ONLY valid JSON matching this structure:
 {
   "type": "natural_conversation" | "explanation",
   "topic": "Clean capitalized topic name (empty string for casual greetings)",
-  "directMessage": "Your response text - natural paragraphs for casual, or the full formatted SCI-FORGE ADAPTIVE INSTRUCTOR block for academic",
+  "directMessage": "Your response text - natural paragraphs for casual, or the FULL explanation content (including the learning style menu block) for academic",
   "journey": null | {
     "diagnosis": "Diagnose prior requirements and missing prerequisite knowledge",
     "foundation": "Teach core idea in simplest possible form - MINIMUM 120 WORDS",
@@ -148,11 +148,12 @@ CRITICAL ENFORCEMENT
 ═══════════════════════════════════════════════════════
 1. NO markdown markup (*, #, \`) inside JSON text fields
 2. For casual greetings: type="natural_conversation", all other fields null/empty
-3. For academic questions: ALWAYS use the SCI-FORGE ADAPTIVE INSTRUCTOR block with learning style options
+3. For academic questions: type="explanation" and include the FULL menu block in directMessage
 4. ALWAYS minimum 120 words for explanation topics
 5. NEVER show fake scores or mock analytics
 6. NEVER repeat system identity or interface elements
-7. Priority: clarity > depth > intelligence > UI`;
+7. Priority: clarity > depth > intelligence > UI
+8. The directMessage for explanation type MUST contain the full "SCI-FORGE ADAPTIVE INSTRUCTOR" block followed by the explanation`;
 
     if (!GROQ_API_KEY) {
       return res.status(500).json({
@@ -176,9 +177,8 @@ CRITICAL ENFORCEMENT
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         messages: groqMessages,
-        response_format: { type: "json_object" },
         temperature: 0.3,
-        max_tokens: 1500
+        max_tokens: 2000
       })
     });
 
@@ -188,7 +188,29 @@ CRITICAL ENFORCEMENT
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || "{}";
-    const finalJson = JSON.parse(content.trim());
+    
+    // Parse the JSON from the response
+    let finalJson;
+    try {
+      finalJson = JSON.parse(content.trim());
+    } catch (e) {
+      // If JSON parsing fails, try to extract JSON from the content
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      if (jsonMatch) {
+        finalJson = JSON.parse(jsonMatch[0]);
+      } else {
+        // If no JSON found, create a natural_conversation response with the raw content
+        finalJson = {
+          type: "natural_conversation",
+          topic: "",
+          directMessage: content.trim(),
+          journey: null,
+          explanationStyles: null,
+          mission: null,
+          scoreEstimation: null
+        };
+      }
+    }
 
     res.json(finalJson);
   } catch (error: any) {

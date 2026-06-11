@@ -381,7 +381,7 @@ export function GlobalChat({
                         <div className="space-y-4">
                           {/* Main introductory bubble */}
                           <div className="p-5 rounded-2xl bg-secondary-bg/10 border border-white/5 rounded-tl-none relative shadow-sm">
-                            {msg.type !== "natural_conversation" && (
+                            {msg.type === "explanation" && (
                               <h3 className="text-xs font-mono text-accent-cyan uppercase tracking-widest mb-2 font-bold flex items-center gap-1">
                                 <Bot className="w-3.5 h-3.5" /> SCI-FORGE ADAPTIVE INSTRUCTOR
                               </h3>
