@@ -73,6 +73,18 @@ export function GlobalChat({
   const [missionQuests, setMissionQuests] = useState<boolean[]>([false, false, false]);
   const [activeMissionQuizAnswer, setActiveMissionQuizAnswer] = useState<string | null>(null);
   const [missionQuizCorrect, setMissionQuizCorrect] = useState<boolean | null>(null);
+  const [showWorkspaceLauncher, setShowWorkspaceLauncher] = useState(false);
+
+  // Workspace launcher items
+  const workspaceItems = [
+    { id: "notes", label: "Notes Generator", icon: "📝", color: "#FFB547" },
+    { id: "quiz", label: "Quiz Generator", icon: "❓", color: "#FFB547" },
+    { id: "scribble", label: "Scribble Analysis Lab", icon: "✍️", color: "#22C55E" },
+    { id: "scientist", label: "Quantum Research Engine", icon: "🔬", color: "#22C55E" },
+    { id: "dependencymap", label: "Concept Dependency Map", icon: "🗺️", color: "#FF7A00" },
+    { id: "progress", label: "Academic Propulsion", icon: "🚀", color: "#FF7A00" },
+    { id: "portfolio", label: "Research Portfolio", icon: "📚", color: "#A1A1AA" },
+  ];
 
   const updateUnderstandingScore = (modifier: number) => {
     // Direct telemetry modification to preserve dynamic backpropagation scaling
@@ -122,10 +134,8 @@ export function GlobalChat({
 
       const data = await response.json();
       
-      // Record inquiry in the central telemetry to evolve academic intelligence recursively
-      if (data.topic) {
-        updateTelemetryOnAction("quiz_answer", { topic: data.topic, isCorrect: true });
-      }
+      // Note: Understanding Score is NOT updated from chat messages
+      // Scores only increase from real workspace actions (notes, quizzes, etc.)
 
       // Activate Gamified Mission Mode if requested or present
       if (data.mission) {
@@ -141,7 +151,7 @@ export function GlobalChat({
         sender: "ai",
         text: data.content || "I have compiled your adaptive STEM tutor module below.",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        type: "explanation",
+        type: data.type === "greeting" ? "natural_conversation" : "explanation",
         menuBlock: "",
         topic: "",
         journey: null,
@@ -219,8 +229,8 @@ export function GlobalChat({
             <h1 className="text-sm font-heading font-semibold tracking-wider text-white select-none uppercase">SciForge AI Workspace</h1>
           </div>
           <button 
-            onClick={() => onToggleWorkspaceUINav?.(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-accent-cyan/10 hover:bg-accent-cyan/25 border border-accent-cyan/25 hover:border-accent-cyan/50 text-[11px] font-mono font-bold text-accent-cyan rounded-xl transition-all cursor-pointer"
+            onClick={() => setShowWorkspaceLauncher(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-[#FF7A00]/10 hover:bg-[#FF7A00]/25 border border-[#FF7A00]/25 hover:border-[#FF7A00]/50 text-[11px] font-mono font-bold text-[#FF7A00] rounded-xl transition-all cursor-pointer"
           >
             <GraduationCap className="w-3.5 h-3.5" /> EXPLORE ACADEMIC WORKSPACES
           </button>
@@ -575,6 +585,61 @@ export function GlobalChat({
                 </div>
               )}
 
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Workspace Launcher Modal */}
+        <AnimatePresence>
+          {showWorkspaceLauncher && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
+              onClick={() => setShowWorkspaceLauncher(false)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.9, opacity: 0 }}
+                className="bg-[#111111] border border-white/10 rounded-3xl p-6 max-w-2xl w-full mx-4 max-h-[80vh] overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between mb-6">
+                  <h2 className="text-lg font-heading font-bold text-white flex items-center gap-2">
+                    🍊 SCI-FORGE ACADEMIC WORKSPACES
+                  </h2>
+                  <button
+                    onClick={() => setShowWorkspaceLauncher(false)}
+                    className="p-2 hover:bg-white/5 rounded-lg text-white/50 hover:text-white transition-colors cursor-pointer"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {workspaceItems.map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        onRoute(item.id as ModuleType);
+                        setShowWorkspaceLauncher(false);
+                      }}
+                      className="flex items-center gap-3 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-white/20 hover:bg-white/10 transition-all text-left group"
+                    >
+                      <span className="text-2xl">{item.icon}</span>
+                      <div className="flex-1">
+                        <h3 className="text-sm font-bold text-white group-hover:text-[#FF7A00] transition-colors">{item.label}</h3>
+                        <div 
+                          className="w-6 h-1 rounded-full mt-1.5" 
+                          style={{ backgroundColor: item.color }}
+                        />
+                      </div>
+                      <ArrowRight className="w-4 h-4 text-white/30 group-hover:text-[#FF7A00] group-hover:translate-x-1 transition-all" />
+                    </button>
+                  ))}
+                </div>
+              </motion.div>
             </motion.div>
           )}
         </AnimatePresence>
