@@ -11,6 +11,85 @@ import { cn } from "../../lib/utils";
 import { ModuleType, ChatMessage } from "../../types";
 import { updateTelemetryOnAction, getTelemetry } from "../../lib/telemetry";
 
+// Premium Neural Helix Logo - Adaptive Mentor
+const NeuralHelixLogo = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 36 36" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="helixGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#22C55E" stopOpacity="0.9" />
+        <stop offset="100%" stopColor="#4ADE80" stopOpacity="0.5" />
+      </linearGradient>
+      <linearGradient id="helixGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#4ADE80" stopOpacity="0.7" />
+        <stop offset="100%" stopColor="#22C55E" stopOpacity="0.4" />
+      </linearGradient>
+      <filter id="helixGlow">
+        <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    {/* DNA Helix strands */}
+    <path d="M12 6C16 10 20 14 24 18C20 22 16 26 12 30" stroke="url(#helixGrad1)" strokeWidth="1.5" strokeLinecap="round" filter="url(#helixGlow)" />
+    <path d="M24 6C20 10 16 14 12 18C16 22 20 26 24 30" stroke="url(#helixGrad2)" strokeWidth="1.5" strokeLinecap="round" filter="url(#helixGlow)" />
+    {/* Base pairs */}
+    <path d="M14 10H22M11 15H25M14 20H22M11 25H25" stroke="#22C55E" strokeWidth="1" strokeOpacity="0.4" strokeLinecap="round" />
+    {/* Neural nodes */}
+    <circle cx="12" cy="6" r="1.5" fill="#4ADE80" />
+    <circle cx="24" cy="18" r="2" fill="#22C55E" filter="url(#helixGlow)" />
+    <circle cx="12" cy="30" r="1.5" fill="#4ADE80" />
+    <circle cx="18" cy="12" r="1" fill="#22C55E" opacity="0.6" />
+    <circle cx="18" cy="24" r="1" fill="#22C55E" opacity="0.6" />
+    {/* Center */}
+    <circle cx="18" cy="18" r="2.5" fill="#22C55E" filter="url(#helixGlow)" />
+    <circle cx="18" cy="18" r="1" fill="#4ADE80" />
+  </svg>
+);
+
+// Premium Wireframe Flame - Learning Streak
+const WireframeFlameLogo = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="flameGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+        <stop offset="0%" stopColor="#FF7A00" stopOpacity="0.8" />
+        <stop offset="50%" stopColor="#FFB547" stopOpacity="0.6" />
+        <stop offset="100%" stopColor="#FFB547" stopOpacity="0.3" />
+      </linearGradient>
+      <filter id="flameGlow">
+        <feGaussianBlur stdDeviation="0.5" result="coloredBlur"/>
+        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <path d="M12 2C8 6 6 10 6 13C6 17 8 20 12 22C16 20 18 17 18 13C18 10 16 6 12 2Z" stroke="url(#flameGrad)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" filter="url(#flameGlow)" />
+    <path d="M12 5C10 8 9 10 9 12C9 14.5 10 16 12 17.5" stroke="#FF7A00" strokeWidth="0.8" strokeOpacity="0.5" strokeLinecap="round" />
+    <path d="M12 5C14 8 15 10 15 12C15 14.5 14 16 12 17.5" stroke="#FFB547" strokeWidth="0.8" strokeOpacity="0.5" strokeLinecap="round" />
+    <circle cx="12" cy="14" r="2" stroke="#FF7A00" strokeWidth="0.8" strokeOpacity="0.6" />
+    <circle cx="12" cy="14" r="0.8" fill="#FF7A00" />
+  </svg>
+);
+
+// Premium Wireframe Brain - Quick-Scan
+const WireframeBrainLogo = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="brainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#22C55E" stopOpacity="0.8" />
+        <stop offset="100%" stopColor="#4ADE80" stopOpacity="0.4" />
+      </linearGradient>
+      <filter id="brainGlow">
+        <feGaussianBlur stdDeviation="0.5" result="coloredBlur"/>
+        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    <path d="M12 3C8 3 5 5 4 8C3 10 4 12 4 12C3 14 4 16 5 17C4 19 6 21 8 21C9 21 10 20 11 19C11 20 12 21 12 21C12 21 13 20 13 19C14 20 15 21 16 21C18 21 20 19 19 17C20 16 21 14 20 12C20 12 21 10 20 8C19 5 16 3 12 3Z" stroke="url(#brainGrad)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" filter="url(#brainGlow)" />
+    <path d="M8 8C10 9 11 11 11 12" stroke="#22C55E" strokeWidth="0.8" strokeOpacity="0.5" strokeLinecap="round" />
+    <path d="M16 8C14 9 13 11 13 12" stroke="#22C55E" strokeWidth="0.8" strokeOpacity="0.5" strokeLinecap="round" />
+    <circle cx="9" cy="10" r="1" fill="#22C55E" opacity="0.6" />
+    <circle cx="15" cy="10" r="1" fill="#22C55E" opacity="0.6" />
+    <circle cx="12" cy="12" r="1.5" fill="#4ADE80" filter="url(#brainGlow)" />
+    <circle cx="12" cy="12" r="0.5" fill="white" />
+  </svg>
+);
+
 // Premium Custom SVG Icons for Workspace Cards
 const PremiumIcons = {
   chat: ({ className, color }: { className?: string; color: string }) => (
@@ -603,14 +682,14 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
             {/* Mentor Header */}
             <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-5">
               <div className="relative">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#FF7A00] to-[#FFB547] flex items-center justify-center shadow-lg shadow-[#FF7A00]/20">
-                  <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-[#0a2010] border border-[#22C55E]/30 flex items-center justify-center">
+                  <NeuralHelixLogo className="w-7 h-7 sm:w-8 sm:h-8" />
                 </div>
-                <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-[#22C55E] rounded-full border-2 border-[#111111]" />
+                <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-[#22C55E] rounded-full border-2 border-[#111111] shadow-[0_0_8px_rgba(34,197,94,0.6)]" />
               </div>
               <div>
                 <div className="flex items-center gap-1 sm:gap-2">
-                  <h2 className="text-lg sm:text-xl font-heading font-semibold text-white">SciForge Adaptive Mentor</h2>
+                  <h2 className="text-lg sm:text-xl font-heading font-semibold text-white tracking-tight">SciForge Adaptive Mentor</h2>
                   <span className="text-[10px] sm:text-xs text-[#22C55E] flex items-center gap-1">
                     <span className="w-1.5 h-1.5 bg-[#22C55E] rounded-full animate-pulse" />
                     Mentor Online
@@ -727,14 +806,14 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
               className="bg-[#111111] border border-white/5 rounded-2xl p-5 relative overflow-hidden"
             >
               <h3 className="text-sm font-heading font-semibold text-white mb-4 flex items-center gap-2">
-                <Flame className="w-4 h-4 text-[#FF7A00]" />
+                <WireframeFlameLogo className="w-4 h-4" />
                 Learning Streak
               </h3>
               
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#FF7A00]/20 to-[#FFB547]/10 flex items-center justify-center">
-                    <span className="text-2xl">🔥</span>
+                  <div className="w-12 h-12 rounded-xl bg-[#1a0a00] border border-[#FF7A00]/20 flex items-center justify-center">
+                    <WireframeFlameLogo className="w-7 h-7" />
                   </div>
                   <div>
                     <motion.p 
@@ -793,7 +872,7 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.35 }}
             whileHover={{ y: -2 }}
-            className="bg-[#111111] border border-white/5 rounded-2xl p-5 cursor-pointer hover:border-[#FFB547]/30 transition-all duration-300"
+            className="bg-[#111111] border border-white/5 rounded-2xl p-5 cursor-pointer hover:border-[#22C55E]/30 transition-all duration-300"
             onClick={() => onRoute("scribble")}
           >
             <h3 className="text-sm font-heading font-semibold text-white mb-4 flex items-center gap-2">
@@ -801,7 +880,7 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                 whileHover={{ rotate: 10, scale: 1.1 }}
                 transition={{ duration: 0.2 }}
               >
-                <Upload className="w-4 h-4 text-[#FFB547]" />
+                <Upload className="w-4 h-4 text-[#22C55E]" />
               </motion.div>
               Quick-Scan Input Lab
             </h3>
@@ -812,7 +891,7 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
               whileTap={{ scale: 0.99 }}
               className={cn(
                 "border-2 border-dashed rounded-2xl p-6 text-center transition-all duration-300 min-h-[120px] flex flex-col items-center justify-center gap-3 cursor-pointer",
-                isDragOver ? "bg-[#FF7A00]/5 border-[#FF7A00]" : "bg-[#1a1a1a]/50 hover:border-[#FFB547]/30"
+                isDragOver ? "bg-[#FF7A00]/5 border-[#FF7A00]" : "bg-[#1a1a1a]/50 hover:border-[#22C55E]/30"
               )}
               onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
               onDragLeave={() => setIsDragOver(false)}
@@ -824,11 +903,11 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
               }}
             >
               <motion.div 
-                className="w-10 h-10 rounded-xl bg-[#FFB547]/10 flex items-center justify-center"
+                className="w-10 h-10 rounded-xl bg-[#0a2010] border border-[#22C55E]/20 flex items-center justify-center"
                 whileHover={{ rotate: 15, scale: 1.1 }}
                 transition={{ duration: 0.2 }}
               >
-                <BrainCircuit className="w-5 h-5 text-[#FFB547]" />
+                <WireframeBrainLogo className="w-5 h-5" />
               </motion.div>
               
               {clipboardText ? (
