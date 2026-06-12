@@ -268,28 +268,31 @@ const PremiumStatsIcons = {
     </svg>
   ),
   quizzesCompleted: ({ className }: { className?: string }) => (
-    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 28 28" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="statsQuizGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#FFB547" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#FFB547" stopOpacity="0.05" />
+          <stop offset="0%" stopColor="#FFB547" stopOpacity="0.5" />
+          <stop offset="100%" stopColor="#FFB547" stopOpacity="0.1" />
         </linearGradient>
         <filter id="statsQuizGlow">
-          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
           <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
+        <filter id="trophyShadow">
+          <feDropShadow dx="0" dy="0" stdDeviation="3" floodColor="#FFB547" floodOpacity="0.4"/>
+        </filter>
       </defs>
-      {/* Trophy/Achievement emblem */}
-      <path d="M8 4h8v2c0 2-1.5 4-4 4s-4-2-4-4V4z" fill="url(#statsQuizGrad)" stroke="#FFB547" strokeWidth="1.5" strokeLinejoin="round" filter="url(#statsQuizGlow)" />
-      <path d="M8 6H5c0 2 1.5 4 3 4" stroke="#FFB547" strokeWidth="1.2" strokeLinecap="round" />
-      <path d="M16 6h3c0 2-1.5 4-3 4" stroke="#FFB547" strokeWidth="1.2" strokeLinecap="round" />
+      {/* Trophy/Achievement emblem - scaled up */}
+      <path d="M9 5h10v2.5c0 2.5-2 5-5 5s-5-2.5-5-5V5z" fill="url(#statsQuizGrad)" stroke="#FFB547" strokeWidth="1.8" strokeLinejoin="round" filter="url(#trophyShadow)" />
+      <path d="M9 7H6c0 2.5 2 5 3.5 5" stroke="#FFB547" strokeWidth="1.4" strokeLinecap="round" />
+      <path d="M19 7h3c0 2.5-2 5-3.5 5" stroke="#FFB547" strokeWidth="1.4" strokeLinecap="round" />
       {/* Trophy handles */}
-      <path d="M9 4V2M15 4V2" stroke="#FFB547" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M10 5V2.5M18 5V2.5" stroke="#FFB547" strokeWidth="1.4" strokeLinecap="round" />
       {/* Trophy base */}
-      <rect x="10" y="10" width="4" height="2" fill="#FFB547" opacity="0.6" />
-      <rect x="8" y="12" width="8" height="2" rx="0.5" fill="#FFB547" />
-      {/* Achievement star */}
-      <path d="M12 3l.6 1.8h2l-1.6 1.2.6 1.8-1.6-1.2-1.6 1.2.6-1.8-1.6-1.2h2z" fill="#FFB547" />
+      <rect x="12" y="12.5" width="4" height="2.5" fill="#FFB547" opacity="0.7" />
+      <rect x="9.5" y="15" width="9" height="2.5" rx="0.6" fill="#FFB547" />
+      {/* Achievement star - larger */}
+      <path d="M14 2.5l.8 2.2h2.4l-2 1.5.8 2.2-2-1.5-2 1.5.8-2.2-2-1.5h2.4z" fill="#FFB547" filter="url(#statsQuizGlow)" />
     </svg>
   ),
   researchProjects: ({ className }: { className?: string }) => (
