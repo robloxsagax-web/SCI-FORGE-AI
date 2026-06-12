@@ -141,23 +141,28 @@ const PremiumIcons = {
 type WorkspaceIconKey = keyof typeof PremiumIcons;
 
 // Premium Custom SVG Icons for Telemetry/Stats Cards
+// Data-focused with Scientific Orange (#FF7A00) and Amber (#FFB547) duo-tone glow
 const PremiumStatsIcons = {
   questionsSolved: ({ className }: { className?: string }) => (
     <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
-        <linearGradient id="statsChatGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="statsTargetGrad" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FF7A00" stopOpacity="0.4" />
           <stop offset="100%" stopColor="#FF7A00" stopOpacity="0.05" />
         </linearGradient>
-        <filter id="statsChatGlow">
-          <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+        <filter id="statsTargetGlow">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
           <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
         </filter>
       </defs>
-      <rect x="2" y="4" width="20" height="14" rx="3" fill="url(#statsChatGrad)" />
-      <path d="M6 8h12M6 12h8" stroke="#FF7A00" strokeWidth="1.5" strokeLinecap="round" filter="url(#statsChatGlow)" />
-      <circle cx="18" cy="10" r="1" fill="#FF7A00" />
-      <path d="M20 16l2 2-2 2" stroke="#FF7A00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" filter="url(#statsChatGlow)" />
+      {/* Target matrix rings */}
+      <circle cx="12" cy="12" r="9" fill="url(#statsTargetGrad)" />
+      <circle cx="12" cy="12" r="9" stroke="#FF7A00" strokeWidth="1.5" strokeOpacity="0.6" filter="url(#statsTargetGlow)" />
+      <circle cx="12" cy="12" r="6" stroke="#FF7A00" strokeWidth="1" strokeOpacity="0.4" />
+      <circle cx="12" cy="12" r="3" stroke="#FF7A00" strokeWidth="1" strokeOpacity="0.3" />
+      {/* Center checkmark badge */}
+      <circle cx="12" cy="12" r="3.5" fill="#FF7A00" />
+      <path d="M10 12l1.5 1.5L14 10.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   ),
   notesGenerated: ({ className }: { className?: string }) => (
@@ -165,13 +170,22 @@ const PremiumStatsIcons = {
       <defs>
         <linearGradient id="statsNotesGrad" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FFB547" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#FFB547" stopOpacity="0" />
+          <stop offset="100%" stopColor="#FFB547" stopOpacity="0.05" />
         </linearGradient>
+        <filter id="statsNotesGlow">
+          <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
       </defs>
-      <rect x="4" y="2" width="16" height="18" rx="2" fill="url(#statsNotesGrad)" />
-      <path d="M8 7h8M8 11h6M8 15h4" stroke="#FFB547" strokeWidth="1.5" strokeLinecap="round" />
-      <path d="M16 2V6H20" stroke="#FFB547" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-      <circle cx="19" cy="4" r="1" fill="#FFB547" />
+      {/* Stacked notebook/Data index cards */}
+      <rect x="5" y="6" width="14" height="12" rx="1.5" fill="url(#statsNotesGrad)" stroke="#FFB547" strokeWidth="1" strokeOpacity="0.5" />
+      <rect x="4" y="4" width="14" height="12" rx="1.5" fill="url(#statsNotesGrad)" stroke="#FFB547" strokeWidth="1.2" strokeOpacity="0.6" filter="url(#statsNotesGlow)" />
+      <rect x="3" y="2" width="14" height="12" rx="1.5" fill="url(#statsNotesGrad)" stroke="#FFB547" strokeWidth="1.2" strokeOpacity="0.8" />
+      {/* Data index lines */}
+      <path d="M6 6h8M6 9h6M6 12h4" stroke="#FFB547" strokeWidth="1" strokeLinecap="round" opacity="0.8" />
+      {/* Analytical badge */}
+      <circle cx="17" cy="5" r="2" fill="#FFB547" />
+      <path d="M16.5 5l.5.5.5-.5" stroke="white" strokeWidth="0.8" strokeLinecap="round" />
     </svg>
   ),
   quizzesCompleted: ({ className }: { className?: string }) => (
@@ -179,27 +193,48 @@ const PremiumStatsIcons = {
       <defs>
         <linearGradient id="statsQuizGrad" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stopColor="#FFB547" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#FFB547" stopOpacity="0" />
+          <stop offset="100%" stopColor="#FFB547" stopOpacity="0.05" />
         </linearGradient>
+        <filter id="statsQuizGlow">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
       </defs>
-      <circle cx="12" cy="12" r="9" fill="url(#statsQuizGrad)" />
-      <text x="12" y="16" textAnchor="middle" fill="#FFB547" fontSize="11" fontWeight="bold">?</text>
-      <circle cx="12" cy="12" r="9" stroke="#FFB547" strokeWidth="1" strokeOpacity="0.5" />
+      {/* Trophy/Achievement emblem */}
+      <path d="M8 4h8v2c0 2-1.5 4-4 4s-4-2-4-4V4z" fill="url(#statsQuizGrad)" stroke="#FFB547" strokeWidth="1.5" strokeLinejoin="round" filter="url(#statsQuizGlow)" />
+      <path d="M8 6H5c0 2 1.5 4 3 4" stroke="#FFB547" strokeWidth="1.2" strokeLinecap="round" />
+      <path d="M16 6h3c0 2-1.5 4-3 4" stroke="#FFB547" strokeWidth="1.2" strokeLinecap="round" />
+      {/* Trophy handles */}
+      <path d="M9 4V2M15 4V2" stroke="#FFB547" strokeWidth="1.2" strokeLinecap="round" />
+      {/* Trophy base */}
+      <rect x="10" y="10" width="4" height="2" fill="#FFB547" opacity="0.6" />
+      <rect x="8" y="12" width="8" height="2" rx="0.5" fill="#FFB547" />
+      {/* Achievement star */}
+      <path d="M12 3l.6 1.8h2l-1.6 1.2.6 1.8-1.6-1.2-1.6 1.2.6-1.8-1.6-1.2h2z" fill="#FFB547" />
     </svg>
   ),
   researchProjects: ({ className }: { className?: string }) => (
     <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="statsAtomGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#FFB547" stopOpacity="0.4" />
-          <stop offset="100%" stopColor="#FFB547" stopOpacity="0" />
+          <stop offset="0%" stopColor="#FF7A00" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#FF7A00" stopOpacity="0.05" />
         </linearGradient>
+        <filter id="statsAtomGlow">
+          <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
       </defs>
-      <circle cx="12" cy="12" r="3" fill="#FFB547" fillOpacity="0.3" />
-      <ellipse cx="12" cy="12" rx="9" ry="4" stroke="#FFB547" strokeWidth="1.2" strokeOpacity="0.6" />
-      <ellipse cx="12" cy="12" rx="9" ry="4" stroke="#FFB547" strokeWidth="1.2" strokeOpacity="0.6" transform="rotate(60 12 12)" />
-      <ellipse cx="12" cy="12" rx="9" ry="4" stroke="#FFB547" strokeWidth="1.2" strokeOpacity="0.6" transform="rotate(120 12 12)" />
-      <circle cx="12" cy="12" r="2" fill="#FFB547" />
+      {/* Microscope lens grid / nested node graph */}
+      <rect x="4" y="4" width="16" height="16" rx="3" fill="url(#statsAtomGrad)" />
+      <rect x="4" y="4" width="16" height="16" rx="3" stroke="#FF7A00" strokeWidth="1.2" strokeOpacity="0.5" filter="url(#statsAtomGlow)" />
+      {/* Nested hexagonal nodes */}
+      <circle cx="12" cy="8" r="2.5" fill="#FF7A00" fillOpacity="0.6" stroke="#FF7A00" strokeWidth="1" />
+      <circle cx="7" cy="13" r="2" fill="#FF7A00" fillOpacity="0.4" stroke="#FF7A00" strokeWidth="1" />
+      <circle cx="17" cy="13" r="2" fill="#FF7A00" fillOpacity="0.4" stroke="#FF7A00" strokeWidth="1" />
+      <circle cx="12" cy="17" r="1.5" fill="#FF7A00" fillOpacity="0.3" stroke="#FF7A00" strokeWidth="0.8" />
+      {/* Connection lines */}
+      <path d="M12 10.5v2M10 12.5l-2 .5M14 12.5l2 .5M12 15.5v1.5" stroke="#FF7A00" strokeWidth="1" strokeLinecap="round" opacity="0.6" />
     </svg>
   ),
 } as const;
@@ -529,14 +564,14 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
               key={stat.label}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              whileHover={{ scale: 1.02, y: -2 }}
-              transition={{ duration: 0.4, delay: 0.1 + idx * 0.05 }}
-              className="bg-[#111111] border border-white/5 rounded-2xl p-4 sm:p-5 hover:border-white/10 transition-all duration-300 group cursor-pointer"
+              whileHover={{ scale: 1.015 }}
+              transition={{ duration: 0.3, ease: "easeInOut", delay: 0.1 + idx * 0.05 }}
+              className="bg-[#111111] border border-white/5 rounded-2xl p-4 sm:p-5 hover:border-[#FF7A00]/40 hover:shadow-[0_0_20px_rgba(255,122,0,0.15)] transition-all duration-300 group cursor-pointer"
             >
               <div className="flex items-center gap-3 mb-3">
                 <div 
-                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110"
-                  style={{ backgroundColor: `${stat.color}15` }}
+                  className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:brightness-110"
+                  style={{ backgroundColor: `${stat.color}20` }}
                 >
                   {PremiumStatsIcons[stat.iconKey]({ className: "w-4 h-4 sm:w-5 sm:h-5" })}
                 </div>
