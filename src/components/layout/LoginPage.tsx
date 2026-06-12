@@ -222,15 +222,15 @@ export function LoginPage() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)]" />
         </div>
 
-        <div className="relative z-10 flex flex-col justify-center px-8 lg:px-16 py-8 lg:py-16">
+        <div className="relative z-10 flex flex-col justify-center px-4 lg:px-8 py-6 lg:py-12">
           {/* Logo & Branding */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 lg:mb-16"
+            className="mb-4 lg:mb-8"
           >
-            <div className="flex items-center gap-4 lg:gap-5 mb-4 lg:mb-8">
-              <div className="w-20 h-20 rounded-2xl bg-[#1a0f00] border-2 border-[#FF7A00]/30 flex items-center justify-center shadow-[0_0_40px_rgba(255,122,0,0.25)]">
+            <div className="flex items-center gap-3 lg:gap-4 mb-3 lg:mb-6">
+              <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-xl bg-[#1a0f00] border border-[#FF7A00]/30 flex items-center justify-center shadow-[0_0_40px_rgba(255,122,0,0.25)]">
                 <NeuralNexusLogo className="w-10 h-10 lg:w-14 lg:h-14" />
               </div>
               <div>
