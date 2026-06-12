@@ -383,8 +383,8 @@ export function LoginPage() {
         >
           {/* Mobile Logo */}
           <div className="lg:hidden flex items-center justify-center gap-4 mb-10">
-            <div className="w-14 h-14 rounded-xl bg-[#1a0f00] border border-[#FF7A00]/30 flex items-center justify-center">
-              <NeuralNexusLogo className="w-10 h-10" />
+            <div className="w-20 h-20 rounded-xl bg-[#1a0f00] border border-[#FF7A00]/30 flex items-center justify-center">
+              <NeuralNexusLogo className="w-16 h-16" />
             </div>
             <span className="text-2xl font-heading font-bold text-white">SCI FORGE AI</span>
           </div>
@@ -393,8 +393,8 @@ export function LoginPage() {
           <div className="bg-[#111111] border border-white/5 rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-10 shadow-2xl">
             {/* Header */}
             <div className="text-center mb-4 md:mb-6">
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-[#FF7A00]/20 to-[#FFB547]/10 border border-[#FF7A00]/30 flex items-center justify-center mx-auto mb-4 shadow-[0_0_30px_rgba(255,122,0,0.2)]">
-                <SciForgeEmblem className="w-10 h-10 md:w-14 md:h-14" />
+              <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-gradient-to-br from-[#FF7A00]/20 to-[#FFB547]/10 border border-[#FF7A00]/30 flex items-center justify-center mx-auto mb-4 shadow-[0_0_30px_rgba(255,122,0,0.2)]">
+                <SciForgeEmblem className="w-16 h-16 md:w-20 md:h-20" />
               </div>
               <h2 className="text-2xl font-heading font-bold text-white mb-2">
                 {activeTab === 'signin' ? 'Welcome Back' : 'Create Account'}
