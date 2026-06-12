@@ -57,8 +57,29 @@ export async function signOut(): Promise<void> {
 }
 
 // Listen to auth state changes
+// Also processes redirect result internally for seamless redirect flow
 export function onAuthStateChange(callback: (user: User | null) => void): () => void {
-  return onAuthStateChanged(auth, callback);
+  // Firebase SDK automatically persists auth state and handles redirect results
+  // The callback will be called with the user once redirect result is processed
+  return onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      // User is signed in after redirect
+      callback(user);
+    } else {
+      // Check if there's a pending redirect result
+      try {
+        const result = await getRedirectResult(auth);
+        if (result?.user) {
+          callback(result.user);
+        } else {
+          callback(null);
+        }
+      } catch (error) {
+        console.error('Error checking redirect result:', error);
+        callback(null);
+      }
+    }
+  });
 }
 
 // Get current user synchronously

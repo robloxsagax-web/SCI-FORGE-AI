@@ -36,16 +36,14 @@ export default function App() {
 
   // Firebase Auth - Listen to authentication state changes
   useEffect(() => {
+    // onAuthStateChange in firebase.ts handles redirect result processing
     const unsubscribe = onAuthStateChange((firebaseUser) => {
       setUser(firebaseUser);
       setIsAuthLoading(false);
       
-      // Route guard: If authenticated, ensure we're on dashboard
-      // If not authenticated, ensure we're on login
+      // Route guard: Update page based on auth state
       if (firebaseUser) {
         setCurrentPage('dashboard');
-        // Hydrate conversation history from Firebase user data
-        // The user can be used to fetch Firestore data if needed
       } else {
         setCurrentPage('login');
       }
