@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { Shield, ChevronRight, User, Mail, Lock, Sparkles, Zap, Type, Contrast } from "lucide-react";
+import { ChevronRight, User, Mail, Lock, Sparkles, Zap, Type, Contrast } from "lucide-react";
 import { signIn, signUp, demoLogin } from "../../lib/auth";
 import { LoadingScreen } from "./LoadingScreen";
 
@@ -39,6 +39,87 @@ const NeuralNexusLogo = ({ className }: { className?: string }) => (
     <circle cx="18" cy="18" r="3.5" fill="#FF7A00" filter="url(#loginNexusGlow)" />
     <path d="M18 10L24 15M24 15L22 22M22 22L14 22M14 22L12 15M12 15L18 10" stroke="#FF7A00" strokeWidth="1" strokeOpacity="0.6" strokeLinecap="round" />
     <path d="M18 10L18 18M24 15L18 18M22 22L18 18M14 22L18 18M12 15L18 18" stroke="#FFB547" strokeWidth="0.8" strokeOpacity="0.5" strokeLinecap="round" />
+  </svg>
+);
+
+// Premium SciForge Quantum Emblem - Atomic Hexagon with Vector-Dot Grid
+const SciForgeEmblem = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 64 64" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    {/* Outer glow effect */}
+    <defs>
+      <filter id="emblemGlow" x="-50%" y="-50%" width="200%" height="200%">
+        <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <linearGradient id="hexGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#FF7A00" stopOpacity="1" />
+        <stop offset="50%" stopColor="#FFB547" stopOpacity="0.8" />
+        <stop offset="100%" stopColor="#FF7A00" stopOpacity="1" />
+      </linearGradient>
+      <linearGradient id="innerGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#FFB547" stopOpacity="0.9" />
+        <stop offset="100%" stopColor="#FF7A00" stopOpacity="0.6" />
+      </linearGradient>
+    </defs>
+    
+    {/* Outer hexagon ring */}
+    <polygon 
+      points="32,4 56,18 56,46 32,60 8,46 8,18" 
+      stroke="url(#hexGrad)" 
+      strokeWidth="1.5" 
+      fill="none"
+      opacity="0.7"
+      filter="url(#emblemGlow)"
+    />
+    
+    {/* Middle hexagon */}
+    <polygon 
+      points="32,12 48,22 48,42 32,52 16,42 16,22" 
+      stroke="url(#hexGrad)" 
+      strokeWidth="1.5" 
+      fill="url(#hexGrad)"
+      fillOpacity="0.15"
+      filter="url(#emblemGlow)"
+    />
+    
+    {/* Inner hexagon */}
+    <polygon 
+      points="32,20 40,26 40,38 32,44 24,38 24,26" 
+      stroke="url(#innerGrad)" 
+      strokeWidth="2" 
+      fill="url(#hexGrad)"
+      fillOpacity="0.3"
+    />
+    
+    {/* Center core dot */}
+    <circle cx="32" cy="32" r="4" fill="#FF7A00" filter="url(#emblemGlow)" className="animate-pulse" />
+    
+    {/* Vector-dot grid array - top section */}
+    <circle cx="32" cy="10" r="1.5" fill="#FFB547" opacity="0.8" />
+    <circle cx="32" cy="54" r="1.5" fill="#FFB547" opacity="0.8" />
+    <circle cx="14" cy="20" r="1.5" fill="#FFB547" opacity="0.8" />
+    <circle cx="50" cy="20" r="1.5" fill="#FFB547" opacity="0.8" />
+    <circle cx="14" cy="44" r="1.5" fill="#FFB547" opacity="0.8" />
+    <circle cx="50" cy="44" r="1.5" fill="#FFB547" opacity="0.8" />
+    
+    {/* Vector-dot grid array - middle section */}
+    <circle cx="20" cy="32" r="1" fill="#FF7A00" opacity="0.6" />
+    <circle cx="44" cy="32" r="1" fill="#FF7A00" opacity="0.6" />
+    <circle cx="26" cy="26" r="1" fill="#FF7A00" opacity="0.5" />
+    <circle cx="38" cy="26" r="1" fill="#FF7A00" opacity="0.5" />
+    <circle cx="26" cy="38" r="1" fill="#FF7A00" opacity="0.5" />
+    <circle cx="38" cy="38" r="1" fill="#FF7A00" opacity="0.5" />
+    
+    {/* Connecting lines from center to dots */}
+    <line x1="32" y1="28" x2="32" y2="10" stroke="#FF7A00" strokeWidth="0.5" opacity="0.4" />
+    <line x1="32" y1="36" x2="32" y2="54" stroke="#FF7A00" strokeWidth="0.5" opacity="0.4" />
+    <line x1="28" y1="32" x2="14" y2="20" stroke="#FF7A00" strokeWidth="0.5" opacity="0.4" />
+    <line x1="36" y1="32" x2="50" y2="20" stroke="#FF7A00" strokeWidth="0.5" opacity="0.4" />
+    <line x1="28" y1="32" x2="14" y2="44" stroke="#FF7A00" strokeWidth="0.5" opacity="0.4" />
+    <line x1="36" y1="32" x2="50" y2="44" stroke="#FF7A00" strokeWidth="0.5" opacity="0.4" />
+    
+    {/* Animated pulse ring */}
+    <circle cx="32" cy="32" r="8" stroke="#FF7A00" strokeWidth="0.5" opacity="0.3" className="animate-ping" />
   </svg>
 );
 
@@ -222,14 +303,14 @@ export function LoginPage() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)]" />
         </div>
 
-        <div className="relative z-10 flex flex-col justify-center px-4 lg:px-8 py-6 lg:py-12">
+        <div className="relative z-10 flex flex-col justify-center px-4 lg:px-8 py-4 lg:py-6">
           {/* Logo & Branding */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-4 lg:mb-8"
           >
-            <div className="flex items-center gap-3 lg:gap-4 mb-3 lg:mb-6">
+            <div className="flex items-center gap-3 lg:gap-4 mb-2 lg:mb-4">
               <div className="w-14 h-14 lg:w-16 lg:h-16 rounded-xl bg-[#1a0f00] border border-[#FF7A00]/30 flex items-center justify-center shadow-[0_0_40px_rgba(255,122,0,0.25)]">
                 <NeuralNexusLogo className="w-10 h-10 lg:w-14 lg:h-14" />
               </div>
@@ -254,7 +335,7 @@ export function LoginPage() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.2 + idx * 0.1 }}
-                  className="flex items-start gap-5 p-5 rounded-xl bg-white/[0.02] border border-white/5 hover:border-[#FF7A00]/30 transition-all duration-300 group"
+                  className="flex items-start gap-4 p-4 rounded-xl bg-white/[0.02] border border-white/5 hover:border-[#FF7A00]/30 transition-all duration-300 group"
                 >
                   <div 
                     className="w-12 h-12 rounded-xl flex items-center justify-center shrink-0"
@@ -309,11 +390,11 @@ export function LoginPage() {
           </div>
 
           {/* Auth Card */}
-          <div className="bg-[#111111] border border-white/5 rounded-3xl p-10 shadow-2xl">
+          <div className="bg-[#111111] border border-white/5 rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-10 shadow-2xl">
             {/* Header */}
-            <div className="text-center mb-8">
-              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#FF7A00]/20 to-[#FFB547]/10 border border-[#FF7A00]/20 flex items-center justify-center mx-auto mb-4 shadow-[0_0_30px_rgba(255,122,0,0.15)]">
-                <Shield className="w-8 h-8 text-[#FF7A00]" />
+            <div className="text-center mb-4 md:mb-6">
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-2xl bg-gradient-to-br from-[#FF7A00]/20 to-[#FFB547]/10 border border-[#FF7A00]/30 flex items-center justify-center mx-auto mb-4 shadow-[0_0_30px_rgba(255,122,0,0.2)]">
+                <SciForgeEmblem className="w-10 h-10 md:w-14 md:h-14" />
               </div>
               <h2 className="text-2xl font-heading font-bold text-white mb-2">
                 {activeTab === 'signin' ? 'Welcome Back' : 'Create Account'}
@@ -326,7 +407,7 @@ export function LoginPage() {
             </div>
 
             {/* Tab Switcher */}
-            <div className="flex bg-white/5 rounded-xl p-1 mb-6">
+            <div className="flex bg-white/5 rounded-xl p-1 mb-4 md:mb-6">
               <button
                 type="button"
                 onClick={() => handleTabSwitch('signin')}
@@ -363,7 +444,7 @@ export function LoginPage() {
             )}
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
               {activeTab === 'signup' && (
                 <InputField
                   icon={User}
@@ -403,7 +484,7 @@ export function LoginPage() {
             </form>
 
             {/* Divider */}
-            <div className="flex items-center gap-4 my-6">
+            <div className="flex items-center gap-4 my-4 md:my-6">
               <div className="flex-1 h-px bg-white/10" />
               <span className="text-xs text-white/40 font-mono">or</span>
               <div className="flex-1 h-px bg-white/10" />
@@ -423,7 +504,7 @@ export function LoginPage() {
           </div>
 
           {/* Footer */}
-          <p className="text-center text-xs text-white/30 mt-8">
+          <p className="text-center text-xs text-white/30 mt-4 md:mt-6">
             {activeTab === 'signin' 
               ? "Don't have an account? Sign up to get started"
               : "Already have an account? Sign in to continue"
