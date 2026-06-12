@@ -212,7 +212,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex h-screen w-full bg-[#050505]">
+    <div className="flex flex-col lg:flex-row min-h-screen w-full bg-[#050505] overflow-y-auto lg:overflow-hidden">
       {/* Left Pane - Feature Showcase */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#0a0a0a] via-[#111111] to-[#0a0a0a] relative overflow-hidden">
         {/* Background Effects */}
@@ -222,23 +222,23 @@ export function LoginPage() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.4)_100%)]" />
         </div>
 
-        <div className="relative z-10 flex flex-col justify-center px-16 py-16">
+        <div className="relative z-10 flex flex-col justify-center px-8 lg:px-16 py-8 lg:py-16">
           {/* Logo & Branding */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-16"
+            className="mb-6 lg:mb-16"
           >
-            <div className="flex items-center gap-5 mb-8">
+            <div className="flex items-center gap-4 lg:gap-5 mb-4 lg:mb-8">
               <div className="w-20 h-20 rounded-2xl bg-[#1a0f00] border-2 border-[#FF7A00]/30 flex items-center justify-center shadow-[0_0_40px_rgba(255,122,0,0.25)]">
-                <NeuralNexusLogo className="w-14 h-14" />
+                <NeuralNexusLogo className="w-10 h-10 lg:w-14 lg:h-14" />
               </div>
               <div>
-                <h1 className="text-4xl font-heading font-bold text-white tracking-tight">SCI FORGE AI</h1>
-                <p className="text-base text-[#FFB547] font-mono">Educational Intelligence System</p>
+                <h1 className="text-xl lg:text-4xl font-heading font-bold text-white tracking-tight">SCI FORGE AI</h1>
+                <p className="text-xs lg:text-base text-[#FFB547] font-mono">Educational Intelligence System</p>
               </div>
             </div>
-            <p className="text-xl text-white/60 max-w-lg leading-relaxed">
+            <p className="text-sm lg:text-xl text-white/60 max-w-lg leading-relaxed">
               Your intelligent STEM workbench for learning, research, problem solving, and academic growth.
             </p>
           </motion.div>
@@ -294,7 +294,7 @@ export function LoginPage() {
       </div>
 
       {/* Right Pane - Authentication Terminal */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center px-8 py-12 bg-[#0a0a0a]">
+      <div className="w-full lg:w-1/2 flex items-center justify-center px-4 lg:px-8 py-8 lg:py-12 bg-[#0a0a0a] min-h-[60vh] lg:min-h-0">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

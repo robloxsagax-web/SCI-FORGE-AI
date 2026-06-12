@@ -343,7 +343,19 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
   };
 
   const handleSignOut = () => {
-    localStorage.removeItem("sciforge_google_session");
+    // Clear authentication state from localStorage
+    localStorage.removeItem("sciforge_auth");
+    localStorage.removeItem("sciforge_user");
+    localStorage.removeItem("sciforge_recent_sessions");
+    
+    // Clear any active auth layout states
+    localStorage.removeItem("sciforge_accessibility");
+    
+    // Dispatch auth state change event to trigger re-render
+    window.dispatchEvent(new Event('authStateChange'));
+    
+    // Force a complete page reload to ensure clean state
+    window.location.href = '/';
     window.location.reload();
   };
 
