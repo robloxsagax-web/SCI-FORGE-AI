@@ -15,12 +15,27 @@ import { GlobalChat } from "./components/modules/GlobalChat";
 import { ConceptDependencyMap } from "./components/modules/ConceptDependencyMap";
 import { ResearchPortfolio } from "./components/modules/ResearchPortfolio";
 import { ModuleType, LearningMode, ChatMessage } from "./types";
-import { Settings as SettingsIcon, Sparkles, Menu } from "lucide-react";
+import { Settings as SettingsIcon, Sparkles, Menu, X, Home, MessageSquare, PenTool, FileText, HelpCircle, Atom, Network, TrendingUp, FolderOpen, LogOut } from "lucide-react";
 import { updateTelemetryOnAction } from "./lib/telemetry";
 import { cn } from "./lib/utils";
 import { getAuthState, signOut as authSignOut, getUser, User } from "./lib/auth";
 
 type AppPage = 'login' | 'dashboard';
+
+// Mobile Navigation Tool Items
+const MOBILE_TOOLS = [
+  { id: 'home' as ModuleType, label: 'Home', icon: Home, color: '#FF7A00' },
+  { id: 'chat' as ModuleType, label: 'Core Intelligence Console', icon: MessageSquare, color: '#FF7A00' },
+  { id: 'scribble' as ModuleType, label: 'Scribble Analysis Lab', icon: PenTool, color: '#22C55E' },
+  { id: 'notes' as ModuleType, label: 'Notes Generator', icon: FileText, color: '#FFB547' },
+  { id: 'quiz' as ModuleType, label: 'Quiz Generator', icon: HelpCircle, color: '#FFB547' },
+  { id: 'scientist' as ModuleType, label: 'Quantum Research Engine', icon: Atom, color: '#22C55E' },
+  { id: 'simulation' as ModuleType, label: 'ProjectMate AI', icon: Network, color: '#FF7A00' },
+  { id: 'dependencymap' as ModuleType, label: 'Concept Dependency Map', icon: Network, color: '#FFB547' },
+  { id: 'progress' as ModuleType, label: 'Academic Propulsion', icon: TrendingUp, color: '#FF7A00' },
+  { id: 'portfolio' as ModuleType, label: 'Research Portfolio', icon: FolderOpen, color: '#A1A1AA' },
+  { id: 'settings' as ModuleType, label: 'Settings', icon: SettingsIcon, color: '#A1A1AA' },
+];
 
 export default function App() {
   // Auth state - managed by localStorage
@@ -32,6 +47,7 @@ export default function App() {
   const [showWorkspaceUINav, setShowWorkspaceUINav] = useState(false);
   const [learningMode, setLearningMode] = useState<LearningMode>("beginner");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+  const [isMobileShelfOpen, setIsMobileShelfOpen] = useState(false);
 
   // LocalStorage Auth - Check auth state on mount and listen for changes
   useEffect(() => {
@@ -396,6 +412,96 @@ export default function App() {
         </div>
       )}
 
+      {/* Mobile Navigation Shelf - Shows on tablet/mobile */}
+      {isMobileShelfOpen && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 lg:hidden"
+            onClick={() => setIsMobileShelfOpen(false)}
+          />
+          
+          {/* Shelf Drawer */}
+          <motion.div 
+            initial={{ y: -20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
+            className="fixed top-0 left-0 right-0 bg-[#111111] border-b border-white/10 z-50 lg:hidden max-h-[70vh] overflow-y-auto"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between p-4 border-b border-white/5">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-[#1a0f00] border border-[#FF7A00]/30 flex items-center justify-center">
+                  <svg viewBox="0 0 36 36" className="w-5 h-5" fill="none">
+                    <circle cx="18" cy="18" r="3.5" fill="#FF7A00" />
+                    <circle cx="18" cy="10" r="2.5" fill="#FF7A00" />
+                    <circle cx="24" cy="15" r="2" fill="#FFB547" />
+                    <circle cx="22" cy="22" r="2" fill="#FF7A00" />
+                    <circle cx="14" cy="22" r="2" fill="#FFB547" />
+                    <circle cx="12" cy="15" r="2" fill="#FF7A00" />
+                  </svg>
+                </div>
+                <span className="font-heading font-bold text-white">SCI FORGE AI</span>
+              </div>
+              <button
+                onClick={() => setIsMobileShelfOpen(false)}
+                className="p-2 hover:bg-white/10 rounded-lg text-white/70 hover:text-white transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Tools Grid */}
+            <div className="p-4 space-y-1">
+              <p className="text-[10px] text-white/40 uppercase tracking-widest font-mono mb-3">Quick Access</p>
+              {MOBILE_TOOLS.map((tool) => {
+                const Icon = tool.icon;
+                const isActive = activeModule === tool.id;
+                return (
+                  <button
+                    key={tool.id}
+                    onClick={() => {
+                      setActiveModule(tool.id);
+                      setIsMobileShelfOpen(false);
+                    }}
+                    className={cn(
+                      "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
+                      isActive 
+                        ? "bg-[#FF7A00]/10 text-white border border-[#FF7A00]/30" 
+                        : "text-white/70 hover:text-white hover:bg-white/5"
+                    )}
+                  >
+                    <div 
+                      className="w-8 h-8 rounded-lg flex items-center justify-center"
+                      style={{ backgroundColor: `${tool.color}20` }}
+                    >
+                      <Icon className="w-4 h-4" style={{ color: tool.color }} />
+                    </div>
+                    <span className="flex-1 text-left truncate">{tool.label}</span>
+                    {isActive && (
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#FF7A00]" />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            
+            {/* Sign Out Button */}
+            <div className="p-4 border-t border-white/5">
+              <button
+                onClick={handleSignOut}
+                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-red-400 hover:bg-red-500/10 transition-all"
+              >
+                <div className="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center">
+                  <LogOut className="w-4 h-4 text-red-400" />
+                </div>
+                <span>Sign Out</span>
+              </button>
+            </div>
+          </motion.div>
+        </>
+      )}
+
       {showSidebar && (
         <Sidebar 
           activeModule={activeModule} 
@@ -409,8 +515,37 @@ export default function App() {
         "flex flex-col min-w-0 h-full relative",
         isHomePage ? "overflow-hidden" : "flex-1"
       )}>
+        {/* Mobile Shelf Trigger - Only visible on mobile/tablet */}
+        <div className="lg:hidden px-4 py-2 bg-[#0a0a0a] border-b border-white/5 flex items-center gap-3 shrink-0">
+          <button
+            onClick={() => setIsMobileShelfOpen(true)}
+            className="p-2 hover:bg-white/10 rounded-lg text-white/70 hover:text-white transition-colors"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          <div className="flex-1 min-w-0">
+            <p className="text-xs font-mono text-white/50 truncate">
+              {activeModule === "home" ? "Home Dashboard" :
+              activeModule === "chat" ? "Core Intelligence Console" :
+              activeModule === "simulation" ? "ProjectMate AI" :
+              activeModule === "scribble" ? "Scribble Analysis Lab" :
+              activeModule === "scientist" ? "Quantum Research Engine" :
+              activeModule === "quiz" ? "Quiz Generator" :
+              activeModule === "notes" ? "Notes Generator" :
+              activeModule === "dependencymap" ? "Concept Dependency Map" :
+              activeModule === "progress" ? "Academic Propulsion" :
+              activeModule === "portfolio" ? "Research Portfolio" : "Settings"}
+            </p>
+          </div>
+          {user && (
+            <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#FF7A00] to-[#FFB547] flex items-center justify-center text-white text-[10px] font-bold shrink-0">
+              {user.name?.charAt(0).toUpperCase() || 'U'}
+            </div>
+          )}
+        </div>
+        
         {activeModule !== "home" && (
-          <div className="px-5 py-2.5 bg-[#111111] border-b border-white/8 shrink-0 flex items-center justify-between gap-4">
+          <div className="hidden lg:flex px-5 py-2.5 bg-[#111111] border-b border-white/8 shrink-0 flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
               <button
                 onClick={() => setIsMobileSidebarOpen(true)}

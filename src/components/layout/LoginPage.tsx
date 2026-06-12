@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { Shield, ChevronRight, User, Mail, Lock, Sparkles, Zap } from "lucide-react";
+import { Shield, ChevronRight, User, Mail, Lock, Sparkles, Zap, Type, Contrast } from "lucide-react";
 import { signIn, signUp, demoLogin } from "../../lib/auth";
 import { LoadingScreen } from "./LoadingScreen";
 
