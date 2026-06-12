@@ -212,7 +212,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen w-full bg-[#050505] overflow-y-auto lg:overflow-hidden font-dyslexic custom-pen-cursor">
+    <div className="flex flex-col lg:flex-row min-h-screen w-full bg-[#050505] overflow-y-auto lg:overflow-hidden">
       {/* Left Pane - Feature Showcase */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#0a0a0a] via-[#111111] to-[#0a0a0a] relative overflow-hidden">
         {/* Background Effects */}

@@ -1,7 +1,8 @@
 // LocalStorage-based Authentication Module - SciForge AI
-// Simple auth for hackathon demo without backend dependencies
+// Persistent user registry with localStorage synchronization
 
 const AUTH_STORAGE_KEY = 'sciforge_auth';
+const USER_REGISTRY_KEY = 'sciforge_user_registry';
 const USER_STORAGE_KEY = 'sciforge_user';
 
 export interface User {
@@ -63,6 +64,32 @@ export const DEMO_USER: User = {
   createdAt: new Date().toISOString()
 };
 
+// User Registry Management
+function getUserRegistry(): User[] {
+  try {
+    const stored = localStorage.getItem(USER_REGISTRY_KEY);
+    if (stored) {
+      return JSON.parse(stored);
+    }
+  } catch (error) {
+    console.error('Error reading user registry:', error);
+  }
+  return [];
+}
+
+function saveUserToRegistry(user: User): void {
+  const registry = getUserRegistry();
+  // Remove existing user with same email (for updates)
+  const filteredRegistry = registry.filter(u => u.email !== user.email);
+  filteredRegistry.push(user);
+  localStorage.setItem(USER_REGISTRY_KEY, JSON.stringify(filteredRegistry));
+}
+
+function findUserInRegistry(email: string): User | null {
+  const registry = getUserRegistry();
+  return registry.find(u => u.email === email.toLowerCase()) || null;
+}
+
 // Get current auth state from localStorage
 export function getAuthState(): AuthState {
   try {
@@ -107,15 +134,9 @@ export function setUser(user: User): void {
   }
 }
 
-// Sign up - Create new account
+// Sign up - Create new account and persist to registry
 export function signUp(name: string, email: string, password: string): { success: boolean; error?: string } {
-  // Check if email already exists
-  const existingUser = getUser();
-  if (existingUser && existingUser.email === email) {
-    return { success: false, error: 'An account with this email already exists' };
-  }
-
-  // Validate inputs
+  // Validate inputs first
   if (!name.trim()) {
     return { success: false, error: 'Please enter your name' };
   }
@@ -126,7 +147,13 @@ export function signUp(name: string, email: string, password: string): { success
     return { success: false, error: 'Password must be at least 6 characters' };
   }
 
-  // Create user and set authenticated
+  // Check if email already exists in persistent registry
+  const existingUser = findUserInRegistry(email);
+  if (existingUser) {
+    return { success: false, error: 'An account with this email already exists' };
+  }
+
+  // Create user and persist to registry
   const user: User = {
     name: name.trim(),
     email: email.trim().toLowerCase(),
@@ -134,6 +161,8 @@ export function signUp(name: string, email: string, password: string): { success
     createdAt: new Date().toISOString()
   };
 
+  // Save to registry AND set as current user
+  saveUserToRegistry(user);
   setUser(user);
   setAuthState({ isAuthenticated: true, user });
 
@@ -143,23 +172,21 @@ export function signUp(name: string, email: string, password: string): { success
   return { success: true };
 }
 
-// Sign in - Validate credentials
+// Sign in - Validate credentials against registry
 export function signIn(email: string, password: string): { success: boolean; error?: string } {
-  const user = getUser();
+  // Always check registry first for persistent account recognition
+  const user = findUserInRegistry(email);
 
   if (!user) {
     return { success: false, error: 'No account found. Please sign up first.' };
-  }
-
-  if (user.email !== email.trim().toLowerCase()) {
-    return { success: false, error: 'Email not found. Please check your email or sign up.' };
   }
 
   if (user.password !== password) {
     return { success: false, error: 'Incorrect password. Please try again.' };
   }
 
-  // Set authenticated
+  // Set as current logged in user
+  setUser(user);
   setAuthState({ isAuthenticated: true, user });
 
   // Load mock chats for demo
@@ -178,7 +205,7 @@ export function demoLogin(): void {
 // Sign out - Clear auth state
 export function signOut(): void {
   setAuthState({ isAuthenticated: false, user: null });
-  // Don't clear user data - allows sign back in without losing account
+  // Keep user in registry for re-login without account loss
 }
 
 // Check if user is authenticated
@@ -211,5 +238,6 @@ export function getMockChats() {
 export function clearAuthData(): void {
   localStorage.removeItem(AUTH_STORAGE_KEY);
   localStorage.removeItem(USER_STORAGE_KEY);
+  localStorage.removeItem(USER_REGISTRY_KEY);
   localStorage.removeItem('sciforge_recent_sessions');
 }
