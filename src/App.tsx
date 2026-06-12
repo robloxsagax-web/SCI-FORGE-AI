@@ -105,6 +105,8 @@ export default function App() {
         const user = await getAuthRedirectResult();
         if (user) {
           setCurrentUser(user);
+          // Update URL to dashboard after successful auth
+          window.history.pushState({}, '', '/dashboard');
         }
       } catch (err) {
         console.error('Redirect result error:', err);
@@ -113,6 +115,13 @@ export default function App() {
     
     handleRedirectResult();
   }, []);
+
+  // Update URL when user is authenticated and on login page
+  useEffect(() => {
+    if (currentUser && window.location.pathname === '/login') {
+      window.history.pushState({}, '', '/dashboard');
+    }
+  }, [currentUser]);
 
   // Route guard - if loading, show loading screen
   if (isAuthLoading) {
@@ -523,6 +532,16 @@ export default function App() {
                   CORE: {Math.floor(coreTime / 3600).toString().padStart(2, "0")}:{Math.floor((coreTime % 3600) / 60).toString().padStart(2, "0")}:{(coreTime % 60).toString().padStart(2, "0")}
                 </div>
               )}
+              {/* User Profile Display */}
+              <div className="flex items-center gap-2 px-2.5 py-1.5 bg-white/5 border border-white/10 rounded-lg shrink-0">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#FF7A00] to-[#FFB547] flex items-center justify-center text-white text-[10px] font-bold">
+                  {userDisplayName.charAt(0).toUpperCase()}
+                </div>
+                <div className="hidden sm:block">
+                  <p className="text-[10px] font-semibold text-white leading-none">{userDisplayName}</p>
+                  <p className="text-[8px] text-white/40 font-mono mt-0.5">{userEmail}</p>
+                </div>
+              </div>
             </div>
           </div>
         )}
