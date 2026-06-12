@@ -1,8 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import { User } from "firebase/auth";
 import { Sidebar } from "./components/layout/Sidebar";
 import { TopBar } from "./components/layout/TopBar";
 import { RightPanel } from "./components/layout/RightPanel";
 import { HomeDashboard } from "./components/layout/HomeDashboard";
+import { LoginPage } from "./components/layout/LoginPage";
+import { LoadingScreen } from "./components/layout/LoadingScreen";
 import { ProjectMate } from "./components/modules/ProjectMate";
 import { ScribbleAnalyzer } from "./components/modules/ScribbleAnalyzer";
 import { AIScientist } from "./components/modules/AIScientist";
@@ -16,12 +19,51 @@ import { ModuleType, LearningMode, ChatMessage } from "./types";
 import { Settings as SettingsIcon, Sparkles, Menu } from "lucide-react";
 import { updateTelemetryOnAction } from "./lib/telemetry";
 import { cn } from "./lib/utils";
+import { onAuthStateChange, signOut } from "./lib/firebase";
+
+type AppPage = 'login' | 'dashboard';
 
 export default function App() {
+  // Auth state - managed by Firebase
+  const [user, setUser] = useState<User | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+  const [currentPage, setCurrentPage] = useState<AppPage>('dashboard');
+
   const [activeModule, setActiveModule] = useState<ModuleType>("home");
   const [showWorkspaceUINav, setShowWorkspaceUINav] = useState(false);
   const [learningMode, setLearningMode] = useState<LearningMode>("beginner");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
+
+  // Firebase Auth - Listen to authentication state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChange((firebaseUser) => {
+      setUser(firebaseUser);
+      setIsAuthLoading(false);
+      
+      // Route guard: If authenticated, ensure we're on dashboard
+      // If not authenticated, ensure we're on login
+      if (firebaseUser) {
+        setCurrentPage('dashboard');
+        // Hydrate conversation history from Firebase user data
+        // The user can be used to fetch Firestore data if needed
+      } else {
+        setCurrentPage('login');
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Handle sign out
+  const handleSignOut = useCallback(async () => {
+    try {
+      await signOut();
+      setActiveModule("home");
+      setCurrentPage('login');
+    } catch (error) {
+      console.error('Sign out error:', error);
+    }
+  }, []);
   
   const [isCoreRunning, setIsCoreRunning] = useState(false);
   const [coreTime, setCoreTime] = useState(0);
@@ -325,6 +367,16 @@ export default function App() {
   const showTopBar = activeModule !== "home" && activeModule !== "settings" && activeModule !== "progress" && activeModule !== "portfolio";
   const isHomePage = activeModule === "home";
 
+  // Route Guard: Show loading screen while checking auth state
+  if (isAuthLoading) {
+    return <LoadingScreen message="Initializing Neural Nexus..." />;
+  }
+
+  // Route Guard: If not authenticated, show login page
+  if (!user) {
+    return <LoginPage />;
+  }
+
   return (
     <div className={`flex h-screen w-full bg-[#050505] text-white relative ${isLightMode ? "light-mode" : ""} ${highContrast ? "contrast-125 saturate-150" : ""}`}>
       
@@ -384,11 +436,11 @@ export default function App() {
               {/* User Profile Display */}
               <div className="flex items-center gap-2 px-2.5 py-1.5 bg-white/5 border border-white/10 rounded-lg shrink-0">
                 <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#FF7A00] to-[#FFB547] flex items-center justify-center text-white text-[10px] font-bold">
-                  {userDisplayName.charAt(0).toUpperCase()}
+                  {user?.displayName?.charAt(0).toUpperCase() || 'U'}
                 </div>
                 <div className="hidden sm:block">
-                  <p className="text-[10px] font-semibold text-white leading-none">{userDisplayName}</p>
-                  <p className="text-[8px] text-white/40 font-mono mt-0.5">{userEmail}</p>
+                  <p className="text-[10px] font-semibold text-white leading-none">{user?.displayName || 'User'}</p>
+                  <p className="text-[8px] text-white/40 font-mono mt-0.5">{user?.email || ''}</p>
                 </div>
               </div>
             </div>
