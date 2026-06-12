@@ -3,6 +3,7 @@ import { Sidebar } from "./components/layout/Sidebar";
 import { TopBar } from "./components/layout/TopBar";
 import { RightPanel } from "./components/layout/RightPanel";
 import { HomeDashboard } from "./components/layout/HomeDashboard";
+import { LoginPage } from "./components/layout/LoginPage";
 import { ProjectMate } from "./components/modules/ProjectMate";
 import { ScribbleAnalyzer } from "./components/modules/ScribbleAnalyzer";
 import { AIScientist } from "./components/modules/AIScientist";
@@ -16,8 +17,72 @@ import { ModuleType, LearningMode, ChatMessage } from "./types";
 import { Settings as SettingsIcon, Sparkles, Menu } from "lucide-react";
 import { updateTelemetryOnAction } from "./lib/telemetry";
 import { cn } from "./lib/utils";
+import { onAuthStateChange, User } from "./lib/firebase";
+
+// Premium loading screen while auth state resolves
+const AuthLoadingScreen = () => (
+  <div className="flex h-screen w-full bg-[#050505] items-center justify-center">
+    <div className="flex flex-col items-center">
+      <div className="w-24 h-24 rounded-2xl bg-[#1a0f00] border-2 border-[#FF7A00]/30 flex items-center justify-center shadow-[0_0_40px_rgba(255,122,0,0.2)] mb-6">
+        <svg viewBox="0 0 36 36" className="w-16 h-16 animate-pulse" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="loadGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FF7A00" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="#FFB547" stopOpacity="0.6" />
+            </linearGradient>
+            <filter id="loadGlow">
+              <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+              <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <ellipse cx="18" cy="18" rx="15" ry="6" stroke="url(#loadGrad1)" strokeWidth="0.8" strokeOpacity="0.4" transform="rotate(-30 18 18)" />
+          <ellipse cx="18" cy="18" rx="15" ry="6" stroke="url(#loadGrad1)" strokeWidth="0.8" strokeOpacity="0.4" transform="rotate(30 18 18)" />
+          <circle cx="18" cy="10" r="2.5" fill="#FF7A00" filter="url(#loadGlow)" />
+          <circle cx="24" cy="15" r="2" fill="#FFB547" />
+          <circle cx="22" cy="22" r="2" fill="#FF7A00" />
+          <circle cx="14" cy="22" r="2" fill="#FFB547" />
+          <circle cx="12" cy="15" r="2" fill="#FF7A00" />
+          <circle cx="18" cy="18" r="3.5" fill="#FF7A00" filter="url(#loadGlow)" />
+          <path d="M18 10L24 15M24 15L22 22M22 22L14 22M14 22L12 15M12 15L18 10" stroke="#FF7A00" strokeWidth="1" strokeOpacity="0.6" strokeLinecap="round" />
+          <path d="M18 10L18 18M24 15L18 18M22 22L18 18M14 22L18 18M12 15L18 18" stroke="#FFB547" strokeWidth="0.8" strokeOpacity="0.5" strokeLinecap="round" />
+        </svg>
+      </div>
+      <p className="text-white/50 text-sm font-mono tracking-wider animate-pulse">Synchronizing STEM Engine...</p>
+    </div>
+  </div>
+);
 
 export default function App() {
+  // Firebase Auth State
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
+
+  // Safe user display name with strict fallback
+  const userDisplayName = currentUser?.displayName || currentUser?.email?.split('@')[0] || "Academic Explorer";
+  const userEmail = currentUser?.email || "";
+
+  // Subscribe to Firebase auth state changes
+  useEffect(() => {
+    const unsubscribe = onAuthStateChange((user) => {
+      setCurrentUser(user);
+      setIsAuthLoading(false);
+    });
+    
+    return () => unsubscribe();
+  }, []);
+
+  // Route guard - if loading, show loading screen
+  if (isAuthLoading) {
+    return <AuthLoadingScreen />;
+  }
+
+  // Route guard - if not authenticated, show login page
+  if (!currentUser) {
+    return <LoginPage />;
+  }
+
+  // User is authenticated - continue with main app
+
   const [activeModule, setActiveModule] = useState<ModuleType>("home");
   const [showWorkspaceUINav, setShowWorkspaceUINav] = useState(false);
   const [learningMode, setLearningMode] = useState<LearningMode>("beginner");
@@ -60,8 +125,8 @@ export default function App() {
   const [scientistIntel, setScientistIntel] = useState<any>(null);
   const [dependIntel, setDependIntel] = useState<any>(null);
 
-  const [dyslexiaMode, setDyslexiaMode] = useState(false);
-  const [highContrast, setHighContrast] = useState(false);
+  const [dyslexiaMode, setDyslexiaMode] = useState(true); // Default ON
+  const [highContrast, setHighContrast] = useState(true); // Default ON
   const [tts, setTts] = useState(false);
   const [isLightMode, setIsLightMode] = useState(false);
   const [customCursor, setCustomCursor] = useState(true); // Default ON
@@ -75,14 +140,26 @@ export default function App() {
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        setDyslexiaMode(parsed.dyslexiaFont || false);
-        setHighContrast(parsed.highContrast || false);
+        setDyslexiaMode(parsed.dyslexiaFont ?? true); // Default ON
+        setHighContrast(parsed.highContrast ?? true); // Default ON
         setTts(parsed.tts || false);
         setIsLightMode(parsed.isLightMode || false);
-        setCustomCursor(parsed.customCursor || false);
+        setCustomCursor(parsed.customCursor ?? true); // Default ON
       } catch (err) {
-        console.error(err);
+        // Set defaults on parse error
+        setDyslexiaMode(true);
+        setHighContrast(true);
+        setCustomCursor(true);
       }
+    } else {
+      // Initialize with defaults on first load
+      localStorage.setItem("sciforge_accessibility", JSON.stringify({
+        dyslexiaFont: true,
+        highContrast: true,
+        tts: false,
+        isLightMode: false,
+        customCursor: true
+      }));
     }
   }, []);
 
@@ -369,6 +446,16 @@ export default function App() {
                   CORE: {Math.floor(coreTime / 3600).toString().padStart(2, "0")}:{Math.floor((coreTime % 3600) / 60).toString().padStart(2, "0")}:{(coreTime % 60).toString().padStart(2, "0")}
                 </div>
               )}
+              {/* User Profile Display */}
+              <div className="flex items-center gap-2 px-2.5 py-1.5 bg-white/5 border border-white/10 rounded-lg shrink-0">
+                <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#FF7A00] to-[#FFB547] flex items-center justify-center text-white text-[10px] font-bold">
+                  {userDisplayName.charAt(0).toUpperCase()}
+                </div>
+                <div className="hidden sm:block">
+                  <p className="text-[10px] font-semibold text-white leading-none">{userDisplayName}</p>
+                  <p className="text-[8px] text-white/40 font-mono mt-0.5">{userEmail}</p>
+                </div>
+              </div>
             </div>
           </div>
         )}
