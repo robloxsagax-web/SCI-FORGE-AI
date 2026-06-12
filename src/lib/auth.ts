@@ -9,6 +9,7 @@ export interface User {
   name: string;
   email: string;
   password?: string;
+  grade?: string;
   createdAt?: string;
 }
 
@@ -135,7 +136,7 @@ export function setUser(user: User): void {
 }
 
 // Sign up - Create new account and persist to registry
-export function signUp(name: string, email: string, password: string): { success: boolean; error?: string } {
+export function signUp(name: string, email: string, password: string, grade?: string): { success: boolean; error?: string } {
   // Validate inputs first
   if (!name.trim()) {
     return { success: false, error: 'Please enter your name' };
@@ -158,6 +159,7 @@ export function signUp(name: string, email: string, password: string): { success
     name: name.trim(),
     email: email.trim().toLowerCase(),
     password: password, // In production, this would be hashed
+    grade: grade || 'grade11',
     createdAt: new Date().toISOString()
   };
 
