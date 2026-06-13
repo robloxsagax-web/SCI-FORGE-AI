@@ -367,7 +367,7 @@ const WORKSPACE_CARDS: WorkspaceCard[] = [
   },
   {
     id: "notes",
-    title: "Notes Generator",
+    title: "Scientific Documentation Lab",
     description: "Revision notes and exam prep",
     icon: PremiumIcons.notes,
     color: "#FFB547",
@@ -375,7 +375,7 @@ const WORKSPACE_CARDS: WorkspaceCard[] = [
   },
   {
     id: "quiz",
-    title: "Quiz Generator",
+    title: "Mastery Assessment Engine",
     description: "Custom quizzes with difficulty levels",
     icon: PremiumIcons.quiz,
     color: "#FFB547",

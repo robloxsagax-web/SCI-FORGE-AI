@@ -349,7 +349,7 @@ export function ProjectMate({ isRightPanelOpen, setIsRightPanelOpen, onUpdateInt
             <Brain className="w-5 h-5 animate-pulse" />
           </div>
           <div>
-            <h1 className="text-xl font-heading font-semibold text-white tracking-tight">PROJECTMATE AI WORKSPACE</h1>
+            <h1 className="text-xl font-heading font-semibold text-white tracking-tight">COGNITIVE SYNERGY HUB</h1>
             <p className="text-xs text-white/40 font-mono">Personal STEM Study Operating System and Analytical focus modules</p>
           </div>
         </div>

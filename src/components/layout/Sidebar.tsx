@@ -323,13 +323,13 @@ interface SidebarProps {
 const NAV_ITEMS = [
   { id: "home", label: "Home", iconKey: "home" as SidebarIconKey, color: "#FF7A00" },
   { id: "chat", label: "Core Intelligence Console", iconKey: "chat" as SidebarIconKey, color: "#FF7A00" },
-  { id: "notes", label: "Notes Generator", iconKey: "notes" as SidebarIconKey, color: "#FFB547" },
-  { id: "quiz", label: "Quiz Generator", iconKey: "quiz" as SidebarIconKey, color: "#FFB547" },
   { id: "scribble", label: "Scribble Analysis Lab", iconKey: "scribble" as SidebarIconKey, color: "#22C55E" },
   { id: "scientist", label: "Quantum Research Engine", iconKey: "scientist" as SidebarIconKey, color: "#22C55E" },
-  { id: "simulation", label: "ProjectMate AI", iconKey: "simulation" as SidebarIconKey, color: "#FF7A00" },
   { id: "dependencymap", label: "Concept Dependency Map", iconKey: "dependencymap" as SidebarIconKey, color: "#FFB547" },
   { id: "progress", label: "Academic Propulsion", iconKey: "progress" as SidebarIconKey, color: "#FF7A00" },
+  { id: "notes", label: "Scientific Documentation Lab", iconKey: "notes" as SidebarIconKey, color: "#FFB547" },
+  { id: "quiz", label: "Mastery Assessment Engine", iconKey: "quiz" as SidebarIconKey, color: "#FFB547" },
+  { id: "simulation", label: "Cognitive Synergy Hub", iconKey: "simulation" as SidebarIconKey, color: "#FF7A00" },
   { id: "portfolio", label: "Research Portfolio", iconKey: "portfolio" as SidebarIconKey, color: "#A1A1AA" },
   { id: "settings", label: "Settings", iconKey: "settings" as SidebarIconKey, color: "#A1A1AA" },
 ] as const;

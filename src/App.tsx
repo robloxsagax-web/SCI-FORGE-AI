@@ -29,10 +29,10 @@ const MOBILE_TOOLS = [
   { id: 'home' as ModuleType, label: 'Home', icon: Home, color: '#FF7A00' },
   { id: 'chat' as ModuleType, label: 'Core Intelligence Console', icon: MessageSquare, color: '#FF7A00' },
   { id: 'scribble' as ModuleType, label: 'Scribble Analysis Lab', icon: PenTool, color: '#22C55E' },
-  { id: 'notes' as ModuleType, label: 'Notes Generator', icon: FileText, color: '#FFB547' },
-  { id: 'quiz' as ModuleType, label: 'Quiz Generator', icon: HelpCircle, color: '#FFB547' },
+  { id: 'notes' as ModuleType, label: 'Scientific Documentation Lab', icon: FileText, color: '#FFB547' },
+  { id: 'quiz' as ModuleType, label: 'Mastery Assessment Engine', icon: HelpCircle, color: '#FFB547' },
   { id: 'scientist' as ModuleType, label: 'Quantum Research Engine', icon: Atom, color: '#22C55E' },
-  { id: 'simulation' as ModuleType, label: 'ProjectMate AI', icon: Network, color: '#FF7A00' },
+  { id: 'simulation' as ModuleType, label: 'Cognitive Synergy Hub', icon: Network, color: '#FF7A00' },
   { id: 'dependencymap' as ModuleType, label: 'Concept Dependency Map', icon: Network, color: '#FFB547' },
   { id: 'progress' as ModuleType, label: 'Academic Propulsion', icon: TrendingUp, color: '#FF7A00' },
   { id: 'portfolio' as ModuleType, label: 'Research Portfolio', icon: FolderOpen, color: '#A1A1AA' },
@@ -529,11 +529,11 @@ export default function App() {
             <p className="text-xs font-mono text-white/50 truncate">
               {activeModule === "home" ? "Home Dashboard" :
               activeModule === "chat" ? "Core Intelligence Console" :
-              activeModule === "simulation" ? "ProjectMate AI" :
+              activeModule === "simulation" ? "Cognitive Synergy Hub" :
               activeModule === "scribble" ? "Scribble Analysis Lab" :
               activeModule === "scientist" ? "Quantum Research Engine" :
-              activeModule === "quiz" ? "Quiz Generator" :
-              activeModule === "notes" ? "Notes Generator" :
+              activeModule === "quiz" ? "Mastery Assessment Engine" :
+              activeModule === "notes" ? "Scientific Documentation Lab" :
               activeModule === "dependencymap" ? "Concept Dependency Map" :
               activeModule === "progress" ? "Academic Propulsion" :
               activeModule === "portfolio" ? "Research Portfolio" : "Settings"}
@@ -562,11 +562,11 @@ export default function App() {
                 </h2>
                 <p className="text-[9px] uppercase tracking-wider text-white/40 font-medium truncate">
                   {activeModule === "chat" ? "CORE INTELLIGENCE CONSOLE" :
-                  activeModule === "simulation" ? "PROJECTMATE AI" :
+                  activeModule === "simulation" ? "COGNITIVE SYNERGY HUB" :
                   activeModule === "scribble" ? "SCRIBBLE ANALYSIS LAB" :
                   activeModule === "scientist" ? "QUANTUM RESEARCH ENGINE" :
-                  activeModule === "quiz" ? "QUIZ GENERATOR" :
-                  activeModule === "notes" ? "NOTES GENERATOR" :
+                  activeModule === "quiz" ? "MASTERY ASSESSMENT ENGINE" :
+                  activeModule === "notes" ? "SCIENTIFIC DOCUMENTATION LAB" :
                   activeModule === "dependencymap" ? "CONCEPT DEPENDENCY MAP" :
                   activeModule === "progress" ? "ACADEMIC PROPULSION" :
                   activeModule === "portfolio" ? "RESEARCH PORTFOLIO" : "SETTINGS"}

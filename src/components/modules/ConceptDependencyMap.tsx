@@ -438,7 +438,7 @@ export function ConceptDependencyMap({ onRoute, onUpdateIntelligence }: ConceptD
               <span className="text-[9px] font-mono text-white/30 uppercase tracking-widest font-bold block">Ecosystem Learning Pipelines</span>
               
               <div className="space-y-2 font-sans text-xs">
-                {/* Pipeline A: Notes Generator */}
+                {/* Pipeline A: Scientific Documentation Lab */}
                 <div 
                   onClick={() => jumpToModule("notes", activeNode.recommendedNotes)}
                   className="p-3 bg-white/[0.02] hover:bg-accent-violet/10 hover:border-accent-violet/30 border border-white/5 rounded-2xl cursor-pointer transition-all flex items-center justify-between group"
@@ -450,7 +450,7 @@ export function ConceptDependencyMap({ onRoute, onUpdateIntelligence }: ConceptD
                   <ChevronRight className="w-4 h-4 text-white/20 group-hover:translate-x-1 transition-transform group-hover:text-accent-violet" />
                 </div>
 
-                {/* Pipeline B: Quiz Generator */}
+                {/* Pipeline B: Mastery Assessment Engine */}
                 <div 
                   onClick={() => jumpToModule("quiz", activeNode.recommendedQuizzes)}
                   className="p-3 bg-white/[0.02] hover:bg-accent-violet/10 hover:border-accent-violet/30 border border-white/5 rounded-2xl cursor-pointer transition-all flex items-center justify-between group"
@@ -462,14 +462,14 @@ export function ConceptDependencyMap({ onRoute, onUpdateIntelligence }: ConceptD
                   <ChevronRight className="w-4 h-4 text-white/20 group-hover:translate-x-1 transition-transform group-hover:text-accent-violet" />
                 </div>
 
-                {/* Pipeline C: ProjectMate AI */}
+                {/* Pipeline C: Cognitive Synergy Hub */}
                 <div 
                   onClick={() => jumpToModule("simulation", activeNode.recommendedExplorer, activeNode.recommendedExplorerId)}
                   className="p-3 bg-white/[0.02] hover:bg-accent-violet/10 hover:border-accent-violet/30 border border-white/5 rounded-2xl cursor-pointer transition-all flex items-center justify-between group"
                 >
                   <div className="space-y-0.5">
                     <span className="text-[8px] font-mono text-white/25 uppercase font-bold tracking-wider">Study Workspace</span>
-                    <p className="text-white/85 font-semibold group-hover:text-accent-violet transition-colors">Plan ProjectMate Session</p>
+                    <p className="text-white/85 font-semibold group-hover:text-accent-violet transition-colors">Plan Cognitive Synergy Session</p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-white/20 group-hover:translate-x-1 transition-transform group-hover:text-accent-violet" />
                 </div>
