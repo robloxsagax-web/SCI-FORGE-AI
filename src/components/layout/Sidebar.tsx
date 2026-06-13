@@ -2,7 +2,48 @@ import { X } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { ModuleType } from "../../types";
 import { motion } from "motion/react";
-import { BrandLogo, NeuralNexusLogo } from "../../lib/branding";
+
+// Premium Neural Nexus Logo - SciForge AI
+const NeuralNexusLogo = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 36 36" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="nexusGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#FF7A00" stopOpacity="0.9" />
+        <stop offset="100%" stopColor="#FFB547" stopOpacity="0.6" />
+      </linearGradient>
+      <linearGradient id="nexusGrad2" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#FFB547" stopOpacity="0.8" />
+        <stop offset="100%" stopColor="#FF7A00" stopOpacity="0.5" />
+      </linearGradient>
+      <filter id="nexusGlow">
+        <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="nodeGlow">
+        <feGaussianBlur stdDeviation="0.5" result="coloredBlur"/>
+        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    {/* Outer orbital ring */}
+    <ellipse cx="18" cy="18" rx="15" ry="6" stroke="url(#nexusGrad1)" strokeWidth="0.8" strokeOpacity="0.4" transform="rotate(-30 18 18)" />
+    <ellipse cx="18" cy="18" rx="15" ry="6" stroke="url(#nexusGrad2)" strokeWidth="0.8" strokeOpacity="0.4" transform="rotate(30 18 18)" />
+    <ellipse cx="18" cy="18" rx="15" ry="6" stroke="#FF7A00" strokeWidth="0.5" strokeOpacity="0.3" />
+    {/* Neural nodes */}
+    <circle cx="18" cy="10" r="2.5" fill="#FF7A00" filter="url(#nodeGlow)" />
+    <circle cx="24" cy="15" r="2" fill="#FFB547" filter="url(#nodeGlow)" />
+    <circle cx="22" cy="22" r="2" fill="#FF7A00" filter="url(#nodeGlow)" />
+    <circle cx="14" cy="22" r="2" fill="#FFB547" filter="url(#nodeGlow)" />
+    <circle cx="12" cy="15" r="2" fill="#FF7A00" filter="url(#nodeGlow)" />
+    <circle cx="18" cy="18" r="3" fill="#FF7A00" filter="url(#nexusGlow)" />
+    {/* Connection lines */}
+    <path d="M18 10L24 15M24 15L22 22M22 22L14 22M14 22L12 15M12 15L18 10" stroke="#FF7A00" strokeWidth="1" strokeOpacity="0.6" strokeLinecap="round" />
+    <path d="M18 10L18 18M24 15L18 18M22 22L18 18M14 22L18 18M12 15L18 18" stroke="#FFB547" strokeWidth="0.8" strokeOpacity="0.5" strokeLinecap="round" />
+    {/* Orbital electrons */}
+    <circle cx="28" cy="12" r="1" fill="#FF7A00" opacity="0.7" />
+    <circle cx="10" cy="26" r="1" fill="#FFB547" opacity="0.7" />
+    <circle cx="8" cy="10" r="0.8" fill="#FF7A00" opacity="0.5" />
+  </svg>
+);
 
 // Premium Neural Helix Logo - Adaptive Mentor
 const NeuralHelixLogo = ({ className }: { className?: string }) => (
@@ -335,10 +376,13 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
         {/* Logo Area */}
         <div className="h-16 flex items-center justify-between px-5 border-b border-white/8 shrink-0">
           <div className="flex items-center gap-3">
-            <a href="/" className="w-9 h-9 flex items-center justify-center">
-              <BrandLogo className="w-9 h-9" style={{ height: '32px', maxHeight: '40px', width: 'auto' }} />
-            </a>
-            <span className="font-heading font-bold text-base text-white tracking-tight">SCI-FORGE AI</span>
+            <div className="w-9 h-9 flex items-center justify-center">
+              <NeuralNexusLogo className="w-9 h-9" />
+            </div>
+            <div>
+              <span className="font-heading font-bold text-base text-white tracking-tight">SCI FORGE</span>
+              <span className="font-heading font-normal text-base text-[#A1A1AA] ml-1">AI</span>
+            </div>
           </div>
           {onCloseMobile && (
             <button 

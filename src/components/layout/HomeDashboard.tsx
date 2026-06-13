@@ -626,7 +626,7 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
           <div className="flex items-center gap-2 mb-1">
             <span className="text-lg text-[#A1A1AA]">Welcome back to</span>
             <span className="text-lg font-semibold bg-gradient-to-r from-[#FF7A00] to-[#FFB547] bg-clip-text text-transparent">
-              Sci Forge AI
+              SciForge AI
             </span>
           </div>
           <p className="text-sm text-[#71717A] max-w-xl">
@@ -690,7 +690,7 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
               </div>
               <div>
                 <div className="flex items-center gap-1 sm:gap-2">
-                  <h2 className="text-lg sm:text-xl font-heading font-semibold text-white tracking-tight">Sci Forge Adaptive Mentor</h2>
+                  <h2 className="text-lg sm:text-xl font-heading font-semibold text-white tracking-tight">SciForge Adaptive Mentor</h2>
                   <span className="text-[10px] sm:text-xs text-[#22C55E] flex items-center gap-1">
                     <span className="w-1.5 h-1.5 bg-[#22C55E] rounded-full animate-pulse" />
                     Mentor Online
