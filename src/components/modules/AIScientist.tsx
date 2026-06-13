@@ -94,7 +94,7 @@ export function AIScientist({ isRightPanelOpen, setIsRightPanelOpen, onUpdateInt
   const wordCount = insight?.explanation?.split(/\s+/).length || 0;
 
   return (
-    <div id="ai-scientist-module" className="flex-1 flex flex-col h-full bg-primary-bg p-6 overflow-hidden relative select-none">
+    <div id="ai-scientist-module" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col h-full bg-primary-bg p-4 sm:p-6 overflow-hidden relative select-none">
       <div className="absolute bottom-0 right-0 w-96 h-96 bg-accent-green/5 blur-[120px] rounded-full pointer-events-none -z-10" />
 
       {/* Header section */}

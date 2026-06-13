@@ -611,7 +611,7 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
         className="flex-1 overflow-y-auto scroll-smooth overscroll-contain"
       >
         {/* Main Content Container */}
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         
         {/* Welcome Section */}
         <motion.div
