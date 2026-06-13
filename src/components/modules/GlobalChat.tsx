@@ -355,42 +355,6 @@ export function GlobalChat({
         </div>
       )}
 
-      {/* Clean Activity Header - Real Data Only */}
-      {messages.length > 0 && (
-        <div className="mb-6 shrink-0 bg-secondary-bg/30 p-4 rounded-2xl border border-white/5">
-          <div className="flex items-center gap-6 overflow-x-auto">
-            <button 
-              onClick={() => setShowWorkspaceLauncher(true)}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FF7A00]/10 border border-[#FF7A00]/20 hover:bg-[#FF7A00]/20 text-[#FF7A00] text-xs font-bold transition-all whitespace-nowrap cursor-pointer"
-            >
-              <Sparkles className="w-4 h-4" /> Browse Workspaces
-            </button>
-            <div className="h-6 w-px bg-white/10" />
-            <span className="text-[10px] text-white/40 font-mono uppercase">Recent:</span>
-            <div className="flex gap-2">
-              {telemetry.notesGeneratedCount > 0 && (
-                <span className="px-2 py-1 rounded bg-white/5 text-[10px] text-white/60 font-mono">
-                  📝 {telemetry.notesGeneratedCount} Notes
-                </span>
-              )}
-              {telemetry.quizzesCompletedCount > 0 && (
-                <span className="px-2 py-1 rounded bg-white/5 text-[10px] text-white/60 font-mono">
-                  ❓ {telemetry.quizzesCompletedCount} Quizzes
-                </span>
-              )}
-              {telemetry.researchInvestigationsCount > 0 && (
-                <span className="px-2 py-1 rounded bg-white/5 text-[10px] text-white/60 font-mono">
-                  🔬 {telemetry.researchInvestigationsCount} Research
-                </span>
-              )}
-              {telemetry.notesGeneratedCount === 0 && telemetry.quizzesCompletedCount === 0 && telemetry.researchInvestigationsCount === 0 && (
-                <span className="text-[10px] text-white/30 font-mono">Start learning to see your activity</span>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="flex-1 overflow-hidden flex flex-col lg:flex-row gap-6">
         
         {/* Messages / Tutor Workspace */}
