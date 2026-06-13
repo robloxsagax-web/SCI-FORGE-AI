@@ -1,4 +1,4 @@
-export type ModuleType = "home" | "chat" | "simulation" | "scribble" | "scientist" | "progress" | "quiz" | "notes" | "settings" | "sessions" | "dependencymap" | "portfolio";
+export type ModuleType = "home" | "chat" | "simulation" | "scribble" | "scientist" | "progress" | "quiz" | "notes" | "settings" | "sessions" | "dependencymap" | "portfolio" | "inclusion";
 export type LearningMode = "beginner" | "analogy" | "advanced";
 
 export interface LearningJourney {

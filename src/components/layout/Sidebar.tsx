@@ -309,6 +309,20 @@ const PremiumSidebarIcons = {
       <path d="M21 12H9" stroke="#EF4444" strokeWidth="1.5" strokeLinecap="round" />
     </svg>
   ),
+  inclusion: ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="inclusionGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#22C55E" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#22C55E" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="12" r="9" fill="url(#inclusionGrad)" stroke="#22C55E" strokeWidth="1.2" />
+      <path d="M8 12C8 9.79086 9.79086 8 12 8C14.2091 8 16 9.79086 16 12" stroke="#22C55E" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="12" cy="15" r="1.5" fill="#22C55E" />
+      <path d="M12 17V19M9 19H15" stroke="#22C55E" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  ),
 } as const;
 
 type SidebarIconKey = keyof typeof PremiumSidebarIcons;
@@ -331,6 +345,7 @@ const NAV_ITEMS = [
   { id: "dependencymap", label: "Concept Dependency Map", iconKey: "dependencymap" as SidebarIconKey, color: "#FFB547" },
   { id: "progress", label: "Academic Propulsion", iconKey: "progress" as SidebarIconKey, color: "#FF7A00" },
   { id: "portfolio", label: "Research Portfolio", iconKey: "portfolio" as SidebarIconKey, color: "#A1A1AA" },
+  { id: "inclusion", label: "Inclusion Hub", iconKey: "inclusion" as SidebarIconKey, color: "#22C55E" },
   { id: "settings", label: "Settings", iconKey: "settings" as SidebarIconKey, color: "#A1A1AA" },
 ] as const;
 

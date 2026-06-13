@@ -8,6 +8,7 @@ import { LoginPage } from "./components/layout/LoginPage";
 import { LoadingScreen } from "./components/layout/LoadingScreen";
 import { ProjectMate } from "./components/modules/ProjectMate";
 import { ScribbleAnalyzer } from "./components/modules/ScribbleAnalyzer";
+import { InclusionHub } from "./components/layout/InclusionHub";
 import { AIScientist } from "./components/modules/AIScientist";
 import { QuizGenerator } from "./components/modules/QuizGenerator";
 import { NotesGenerator } from "./components/modules/NotesGenerator";
@@ -324,6 +325,12 @@ export default function App() {
             setCoreTime={setCoreTime}
           />
         );
+      case "inclusion":
+        return (
+          <InclusionHub 
+            onNavigateToScribble={() => setActiveModule("scribble")}
+          />
+        );
       case "settings":
         return (
           <div className="flex-1 flex flex-col items-center justify-center p-8 overflow-y-auto max-w-xl mx-auto space-y-8 relative">
@@ -391,8 +398,9 @@ export default function App() {
   };
 
   const showSidebar = activeModule !== "home" || showWorkspaceUINav || true;
-  const showTopBar = activeModule !== "home" && activeModule !== "settings" && activeModule !== "progress" && activeModule !== "portfolio";
+  const showTopBar = activeModule !== "home" && activeModule !== "settings" && activeModule !== "progress" && activeModule !== "portfolio" && activeModule !== "inclusion";
   const isHomePage = activeModule === "home";
+  const isInclusionHub = activeModule === "inclusion";
 
   // Route Guard: Show loading screen while checking auth state
   if (isAuthLoading) {
@@ -535,6 +543,7 @@ export default function App() {
               activeModule === "notes" ? "Notes Generator" :
               activeModule === "dependencymap" ? "Concept Dependency Map" :
               activeModule === "progress" ? "Academic Propulsion" :
+              activeModule === "inclusion" ? "Inclusion Hub" :
               activeModule === "portfolio" ? "Research Portfolio" : "Settings"}
             </p>
           </div>
@@ -568,6 +577,7 @@ export default function App() {
                   activeModule === "notes" ? "NOTES GENERATOR" :
                   activeModule === "dependencymap" ? "CONCEPT DEPENDENCY MAP" :
                   activeModule === "progress" ? "ACADEMIC PROPULSION" :
+                  activeModule === "inclusion" ? "INCLUSION HUB" :
                   activeModule === "portfolio" ? "RESEARCH PORTFOLIO" : "SETTINGS"}
                 </p>
               </div>
