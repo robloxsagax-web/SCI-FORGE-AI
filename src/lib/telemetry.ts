@@ -98,6 +98,74 @@ export function getDashboardStats(): DashboardStats {
   };
 }
 
+// Get full user stats for intelligence layer
+export function getUserStats(): {
+  questionsAsked: number;
+  topicsLearned: number;
+  notesGenerated: number;
+  quizzesCompleted: number;
+  researchSessions: number;
+  studyHours: number;
+  streakDays: number;
+  recentTopics: string[];
+  quizScores: number[];
+  topicsMastered: string[];
+  weakTopics: string[];
+  insights: string[];
+} {
+  const t = getTelemetry();
+  
+  // Calculate derived stats
+  const topicsLearned = t.topicMasteries.filter(m => m.attempts > 0).length;
+  const quizScores = t.topicMasteries
+    .filter(m => m.score > 0)
+    .map(m => m.score);
+  const avgQuizScore = quizScores.length > 0 
+    ? quizScores.reduce((a, b) => a + b, 0) / quizScores.length 
+    : 0;
+  
+  // Identify mastered topics (score >= 80%)
+  const topicsMastered = t.topicMasteries
+    .filter(m => m.score >= 80)
+    .map(m => m.name);
+  
+  // Identify weak topics (score < 60% after multiple attempts)
+  const weakTopics = t.topicMasteries
+    .filter(m => m.attempts >= 2 && m.score < 60)
+    .map(m => m.name);
+  
+  // Generate insights
+  const insights: string[] = [];
+  
+  if (topicsMastered.length > 0) {
+    insights.push(`Your strongest area is ${topicsMastered[0]}.`);
+  }
+  if (weakTopics.length > 0) {
+    insights.push(`Focus on improving: ${weakTopics.join(", ")}.`);
+  }
+  if (t.streakDays > 3) {
+    insights.push(`${t.streakDays}-day learning streak! Keep it up!`);
+  }
+  if (avgQuizScore > 0) {
+    insights.push(`Average quiz score: ${avgQuizScore.toFixed(0)}%`);
+  }
+  
+  return {
+    questionsAsked: t.quizTotalAnswers,
+    topicsLearned,
+    notesGenerated: t.notesGeneratedCount,
+    quizzesCompleted: t.quizzesCompletedCount,
+    researchSessions: t.researchInvestigationsCount,
+    studyHours: Math.round(t.totalSessionDurationSeconds / 3600),
+    streakDays: t.streakDays,
+    recentTopics: t.topicMasteries.slice(-5).map(m => m.name),
+    quizScores,
+    topicsMastered,
+    weakTopics,
+    insights
+  };
+}
+
 export function saveTelemetry(telemetry: TelemetryState) {
   if (typeof window === "undefined") return;
   localStorage.setItem("sciforge_global_telemetry_v2", JSON.stringify(telemetry));
