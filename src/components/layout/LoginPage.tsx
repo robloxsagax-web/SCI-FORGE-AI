@@ -3,6 +3,7 @@ import { motion } from "motion/react";
 import { ChevronDown, ChevronRight, User, Mail, Lock, Sparkles, Zap, Type, Contrast } from "lucide-react";
 import { signIn, signUp, demoLogin } from "../../lib/auth";
 import { LoadingScreen } from "./LoadingScreen";
+import { NeuralNexusLogo } from "../../lib/branding";
 
 // Initialize accessibility defaults on first load
 const initializeAccessibilityDefaults = () => {
@@ -26,36 +27,6 @@ interface FormData {
   password: string;
   grade: string;
 }
-
-// Premium Neural Nexus Logo
-const NeuralNexusLogo = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 36 36" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="loginNexusGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stopColor="#FF7A00" stopOpacity="0.9" />
-        <stop offset="100%" stopColor="#FFB547" stopOpacity="0.6" />
-      </linearGradient>
-      <linearGradient id="loginNexusGrad2" x1="0%" y1="100%" x2="100%" y2="0%">
-        <stop offset="0%" stopColor="#FFB547" stopOpacity="0.8" />
-        <stop offset="100%" stopColor="#FF7A00" stopOpacity="0.5" />
-      </linearGradient>
-      <filter id="loginNexusGlow">
-        <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
-        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-    </defs>
-    <ellipse cx="18" cy="18" rx="15" ry="6" stroke="url(#loginNexusGrad1)" strokeWidth="0.8" strokeOpacity="0.4" transform="rotate(-30 18 18)" />
-    <ellipse cx="18" cy="18" rx="15" ry="6" stroke="url(#loginNexusGrad2)" strokeWidth="0.8" strokeOpacity="0.4" transform="rotate(30 18 18)" />
-    <circle cx="18" cy="10" r="2.5" fill="#FF7A00" filter="url(#loginNexusGlow)" />
-    <circle cx="24" cy="15" r="2" fill="#FFB547" />
-    <circle cx="22" cy="22" r="2" fill="#FF7A00" />
-    <circle cx="14" cy="22" r="2" fill="#FFB547" />
-    <circle cx="12" cy="15" r="2" fill="#FF7A00" />
-    <circle cx="18" cy="18" r="3.5" fill="#FF7A00" filter="url(#loginNexusGlow)" />
-    <path d="M18 10L24 15M24 15L22 22M22 22L14 22M14 22L12 15M12 15L18 10" stroke="#FF7A00" strokeWidth="1" strokeOpacity="0.6" strokeLinecap="round" />
-    <path d="M18 10L18 18M24 15L18 18M22 22L18 18M14 22L18 18M12 15L18 18" stroke="#FFB547" strokeWidth="0.8" strokeOpacity="0.5" strokeLinecap="round" />
-  </svg>
-);
 
 // Premium SciForge Quantum Emblem - Atomic Hexagon with Vector-Dot Grid
 const SciForgeEmblem = ({ className }: { className?: string }) => (
