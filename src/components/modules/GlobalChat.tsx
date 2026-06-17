@@ -119,6 +119,7 @@ export function GlobalChat({
   const [isOrchestrating, setIsOrchestrating] = useState(false);
   const [orchestrationPhase, setOrchestrationPhase] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
+  const conversationIdRef = useRef(crypto.randomUUID());
 
   // Handle pending message from homepage
   useEffect(() => {
@@ -182,7 +183,7 @@ export function GlobalChat({
   const lastAiMsg = [...messages].reverse().find(m => m.sender === "ai");
   const isNaturalMode = !lastAiMsg || lastAiMsg.type === "natural_conversation";
 
-  const handleSend = async (textToSend: string) => {
+  const handleSend = async (textToSend: string, isSuggested = false) => {
     if (!textToSend.trim()) return;
 
     const userMsg: ChatMessage = {
@@ -193,6 +194,17 @@ export function GlobalChat({
     };
 
     onAddMessage(userMsg);
+
+    if (typeof window !== "undefined" && window.pendo) {
+      window.pendo.trackAgent("prompt", {
+        agentId: "gelUFQj-HdTP3S6iDvZOEKeurtg",
+        conversationId: conversationIdRef.current,
+        messageId: userMsg.id,
+        content: textToSend,
+        suggestedPrompt: isSuggested,
+      });
+    }
+
     setInput("");
     setLoading(true);
         
@@ -272,6 +284,16 @@ export function GlobalChat({
       };
 
       onAddMessage(aiMsg);
+
+      if (typeof window !== "undefined" && window.pendo) {
+        window.pendo.trackAgent("agent_response", {
+          agentId: "gelUFQj-HdTP3S6iDvZOEKeurtg",
+          conversationId: conversationIdRef.current,
+          messageId: aiMsg.id,
+          content: aiMsg.text,
+          modelUsed: "llama-3.3-70b-versatile",
+        });
+      }
       
       // End orchestration
       setIsOrchestrating(false);
@@ -435,7 +457,7 @@ export function GlobalChat({
                         setTimeout(() => {
                           const sendBtn = document.querySelector('[data-send-btn]') as HTMLButtonElement;
                           if (sendBtn && !sendBtn.disabled) {
-                            handleSend(prompt);
+                            handleSend(prompt, true);
                           }
                         }, 50);
                       }}
