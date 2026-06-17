@@ -42,11 +42,18 @@ export function ResearchPortfolio() {
 
   const handleDeleteItem = (id: string, e: React.MouseEvent) => {
     e.stopPropagation();
+    const deletedItem = items.find(item => item.id === id);
     const updated = items.filter(item => item.id !== id);
     setItems(updated);
     localStorage.setItem("sciforge_research_portfolio", JSON.stringify(updated));
     if (selectedItem?.id === id) {
       setSelectedItem(null);
+    }
+    if (deletedItem) {
+      pendo.track("portfolio_item_deleted", {
+        item_type: deletedItem.type,
+        item_title: deletedItem.title
+      });
     }
   };
 

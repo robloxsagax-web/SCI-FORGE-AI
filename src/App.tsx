@@ -99,6 +99,10 @@ export default function App() {
 
   // Handle sign out
   const handleSignOut = useCallback(() => {
+    const currentUser = getUser();
+    pendo.track("user_signed_out", {
+      is_firebase_user: !!currentUser?.isFirebaseUser
+    });
     authSignOut();
     pendo.clearSession();
     setUser(null);
@@ -207,6 +211,12 @@ export default function App() {
       isLightMode: updatedLight,
       customCursor: updatedCursor ?? customCursor
     }));
+    pendo.track("accessibility_settings_changed", {
+      dyslexia_font_enabled: updatedDyslexia,
+      high_contrast_enabled: updatedContrast,
+      is_light_mode: updatedLight,
+      custom_cursor_enabled: updatedCursor ?? customCursor
+    });
   };
 
   useEffect(() => {

@@ -66,6 +66,15 @@ export function AIScientist({ isRightPanelOpen, setIsRightPanelOpen, onUpdateInt
         });
 
         updateTelemetryOnAction("research_investigation", { topic: normalizedData.research_topic });
+
+        pendo.track("research_insight_generated", {
+          research_topic: normalizedData.research_topic,
+          principles_count: (normalizedData.principles || []).length,
+          applications_count: (normalizedData.applications || []).length,
+          has_limitations: !!normalizedData.limitations && normalizedData.limitations !== "No specific boundary limitations recorded.",
+          has_misconceptions: !!normalizedData.misconceptions && normalizedData.misconceptions !== "No key textbook misconceptions recorded.",
+          related_fields_count: (normalizedData.related_fields || []).length
+        });
       }
     } catch (err) {
       console.error(err);

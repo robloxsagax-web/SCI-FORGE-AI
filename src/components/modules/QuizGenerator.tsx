@@ -60,6 +60,11 @@ export function QuizGenerator() {
         const data = await res.json();
         setQuiz(data);
         saveRecentSession("quiz", `Quiz: ${data.topic || topic}`, data);
+        pendo.track("quiz_generated", {
+          topic: data.topic || topic,
+          question_count: (data.questions || []).length,
+          difficulty: data.difficulty || "medium"
+        });
       }
     } catch (err) {
       console.error("Quiz fetch failed", err);
@@ -86,6 +91,14 @@ export function QuizGenerator() {
       setAnsweredState("incorrect");
       updateTelemetryOnAction("quiz_answer", { topic: quiz.topic || topicInput, isCorrect: false });
     }
+
+    pendo.track("quiz_answer_submitted", {
+      topic: quiz.topic || topicInput,
+      is_correct: isCorrect,
+      question_index: currentIndex,
+      total_questions: totalQuestions,
+      difficulty: quiz.difficulty || "medium"
+    });
   };
 
   const handleNext = () => {
@@ -103,6 +116,13 @@ export function QuizGenerator() {
         total: totalQuestions,
         percentage: Math.round((score / totalQuestions) * 100),
         difficulty: quiz.difficulty
+      });
+      pendo.track("quiz_completed", {
+        topic: quiz.topic,
+        score: score,
+        total_questions: totalQuestions,
+        percentage: Math.round((score / totalQuestions) * 100),
+        difficulty: quiz.difficulty || "medium"
       });
     }
   };

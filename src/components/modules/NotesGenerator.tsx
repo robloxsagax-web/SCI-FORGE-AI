@@ -107,6 +107,14 @@ export function NotesGenerator() {
 
         saveRecentSession("notes", `Notebook: ${newNote.topic}`, newNote);
         addToPortfolio("note", newNote.topic, newNote);
+
+        pendo.track("notes_generated", {
+          topic: newNote.topic,
+          concept_count: (newNote.conceptBreakdown || []).length,
+          formula_count: (newNote.formulaSheet || []).length,
+          definition_count: (newNote.keyDefinitions || []).length,
+          has_real_world_applications: (newNote.realWorldApplications || []).length > 0
+        });
       }
     } catch (err) {
       console.error("Notes generation failed", err);

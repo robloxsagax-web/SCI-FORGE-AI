@@ -300,6 +300,7 @@ export function LoginPage() {
     setIsLoading(true);
     setError(null);
     demoLogin();
+    pendo.track("demo_login_used");
     window.dispatchEvent(new Event('authStateChange'));
   };
 
