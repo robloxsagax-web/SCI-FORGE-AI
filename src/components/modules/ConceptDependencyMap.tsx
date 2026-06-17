@@ -107,8 +107,9 @@ export function ConceptDependencyMap({ onRoute, onUpdateIntelligence }: ConceptD
 
   const toggleMastery = (nodeId: string) => {
     if (!activeNode) return;
+    const wasMastered = masteredNodes.includes(nodeId);
     let updated: string[];
-    if (masteredNodes.includes(nodeId)) {
+    if (wasMastered) {
       updated = masteredNodes.filter(id => id !== nodeId);
     } else {
       updated = [...masteredNodes, nodeId];
@@ -120,6 +121,12 @@ export function ConceptDependencyMap({ onRoute, onUpdateIntelligence }: ConceptD
     } catch (e) {
       console.error(e);
     }
+    pendo.track("concept_mastery_toggled", {
+      node_name: activeNode.name,
+      is_mastered: !wasMastered,
+      node_difficulty: activeNode.difficulty,
+      subject: activeSubject?.subject || ""
+    });
   };
 
   const jumpToModule = (targetModule: string, topic: string, extraId?: string) => {
@@ -151,6 +158,11 @@ export function ConceptDependencyMap({ onRoute, onUpdateIntelligence }: ConceptD
           setSelectedNodeId(data.nodes[0].id);
         }
         setNewConceptInput("");
+        pendo.track("dependency_map_generated", {
+          subject: data.subject || "",
+          node_count: (data.nodes || []).length,
+          description: (data.description || "").substring(0, 200)
+        });
       }
     } catch (err) {
       console.error("Map generation failed", err);

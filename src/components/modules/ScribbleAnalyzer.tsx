@@ -51,6 +51,9 @@ export function ScribbleAnalyzer({ isRightPanelOpen, setIsRightPanelOpen, onUpda
       setDiagramNarrative(narrative);
       setDiagramContext(narrative); // Store context for cross-analysis
       onUpdateIntelligence({ type: 'diagram', data: narrative });
+      pendo.track("diagram_analysis_completed", {
+        narrative_length: narrative.length
+      });
     } catch (error) {
       console.error('Diagram analysis error:', error);
       setDiagramNarrative("Unable to analyze diagram. Please try again.");
@@ -62,6 +65,10 @@ export function ScribbleAnalyzer({ isRightPanelOpen, setIsRightPanelOpen, onUpda
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    pendo.track("diagram_uploaded", {
+      file_type: file.type || "unknown"
+    });
 
     const reader = new FileReader();
     reader.onload = (event) => {
@@ -139,6 +146,15 @@ export function ScribbleAnalyzer({ isRightPanelOpen, setIsRightPanelOpen, onUpda
       setAnalysis(normalizedData);
       onUpdateIntelligence({ type: 'scribble', data: normalizedData });
       updateTelemetryOnAction('scribble_analysis');
+
+      pendo.track("scribble_analysis_completed", {
+        analysis_mode: mode,
+        has_image: !!currentBase64,
+        has_text_input: !!scribbleInput.trim(),
+        subject: normalizedData.subject || "",
+        is_correct: normalizedData.is_correct,
+        input_length: scribbleInput.length
+      });
     } catch (error) {
       console.error('Analysis error:', error);
       setAnalysis({

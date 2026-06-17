@@ -199,6 +199,13 @@ export function GlobalChat({
         // Intelligent Orchestration Layer
         const detectedIntent = classifyIntent(textToSend);
         setIsOrchestrating(true);
+
+        pendo.track("chat_message_sent", {
+          detected_intent: detectedIntent,
+          message_length: textToSend.length,
+          has_prior_messages: messages.length > 0,
+          message_count_in_session: messages.length + 1
+        });
         
         // Extract and set study topic
         const words = textToSend.split(" ").slice(0, 5).join(" ");
@@ -272,6 +279,15 @@ export function GlobalChat({
       };
 
       onAddMessage(aiMsg);
+
+      pendo.track("chat_response_received", {
+        response_type: aiMsg.type || "unknown",
+        has_journey: !!data.journey,
+        has_mission: !!data.mission,
+        has_explanation_styles: !!data.explanationStyles,
+        topic: data.topic || "",
+        detected_intent: detectedIntent
+      });
       
       // End orchestration
       setIsOrchestrating(false);
@@ -668,6 +684,12 @@ export function GlobalChat({
                             } else {
                               updateUnderstandingScore(-8);
                             }
+                            pendo.track("mission_quiz_answered", {
+                              is_correct: isCorrect,
+                              mission_title: activeMission.title || "",
+                              mission_difficulty: activeMission.difficulty || "Medium",
+                              score_change: isCorrect ? 15 : -8
+                            });
                           }}
                           className={`w-full text-left p-2 rounded-lg text-[11px] transition-all cursor-pointer border ${
                             activeMissionQuizAnswer === opt
@@ -898,8 +920,13 @@ function AIChatResponseItem({ journey, explanationStyles, onUpdateScore }: AICha
               <button
                 key={btn.style}
                 onClick={() => {
+                  const previousStyle = currentStyle;
                   setCurrentStyle(btn.style as any);
                   onUpdateScore(2); // small score bonus for active exploration!
+                  pendo.track("learning_journey_style_changed", {
+                    selected_style: btn.style,
+                    previous_style: previousStyle
+                  });
                 }}
                 className={`py-1 px-2.5 rounded-md text-[10px] font-mono transition-all cursor-pointer ${
                   currentStyle === btn.style
@@ -962,6 +989,9 @@ function AIChatResponseItem({ journey, explanationStyles, onUpdateScore }: AICha
                     if (!userTaskAnswer.trim()) return;
                     setTaskChecked(true);
                     onUpdateScore(8); // progress booster!
+                    pendo.track("active_task_submitted", {
+                      answer_length: userTaskAnswer.trim().length
+                    });
                   }}
                   disabled={!userTaskAnswer.trim()}
                   className="px-4 py-1.5 bg-accent-cyan/15 hover:bg-accent-cyan/25 border border-accent-cyan/20 text-accent-cyan font-mono text-[10px] rounded-lg tracking-wider uppercase transition-all cursor-pointer disabled:opacity-40"
@@ -1010,6 +1040,10 @@ function AIChatResponseItem({ journey, explanationStyles, onUpdateScore }: AICha
                       } else {
                         onUpdateScore(-6); // mini deductive penalty
                       }
+                      pendo.track("validation_quiz_answered", {
+                        is_correct: isCorrect,
+                        score_change: isCorrect ? 12 : -6
+                      });
                     }}
                     className={`text-left p-3 rounded-xl text-xs transition-all cursor-pointer border ${
                       selectedQuizOption === opt

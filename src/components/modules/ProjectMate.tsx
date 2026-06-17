@@ -140,6 +140,13 @@ export function ProjectMate({ isRightPanelOpen, setIsRightPanelOpen, onUpdateInt
         const data = await res.json();
         setSessionSummary(data);
 
+        pendo.track("study_session_completed", {
+          session_duration_minutes: minutesVal,
+          cognitive_efficiency: data.cognitive_efficiency || 0,
+          completed_tasks_count: activeCompletedTasks.length,
+          active_projects_count: activeProjects.length
+        });
+
         // Auto save to Central Research Portfolio
         addToPortfolio("scientist", `Cognitive summary: ${minutesVal} Min`, {
           research_topic: `Study session summary - ${minutesVal} Min`,
@@ -235,6 +242,12 @@ export function ProjectMate({ isRightPanelOpen, setIsRightPanelOpen, onUpdateInt
     setNewProjName("");
     setNewProjMilestones("");
 
+    pendo.track("study_project_created", {
+      project_name: newProject.name,
+      category: newProject.category,
+      milestone_count: milestones.length
+    });
+
     if (onUpdateIntelligence) {
       onUpdateIntelligence({
         explain: `STEM Research Project design initialized: "${newProject.name}"`,
@@ -254,6 +267,13 @@ export function ProjectMate({ isRightPanelOpen, setIsRightPanelOpen, onUpdateInt
         p.progressPercent = Math.round((completed / total) * 100);
         // Feed telemetry
         updateTelemetryOnAction("explore_experience", { topic: p.name });
+        pendo.track("project_milestone_completed", {
+          project_name: p.name,
+          project_category: p.category,
+          milestone_index: milestoneIdx,
+          progress_percent: p.progressPercent,
+          total_milestones: total
+        });
       }
       return p;
     });
@@ -290,6 +310,12 @@ export function ProjectMate({ isRightPanelOpen, setIsRightPanelOpen, onUpdateInt
 
     // Telemetry increment for notes-logged milestones
     updateTelemetryOnAction("generate_notes", { topic: newLog.title });
+
+    pendo.track("research_log_created", {
+      log_title: newLog.title,
+      has_source: !!researchSource.trim(),
+      abstract_length: newLog.extractedAbstract.length
+    });
   };
 
   const deleteResearchLog = (id: string) => {
@@ -317,6 +343,12 @@ export function ProjectMate({ isRightPanelOpen, setIsRightPanelOpen, onUpdateInt
     const updated = [newTask, ...tasksList];
     saveState("sciforge_study_tasks", updated, setTasksList);
     setTaskText("");
+
+    pendo.track("study_task_created", {
+      task_text: newTask.text,
+      priority: newTask.priority,
+      category: newTask.category
+    });
   };
 
   const toggleTaskCompletion = (id: string) => {
@@ -326,6 +358,11 @@ export function ProjectMate({ isRightPanelOpen, setIsRightPanelOpen, onUpdateInt
         if (t.completed) {
           // Task completed increments learning telemetry parameters
           updateTelemetryOnAction("timer_run_seconds", 300); // 5 focus minutes worth
+          pendo.track("study_task_completed", {
+            task_text: t.text,
+            priority: t.priority,
+            category: t.category
+          });
         }
       }
       return t;

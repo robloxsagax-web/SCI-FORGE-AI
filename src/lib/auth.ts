@@ -177,6 +177,12 @@ export function signUp(name: string, email: string, password: string, grade?: st
   // Initialize mock chats for new user
   initializeMockChats();
 
+  pendo.track("user_signed_up", {
+    grade: grade || "grade11",
+    email_domain: email.split("@")[1] || "",
+    signup_method: "email"
+  });
+
   return { success: true };
 }
 
@@ -199,6 +205,11 @@ export function signIn(email: string, password: string): { success: boolean; err
 
   // Load mock chats for demo
   initializeMockChats();
+
+  pendo.track("user_signed_in", {
+    email_domain: email.split("@")[1] || "",
+    signin_method: "email"
+  });
 
   return { success: true };
 }
@@ -279,6 +290,12 @@ export function initializeFirebaseAuthSync(): void {
       setUser(user);
       setAuthState({ isAuthenticated: true, user });
       initializeMockChats();
+
+      pendo.track("google_oauth_completed", {
+        email_domain: (firebaseUser.email || "").split("@")[1] || "",
+        is_new_user: !findAccountInVault(firebaseUser.email || "")
+      });
+
       // Dispatch event for App.tsx to pick up
       window.dispatchEvent(new Event('authStateChange'));
     } else {

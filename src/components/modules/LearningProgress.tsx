@@ -149,6 +149,14 @@ export function LearningProgress({
         // Save plan to portfolio automatically
         addToPortfolio("studyplan", `Study Strategy: ${data.topic}`, data);
         loadRealMetrics();
+
+        pendo.track("study_plan_generated", {
+          topic: data.topic || topicInput,
+          difficulty_progression_count: (data.difficulty_progression || []).length,
+          time_allocation_count: (data.time_allocations || []).length,
+          structural_stages_count: (data.structural_plan || []).length,
+          revision_cycles_count: (data.revision_cycles || []).length
+        });
       }
     } catch (err) {
       console.error(err);
@@ -172,6 +180,7 @@ export function LearningProgress({
 
   const handlePurgeMetrics = () => {
     if (confirm("Reset study timer and purge all local metrics? This action is permanent.")) {
+      pendo.track("telemetry_data_purged");
       localStorage.removeItem("sciforge_research_portfolio");
       localStorage.removeItem("sciforge_recent_sessions");
       setCoreTime(0);
@@ -206,7 +215,14 @@ export function LearningProgress({
             </span>
           </div>
           <button
-            onClick={() => setIsCoreRunning(!isCoreRunning)}
+            onClick={() => {
+              const newRunning = !isCoreRunning;
+              setIsCoreRunning(newRunning);
+              pendo.track("core_timer_toggled", {
+                action: newRunning ? "started" : "stopped",
+                elapsed_seconds: coreTime
+              });
+            }}
             className={cn(
               "px-3.5 py-1.5 rounded-lg text-[9px] font-mono font-extrabold uppercase transition-all tracking-wider cursor-pointer",
               isCoreRunning 

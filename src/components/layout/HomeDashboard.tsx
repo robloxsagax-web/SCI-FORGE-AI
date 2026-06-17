@@ -502,6 +502,9 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
     localStorage.setItem("sciforge_streak", newStreak.toString());
     setShowStreakBurst(true);
     updateTelemetryOnAction("streak_checkin");
+    pendo.track("streak_check_in", {
+      streak_count: newStreak
+    });
     setTimeout(() => setShowStreakBurst(false), 1000);
   };
 
@@ -529,6 +532,11 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
   // Handle clipboard paste - auto-route to scribble or notes
   const handleClipboardPaste = useCallback((text: string) => {
     setClipboardText(text);
+    const targetWorkspace = text.length > 100 ? "notes" : "scribble";
+    pendo.track("clipboard_content_submitted", {
+      content_length: text.length,
+      target_workspace: targetWorkspace
+    });
     if (text.length > 100) {
       // Long text - route to notes generator
       onTransferToWorkspace("notes", { preloadedTopic: text.substring(0, 200) });
