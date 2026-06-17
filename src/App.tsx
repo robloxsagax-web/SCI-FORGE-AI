@@ -60,6 +60,20 @@ export default function App() {
       setUser(currentUser);
       setIsAuthLoading(false);
       setCurrentPage(authState.isAuthenticated ? 'dashboard' : 'login');
+
+      if (authState.isAuthenticated && currentUser) {
+        pendo.identify({
+          visitor: {
+            id: currentUser.email,
+            email: currentUser.email,
+            full_name: currentUser.name,
+            grade: currentUser.grade,
+            createdAt: currentUser.createdAt,
+            firebaseUid: currentUser.firebaseUid,
+            isFirebaseUser: currentUser.isFirebaseUser,
+          }
+        });
+      }
     };
 
     // Check auth immediately
@@ -86,6 +100,7 @@ export default function App() {
   // Handle sign out
   const handleSignOut = useCallback(() => {
     authSignOut();
+    pendo.clearSession();
     setUser(null);
     setActiveModule("home");
     setCurrentPage('login');
