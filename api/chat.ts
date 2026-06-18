@@ -135,7 +135,33 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     res.json(finalJson);
   } catch (error: any) {
-    console.error('[SciForge AI] Error:', error);
-    res.status(500).json(createFallbackResponse('Sorry, I had trouble generating a response. Please try again.'));
+    // Detailed error logging for debugging
+    console.error('[SciForge AI] Error details:', {
+      message: error.message,
+      status: error.status,
+      statusText: error.statusText,
+      stack: error.stack,
+      name: error.name,
+      type: error.type
+    });
+    
+    // Check for specific error types and provide appropriate messages
+    let userMessage = 'Sorry, I had trouble generating a response. Please try again.';
+    
+    if (error.message?.includes('401') || error.message?.includes('Unauthorized')) {
+      userMessage = 'AI service authentication failed. Please check API configuration.';
+      console.error('[SciForge AI] AUTH ERROR: API key may be invalid or expired');
+    } else if (error.message?.includes('429') || error.message?.includes('rate limit')) {
+      userMessage = 'AI service is temporarily busy due to high demand. Please try again in a few seconds.';
+      console.error('[SciForge AI] RATE LIMIT: Too many requests');
+    } else if (error.message?.includes('500') || error.message?.includes('Internal Server Error')) {
+      userMessage = 'AI service is temporarily busy. Please try again in a few seconds.';
+      console.error('[SciForge AI] SERVER ERROR: Groq API internal error');
+    } else if (error.message?.includes('fetch failed') || error.message?.includes('NetworkError')) {
+      userMessage = 'Unable to connect to AI service. Please check your internet connection and try again.';
+      console.error('[SciForge AI] NETWORK ERROR: Failed to reach Groq API');
+    }
+    
+    res.status(500).json(createFallbackResponse(userMessage));
   }
 }
