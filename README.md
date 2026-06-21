@@ -10,6 +10,7 @@
   <img src="https://img.shields.io/badge/STATUS-OPERATIONAL-00ff00?style=for-the-badge" alt="Status" />
   <img src="https://img.shields.io/badge/LLM-GROQ_API_LLAMA_3.3_70B-blue?style=for-the-badge" alt="LLM" />
   <img src="https://img.shields.io/badge/FRAMEWORK-NEXT.JS_14-black?style=for-the-badge" alt="Framework" />
+  <img src="https://img.shields.io/badge/MOBILE_READY-✅-brightgreen?style=for-the-badge&logo=android" alt="Mobile Ready" />
   <br /><br />
   <a href="https://sci-forge-aii.vercel.app/"><strong>🚀 LIVE WORKSPACE</strong></a> •
   <a href="https://youtu.be/ebK7_UeN6PA"><strong>🎥 DEMO VIDEO</strong></a>
@@ -48,17 +49,18 @@
 | **State Management** | Local Storage (Portfolio persistence) |
 | **Hosting** | Vercel Serverless Architecture |
 | **Accessibility** | Native OpenDyslexic + High-Contrast Adaptive Modes |
+| **Mobile Optimization** | Fully responsive across all devices |
 | **Future Roadmap** | SymPy/JAX integration, AES-256 encryption, Topological Graph-Solver |
 
 ---
 
+## 🌐 ECOSYSTEM LINKS
 
-🌐 ECOSYSTEM LINKS
-Marketing & Entry Portal (Landing Page): https://github.com/robloxsagax-web/Sci-forge-ai-landing-website
+- **Landing Page Repo**: https://github.com/robloxsagax-web/Sci-forge-ai-landing-website
+- **Production Deployment**: https://sci-forge-aii.vercel.app/
+- **Product Walkthrough**: https://youtu.be/ebK7_UeN6PA
 
-Production Deployment: https://sci-forge-aii.vercel.app/
-
-Product Walkthrough (YouTube): https://youtu.be/ebK7_UeN6PA
+---
 
 ## ⚙️ LOCAL DEPLOYMENT
 
