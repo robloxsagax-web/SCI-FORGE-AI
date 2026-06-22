@@ -1,0 +1,9 @@
+{
+  "name": "SciForge AI",
+  "description": "AI STEM workspace that catches logic errors before the ink dries.",
+  "handle": "sciforge-ai",
+  "version": "1.0.0",
+  "author": "Muhammad Mujtaba",
+  "permissions": ["llm", "storage"],
+  "entry": "src/app/index.html"
+}
