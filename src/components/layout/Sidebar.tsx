@@ -370,7 +370,7 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
       )}
 
       <div className={cn(
-        "w-64 border-r border-white/8 bg-[#111111] flex flex-col h-full shrink-0 transition-all duration-300 z-50 lg:z-auto lg:translate-x-0 lg:static fixed inset-y-0 left-0",
+        "w-64 border-r border-white/8 bg-[#111111] flex flex-col h-full shrink-0 transition-all duration-200 ease-in-out z-50 lg:z-auto lg:translate-x-0 lg:static fixed inset-y-0 left-0",
         isOpenOnMobile ? "translate-x-0" : "-translate-x-full"
       )}>
         {/* Logo Area */}
@@ -397,6 +397,24 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
         {/* Navigation Items */}
         <div className="flex-1 overflow-y-auto py-4 px-3">
           <div className="space-y-1">
+            {/* Back to Landing Page Bridge */}
+            <motion.a
+              href="https://sci-forge-ai.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0, duration: 0.3 }}
+              whileHover={{ scale: 1.05, x: -4 }}
+              whileTap={{ scale: 0.95 }}
+              className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#22C55E] hover:text-[#22C55E] hover:bg-[#22C55E]/10 transition-all duration-300 group relative border border-[#22C55E]/20 hover:border-[#22C55E]/40 mb-2"
+            >
+              <svg className="w-5 h-5 transition-transform duration-300 group-hover:-translate-x-1" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              <span className="font-semibold">Back to Home</span>
+            </motion.a>
+
             {NAV_ITEMS.map((item, idx) => {
               const isActive = activeModule === item.id;
               const IconComponent = PremiumSidebarIcons[item.iconKey];
@@ -407,10 +425,10 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.03, duration: 0.2 }}
                   whileHover={{ x: 4, backgroundColor: isActive ? 'rgba(255,122,0,0.15)' : 'rgba(255,255,255,0.05)' }}
-                  whileTap={{ scale: 0.98 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => handleItemClick(item.id as ModuleType)}
                   className={cn(
-                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group relative",
+                    "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group relative active:scale-95",
                     isActive 
                       ? "bg-[#FF7A00]/10 text-white border border-[#FF7A00]/20" 
                       : "text-[#A1A1AA] hover:text-white hover:bg-white/5"

@@ -599,7 +599,15 @@ export default function App() {
         )}
         
         <main className="flex-1 overflow-hidden relative">
-          {renderModule()}
+          <motion.div
+            key={activeModule}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5 }}
+            className="w-full h-full"
+          >
+            {renderModule()}
+          </motion.div>
         </main>
       </div>
 
