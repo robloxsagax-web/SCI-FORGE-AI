@@ -530,18 +530,27 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.35 }}
-            className="bg-[#111111] border border-white/5 rounded-2xl p-5"
+            whileHover={{ y: -2 }}
+            className="bg-[#111111] border border-white/5 rounded-2xl p-5 cursor-pointer hover:border-[#FFB547]/30 transition-all duration-300"
+            onClick={() => onRoute("scribble")}
           >
             <h3 className="text-sm font-heading font-semibold text-white mb-4 flex items-center gap-2">
-              <Upload className="w-4 h-4 text-[#FFB547]" />
+              <motion.div
+                whileHover={{ rotate: 10, scale: 1.1 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Upload className="w-4 h-4 text-[#FFB547]" />
+              </motion.div>
               Quick-Scan Input Lab
             </h3>
             
             <motion.div
               animate={{ borderColor: isDragOver ? "#FF7A00" : "rgba(255,255,255,0.05)" }}
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
               className={cn(
-                "border-2 border-dashed rounded-2xl p-6 text-center transition-colors duration-300 min-h-[120px] flex flex-col items-center justify-center gap-3",
-                isDragOver ? "bg-[#FF7A00]/5" : "bg-[#1a1a1a]/50"
+                "border-2 border-dashed rounded-2xl p-6 text-center transition-all duration-300 min-h-[120px] flex flex-col items-center justify-center gap-3 cursor-pointer",
+                isDragOver ? "bg-[#FF7A00]/5 border-[#FF7A00]" : "bg-[#1a1a1a]/50 hover:border-[#FFB547]/30"
               )}
               onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
               onDragLeave={() => setIsDragOver(false)}
@@ -552,9 +561,13 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                 if (text) handleClipboardPaste(text);
               }}
             >
-              <div className="w-10 h-10 rounded-xl bg-[#FFB547]/10 flex items-center justify-center">
+              <motion.div 
+                className="w-10 h-10 rounded-xl bg-[#FFB547]/10 flex items-center justify-center"
+                whileHover={{ rotate: 15, scale: 1.1 }}
+                transition={{ duration: 0.2 }}
+              >
                 <BrainCircuit className="w-5 h-5 text-[#FFB547]" />
-              </div>
+              </motion.div>
               
               {clipboardText ? (
                 <div className="w-full text-left">
@@ -562,15 +575,24 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                   <p className="text-sm text-white/80 line-clamp-2">{clipboardText.substring(0, 100)}...</p>
                 </div>
               ) : (
-                <p className="text-sm text-[#71717A]">
-                  Drop text here or{" "}
-                  <button 
-                    onClick={handlePaste}
-                    className="text-[#FF7A00] hover:underline"
+                <div className="space-y-2">
+                  <motion.p 
+                    className="text-sm text-[#71717A]"
+                    initial={{ opacity: 0.7 }}
+                    whileHover={{ opacity: 1 }}
                   >
-                    paste from clipboard
-                  </button>
-                </p>
+                    Drop text here or paste from clipboard
+                  </motion.p>
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.5 }}
+                    className="text-xs text-[#FFB547] flex items-center justify-center gap-1"
+                  >
+                    <span className="inline-block w-2 h-2 bg-[#22C55E] rounded-full animate-pulse" />
+                    Click to open Scribble Analysis Lab
+                  </motion.div>
+                </div>
               )}
             </motion.div>
           </motion.div>
