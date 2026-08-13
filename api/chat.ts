@@ -1,9 +1,6 @@
 import { VercelRequest, VercelResponse } from '@vercel/node';
-import dotenv from 'dotenv';
 
-dotenv.config();
-
-const GROQ_API_KEY = process.env.GROQ_API_KEY || '';
+const GROQ_API_KEY = process.env.GROQ_API_KEY || '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';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
@@ -12,13 +9,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
   try {
     const { messages } = req.body;
-
-    if (!GROQ_API_KEY) {
-      return res.status(500).json({
-        error: 'GROQ_API_KEY not configured in environment',
-        fallback: true
-      });
-    }
 
     const systemPrompt = `You are "SciForge AI", an advanced, friendly, and adaptive STEM Teaching Intelligence.
 
