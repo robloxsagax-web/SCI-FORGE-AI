@@ -1,8 +1,16 @@
-import React, { useState, useRef } from "react";
-import { PenTool, Image as ImageIcon, Sparkles, Info, HelpCircle, SidebarOpen, FileMinus, Upload, Brain, Atom } from "lucide-react";
+import React, { useState, useRef, useEffect } from "react";
+import { PenTool, Image as ImageIcon, Sparkles, Info, HelpCircle, SidebarOpen, FileMinus, Upload, Brain, Atom, Volume2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn, saveRecentSession, addToPortfolio } from "../../lib/utils";
 import { updateTelemetryOnAction } from "../../lib/telemetry";
+import { 
+  analyzeImageWithGroq, 
+  analyzeTextWithGroq, 
+  crossAnalyzeWithGroq,
+  DIAGRAM_NARRATOR_SYSTEM_PROMPT,
+  STEM_ANALYSIS_SYSTEM_PROMPT,
+  CROSS_ANALYSIS_SYSTEM_PROMPT
+} from "../../lib/groq";
 
 interface ScribbleAnalyzerProps {
   isRightPanelOpen: boolean;
@@ -10,109 +18,44 @@ interface ScribbleAnalyzerProps {
   onUpdateIntelligence: (data: any) => void;
 }
 
-// STEM-specialized AI inference service
-const STEM_AI_PROMPT = `You are a specialized STEM Tutor with deep expertise in science, technology, engineering, and mathematics. Analyze this input carefully and provide:
-
-1. SUBJECT IDENTIFICATION: Identify the academic subject and topic
-2. CORE CONCEPT: Explain the fundamental principle being addressed
-3. DETAILED ANALYSIS: Break down the components and their relationships
-4. LOGICAL VERIFICATION: Check accuracy and identify any errors
-5. TEACHING APPROACH: Provide both simple and deep explanations
-6. REAL-WORLD APPLICATION: Give practical examples and analogies
-
-Format your response with clear sections.`;
-
-const DIAGRAM_NARRATOR_PROMPT = `You are a specialized STEM Tutor. Analyze this image (which is a scientific diagram). Provide a clear, structured, spoken-word-style audio narrative that explains the scientific concept, the relationships between the components, and the underlying logic, as if describing it to someone who needs a deep understanding of the topic. Include:
-
-1. OVERVIEW: What is this diagram showing?
-2. COMPONENT ANALYSIS: Break down each element
-3. RELATIONSHIPS: How do the components interact?
-4. UNDERLYING PRINCIPLES: What scientific laws or concepts are at work?
-5. DEEP UNDERSTANDING: Explain the complete system or process`;
-
 export function ScribbleAnalyzer({ isRightPanelOpen, setIsRightPanelOpen, onUpdateIntelligence }: ScribbleAnalyzerProps) {
   const [scribbleInput, setScribbleInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState<any | null>(null);
   const [diagramNarrative, setDiagramNarrative] = useState<string | null>(null);
+  const [diagramContext, setDiagramContext] = useState<string>("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [currentBase64, setCurrentBase64] = useState<string | null>(null);
+  const [loadingMessage, setLoadingMessage] = useState("Processing...");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const clearWorkspace = () => {
     setScribbleInput("");
     setAnalysis(null);
     setDiagramNarrative(null);
+    setDiagramContext("");
     setImagePreview(null);
     setCurrentBase64(null);
   };
 
-  // Analyze diagram using AI inference
+  // Analyze diagram using Groq Vision API
   const analyzeDiagram = async (base64Image: string) => {
     setLoading(true);
-    setDiagramNarrative("Processing diagram through Neural Vision Engine...");
+    setLoadingMessage("Analyzing diagram through Groq Vision Engine...");
+    setDiagramNarrative(null);
     setAnalysis(null);
     
     try {
-      // Attempt AI inference
-      const res = await fetch("/api/analyze-scribble", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          image: base64Image,
-          prompt: DIAGRAM_NARRATOR_PROMPT,
-          mode: "vision"
-        })
-      });
-      
-      if (res.ok) {
-        const data = await res.json();
-        const narrative = formatDiagramNarrative(data);
-        setDiagramNarrative(narrative);
-        onUpdateIntelligence({ type: 'diagram', data: narrative });
-      } else {
-        // Fallback for demo - simulate AI response
-        const narrative = generateDemoDiagramNarrative();
-        setDiagramNarrative(narrative);
-      }
+      // Use Groq for vision analysis
+      const narrative = await analyzeImageWithGroq(base64Image, DIAGRAM_NARRATOR_SYSTEM_PROMPT);
+      setDiagramNarrative(narrative);
+      setDiagramContext(narrative); // Store context for cross-analysis
+      onUpdateIntelligence({ type: 'diagram', data: narrative });
     } catch (error) {
       console.error('Diagram analysis error:', error);
-      // Fallback response
-      setDiagramNarrative(generateDemoDiagramNarrative());
+      setDiagramNarrative("Unable to analyze diagram. Please try again.");
     }
     setLoading(false);
-  };
-
-  // Format diagram narrative from API response
-  const formatDiagramNarrative = (data: any): string => {
-    return `DIAGRAM ANALYSIS RESULTS
-
-Subject: ${data.subject || 'Scientific Diagram'}
-Confidence: ${data.confidence || 'High'}
-
-${data.narrative || data.explanation || data.description || 'Analysis complete.'}
-
-${data.components?.length ? `Key Components Identified:\n${data.components.map((c: string, i: number) => `${i + 1}. ${c}`).join('\n')}` : ''}
-
-${data.relationships ? `Relationships: ${data.relationships}` : ''}
-
-${data.concept_summary ? `Concept Summary: ${data.concept_summary}` : ''}`;
-  };
-
-  // Generate demo diagram narrative for demonstration
-  const generateDemoDiagramNarrative = (): string => {
-    return `DIAGRAM NARRATOR - Neural Vision Analysis Complete
-
-This diagram has been processed through our Quantum Vision Engine. The image analysis reveals key educational components and their interrelationships.
-
-Key Observations:
-• Visual elements successfully identified and classified
-• Structural relationships mapped to semantic understanding
-• Contextual information extracted for STEM education
-
-The diagram appears to represent a scientific concept with multiple interconnected elements. Each component has been analyzed for its role in the overall system or process.
-
-Ready for cross-analysis with any text input provided in the Equations Edit Box.`;
   };
 
   // Handle image upload
@@ -130,7 +73,7 @@ Ready for cross-analysis with any text input provided in the Equations Edit Box.
     reader.readAsDataURL(file);
   };
 
-  // Start analysis - dual-layer check (text + image cross-analysis)
+  // Start analysis - dual-layer check (text + image cross-analysis) using Groq
   const startAnalysis = async () => {
     if (!scribbleInput.trim() && !currentBase64) return;
     
@@ -139,102 +82,112 @@ Ready for cross-analysis with any text input provided in the Equations Edit Box.
     setAnalysis(null);
     
     try {
-      const requestBody: any = {
-        text: scribbleInput,
-        prompt: STEM_AI_PROMPT,
-        mode: currentBase64 ? "cross_analysis" : "deep_investigation"
+      let narrative: string;
+      let mode: string;
+      
+      if (currentBase64 && scribbleInput.trim()) {
+        // Cross-analysis: diagram context + user query
+        setLoadingMessage("Cross-analyzing diagram + query...");
+        narrative = await crossAnalyzeWithGroq(
+          scribbleInput,
+          diagramContext,
+          CROSS_ANALYSIS_SYSTEM_PROMPT
+        );
+        mode = "DUAL-LAYER (Text + Image)";
+      } else if (currentBase64) {
+        // Image only - enhanced analysis with stored context
+        setLoadingMessage("Enhancing diagram understanding...");
+        narrative = await crossAnalyzeWithGroq(
+          "Please elaborate on this diagram's key concepts and how they relate.",
+          diagramContext,
+          DIAGRAM_NARRATOR_SYSTEM_PROMPT
+        );
+        mode = "DIAGRAM ENHANCEMENT";
+      } else {
+        // Text only - general STEM analysis
+        setLoadingMessage("Conducting deep investigation...");
+        narrative = await analyzeTextWithGroq(scribbleInput, STEM_ANALYSIS_SYSTEM_PROMPT);
+        mode = "DEEP INVESTIGATION";
+      }
+      
+      // Format the response for display
+      const normalizedData = {
+        subject: extractSubject(narrative),
+        problem_understanding: narrative,
+        is_correct: true,
+        error_analysis: {
+          found_error: false,
+          error_location: "",
+          why_wrong: "",
+          concept_gap: ""
+        },
+        step_by_step_solution: [],
+        final_answer: "",
+        alternative_method: "",
+        concept_teaching: {
+          simple_explanation: extractSimpleExplanation(narrative),
+          deep_explanation: extractDeepExplanation(narrative),
+          real_world_analogy: ""
+        },
+        practice_questions: [],
+        difficulty_level: "medium",
+        cross_analysis_mode: !!currentBase64,
+        analysis_mode: mode,
+        rawNarrative: narrative
       };
       
-      if (currentBase64) {
-        requestBody.image = currentBase64;
-      }
-      
-      const res = await fetch("/api/analyze-scribble", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(requestBody)
-      });
-      
-      if (res.ok) {
-        const data: any = await res.json();
-        const normalizedData = normalizeAnalysisResponse(data, !!currentBase64);
-        setAnalysis(normalizedData);
-        onUpdateIntelligence({ type: 'scribble', data: normalizedData });
-        updateTelemetryOnAction('scribble_analysis');
-      } else {
-        // Fallback for demo
-        const normalizedData = generateDemoAnalysis(!!currentBase64);
-        setAnalysis(normalizedData);
-      }
+      setAnalysis(normalizedData);
+      onUpdateIntelligence({ type: 'scribble', data: normalizedData });
+      updateTelemetryOnAction('scribble_analysis');
     } catch (error) {
       console.error('Analysis error:', error);
-      // Fallback response
-      const normalizedData = generateDemoAnalysis(!!currentBase64);
-      setAnalysis(normalizedData);
+      setAnalysis({
+        subject: "Analysis Error",
+        problem_understanding: "Unable to process your request. Please try again.",
+        is_correct: true,
+        error_analysis: { found_error: false, error_location: "", why_wrong: "", concept_gap: "" },
+        step_by_step_solution: [],
+        final_answer: "",
+        alternative_method: "",
+        concept_teaching: { simple_explanation: "", deep_explanation: "", real_world_analogy: "" },
+        practice_questions: [],
+        difficulty_level: "medium",
+        cross_analysis_mode: !!currentBase64,
+        analysis_mode: currentBase64 ? "DUAL-LAYER" : "DEEP INVESTIGATION"
+      });
     }
     setLoading(false);
   };
 
-  // Normalize API response to standard format
-  const normalizeAnalysisResponse = (data: any, hasImage: boolean): any => {
-    return {
-      subject: data.subject || "STEM Analysis",
-      problem_understanding: data.problem_understanding || data.analysis || "Processing your query...",
-      is_correct: data.is_correct !== undefined ? data.is_correct : true,
-      error_analysis: {
-        found_error: data.error_analysis?.found_error ?? false,
-        error_location: data.error_analysis?.error_location || "",
-        why_wrong: data.error_analysis?.why_wrong || "",
-        concept_gap: data.error_analysis?.concept_gap || ""
-      },
-      step_by_step_solution: data.step_by_step_solution || data.steps || [],
-      final_answer: data.final_answer || data.conclusion || "",
-      alternative_method: data.alternative_method || "",
-      concept_teaching: {
-        simple_explanation: data.concept_teaching?.simple_explanation || data.simple_explanation || "",
-        deep_explanation: data.concept_teaching?.deep_explanation || data.deep_explanation || "",
-        real_world_analogy: data.concept_teaching?.real_world_analogy || data.analogy || ""
-      },
-      practice_questions: data.practice_questions || [],
-      difficulty_level: data.difficulty_level || "medium",
-      cross_analysis_mode: hasImage,
-      analysis_mode: hasImage ? "DUAL-LAYER (Text + Image)" : "DEEP INVESTIGATION"
-    };
+  // Helper functions to extract structured data from narrative
+  const extractSubject = (narrative: string): string => {
+    const lines = narrative.split('\n');
+    for (const line of lines) {
+      if (line.toLowerCase().includes('subject:') || line.toLowerCase().includes('topic:')) {
+        return line.split(':')[1]?.trim() || "STEM Analysis";
+      }
+    }
+    return "STEM Analysis";
   };
 
-  // Generate demo analysis for demonstration
-  const generateDemoAnalysis = (hasImage: boolean): any => {
-    return {
-      subject: "Scientific Analysis",
-      problem_understanding: `Analyzing your query: "${scribbleInput}"${hasImage ? '\nCross-referencing with uploaded diagram...' : ''}`,
-      is_correct: true,
-      error_analysis: {
-        found_error: false,
-        error_location: "",
-        why_wrong: "",
-        concept_gap: ""
-      },
-      step_by_step_solution: [
-        { step: 1, description: "Query received and parsed" },
-        { step: 2, description: "STEM knowledge base searched" },
-        { step: 3, description: "Relevant concepts identified" },
-        { step: 4, description: "Analysis complete" }
-      ],
-      final_answer: "The STEM AI engine has processed your input. Connect to the production API to receive detailed analysis.",
-      alternative_method: "Alternative approaches may include visual diagrams or interactive simulations.",
-      concept_teaching: {
-        simple_explanation: "Core concept explained in accessible terms for immediate understanding.",
-        deep_explanation: "Advanced explanation for deeper comprehension and application.",
-        real_world_analogy: "Practical analogy connecting the concept to everyday experiences."
-      },
-      practice_questions: [
-        "How would you apply this concept in a different scenario?",
-        "What related principles connect to this topic?"
-      ],
-      difficulty_level: "medium",
-      cross_analysis_mode: hasImage,
-      analysis_mode: hasImage ? "DUAL-LAYER (Text + Image)" : "DEEP INVESTIGATION"
-    };
+  const extractSimpleExplanation = (narrative: string): string => {
+    // Extract the first substantial paragraph as simple explanation
+    const paragraphs = narrative.split('\n\n');
+    for (const para of paragraphs) {
+      if (para.length > 50 && !para.includes('•') && !para.includes('1.')) {
+        return para.substring(0, 300) + (para.length > 300 ? '...' : '');
+      }
+    }
+    return narrative.substring(0, 200);
+  };
+
+  const extractDeepExplanation = (narrative: string): string => {
+    // Extract bullet points and detailed sections
+    const bullets = narrative.split('\n').filter(l => l.includes('•') || l.includes('-'));
+    if (bullets.length > 0) {
+      return bullets.slice(0, 4).join('\n');
+    }
+    return narrative;
   };
 
   // Save analysis to portfolio
@@ -256,7 +209,7 @@ Ready for cross-analysis with any text input provided in the Equations Edit Box.
   };
 
   // Add save effect when analysis completes
-  React.useEffect(() => {
+  useEffect(() => {
     if (analysis && !loading) {
       saveAnalysisToPortfolio();
     }
@@ -374,31 +327,66 @@ Ready for cross-analysis with any text input provided in the Equations Edit Box.
 
             {loading ? (
               <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4">
-                <div className="w-10 h-10 rounded-full border-2 border-t-accent-violet border-r-transparent animate-spin" />
-                <p className="font-mono text-xs text-accent-violet tracking-widest uppercase">{currentBase64 ? "Cross-analyzing text + diagram..." : "Processing through STEM engine..."}</p>
+                <div className="w-12 h-12 rounded-full border-3 border-t-[#FF7A00] border-r-transparent animate-spin" />
+                <p className="font-mono text-xs text-[#FF7A00] tracking-widest uppercase animate-pulse">{loadingMessage}</p>
               </div>
             ) : diagramNarrative ? (
-              <div id="diagram-narrative-output" className="flex-1 overflow-hidden">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="px-3 py-1 bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E] font-mono rounded text-[10px] uppercase font-bold">
-                    Diagram Narrator
-                  </span>
+              <motion.div 
+                id="diagram-narrative-output" 
+                className="flex-1 overflow-hidden"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
+                {/* Narrator Header */}
+                <div className="flex items-center gap-3 mb-4 pb-3 border-b border-white/10">
+                  <div className="p-2 bg-[#22C55E]/10 rounded-lg">
+                    <Volume2 className="w-4 h-4 text-[#22C55E]" />
+                  </div>
+                  <div>
+                    <span className="text-sm font-bold text-white">Audio Narrative</span>
+                    <span className="text-[10px] text-white/40 ml-2">Groq Vision Analysis</span>
+                  </div>
                 </div>
-                <div className="flex-1 overflow-y-auto bg-black/30 rounded-xl p-4 space-y-3">
-                  {diagramNarrative.split('\n').map((line, i) => (
-                    <p key={i} className="text-sm text-white/80 leading-relaxed font-medium">{line}</p>
-                  ))}
+                
+                {/* Clean AI Narrative Output */}
+                <div className="flex-1 overflow-y-auto space-y-4 pr-1">
+                  <div className="bg-gradient-to-br from-[#FF7A00]/5 to-transparent rounded-xl p-5 border border-[#FF7A00]/10">
+                    {diagramNarrative.split('\n').filter(l => l.trim()).map((line, i) => (
+                      <p key={i} className="text-sm text-white/90 leading-relaxed font-sans mb-3 last:mb-0">
+                        {line.startsWith('•') || line.startsWith('-') ? (
+                          <span className="block pl-4 border-l-2 border-[#FF7A00]/30 ml-2">{line}</span>
+                        ) : line}
+                      </p>
+                    ))}
+                  </div>
+                  
+                  {/* Cross-analysis prompt */}
+                  <div className="p-4 bg-black/30 rounded-xl border border-white/5">
+                    <p className="text-xs text-white/50 font-sans">
+                      Ask a question in the Equations Edit Box to get a unified, contextualized answer combining this diagram's concepts with your query.
+                    </p>
+                  </div>
                 </div>
-              </div>
+              </motion.div>
             ) : analysis ? (
-              <div id="scribble-analysis-result" className="flex-1 flex flex-col overflow-hidden">
+              <motion.div 
+                id="scribble-analysis-result" 
+                className="flex-1 flex flex-col overflow-hidden"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, ease: "easeOut" }}
+              >
                 <div className="flex-1 overflow-y-auto space-y-4 pr-1">
                   
                   {/* Performance Meta Headers */}
                   <div className="flex items-center justify-between gap-2.5 flex-wrap">
-                    <span className="px-3 py-1 bg-accent-violet/10 border border-accent-violet/20 text-accent-violet font-mono rounded text-[10px] uppercase font-bold tracking-wider">
-                      {analysis.subject}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <div className="p-2 bg-[#FF7A00]/10 rounded-lg">
+                        <Atom className="w-4 h-4 text-[#FF7A00]" />
+                      </div>
+                      <span className="text-sm font-bold text-white">{analysis.subject}</span>
+                    </div>
                     <div className="flex items-center gap-2">
                       {analysis.analysis_mode && (
                         <span className="px-2 py-1 bg-[#FF7A00]/10 border border-[#FF7A00]/20 text-[#FF7A00] font-mono rounded text-[9px] uppercase font-bold">
@@ -406,21 +394,24 @@ Ready for cross-analysis with any text input provided in the Equations Edit Box.
                           {analysis.analysis_mode}
                         </span>
                       )}
-                      <span className={cn(
-                        "px-3 py-1 rounded font-mono text-[10px] uppercase font-bold tracking-wider border",
-                        analysis.difficulty_level === "easy" ? "bg-accent-green/10 text-accent-green border-accent-green/20" :
-                        analysis.difficulty_level === "hard" ? "bg-accent-red/10 text-accent-red border-accent-red/20" :
-                        "bg-accent-cyan/10 text-accent-cyan border-accent-cyan/20"
-                      )}>
-                        {analysis.difficulty_level} Difficulty
-                      </span>
+                      {currentBase64 && (
+                        <span className="px-2 py-1 bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E] font-mono rounded text-[9px] uppercase font-bold">
+                          <Volume2 className="w-3 h-3 inline mr-1" />
+                          Diagram Linked
+                        </span>
+                      )}
                     </div>
                   </div>
 
-                  {/* Problem Understanding Abstract */}
-                  <div className="p-4 bg-black/30 rounded-xl border border-white/5 space-y-1">
-                    <span className="text-[9px] font-mono text-white/30 uppercase tracking-widest font-bold block">Mental Objective Block</span>
-                    <p className="text-xs text-white/80 leading-relaxed font-sans">{analysis.problem_understanding}</p>
+                  {/* Clean AI Narrative Output */}
+                  <div className="bg-gradient-to-br from-[#FF7A00]/5 to-transparent rounded-xl p-5 border border-[#FF7A00]/10">
+                    {analysis.problem_understanding?.split('\n').filter(l => l.trim()).map((line: string, i: number) => (
+                      <p key={i} className="text-sm text-white/90 leading-relaxed font-sans mb-3 last:mb-0">
+                        {line.startsWith('•') || line.startsWith('-') ? (
+                          <span className="block pl-4 border-l-2 border-[#FF7A00]/30 ml-2">{line}</span>
+                        ) : line}
+                      </p>
+                    ))}
                   </div>
 
                   {/* Correctness Status Badge */}
@@ -573,7 +564,7 @@ Ready for cross-analysis with any text input provided in the Equations Edit Box.
                   )}
 
                 </div>
-              </div>
+              </motion.div>
             ) : (
               <div className="flex-1 flex flex-col items-center justify-center text-center max-w-sm mx-auto space-y-4">
                 <HelpCircle className="w-12 h-12 text-white/10" />
