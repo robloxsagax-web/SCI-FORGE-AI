@@ -237,56 +237,38 @@ export function GlobalChat({
         </div>
       )}
 
-      {/* Real-time Learning Dashboard header area */}
-      {!isNaturalMode && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-6 shrink-0 bg-secondary-bg/30 p-5 rounded-2xl border border-white/5 shadow-md">
-          {/* Circle metric */}
-          <div className="flex items-center gap-4">
-            <div className="relative w-16 h-16 flex items-center justify-center shrink-0">
-              <svg className="w-full h-full -rotate-90">
-                <circle cx="32" cy="32" r="28" className="stroke-white/5 fill-none" strokeWidth="4" />
-                <circle 
-                  cx="32" 
-                  cy="32" 
-                  r="28" 
-                  className="stroke-accent-cyan fill-none transition-all duration-1000" 
-                  strokeWidth="4" 
-                  strokeDasharray={175} 
-                  strokeDashoffset={175 - (175 * understandingScore) / 100} 
-                />
-              </svg>
-              <div className="absolute font-mono text-base font-bold text-white">{understandingScore}</div>
+      {/* Clean Activity Header - Real Data Only */}
+      {messages.length > 0 && (
+        <div className="mb-6 shrink-0 bg-secondary-bg/30 p-4 rounded-2xl border border-white/5">
+          <div className="flex items-center gap-6 overflow-x-auto">
+            <button 
+              onClick={() => setShowWorkspaceLauncher(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#FF7A00]/10 border border-[#FF7A00]/20 hover:bg-[#FF7A00]/20 text-[#FF7A00] text-xs font-bold transition-all whitespace-nowrap cursor-pointer"
+            >
+              <Sparkles className="w-4 h-4" /> Browse Workspaces
+            </button>
+            <div className="h-6 w-px bg-white/10" />
+            <span className="text-[10px] text-white/40 font-mono uppercase">Recent:</span>
+            <div className="flex gap-2">
+              {telemetry.notesGeneratedCount > 0 && (
+                <span className="px-2 py-1 rounded bg-white/5 text-[10px] text-white/60 font-mono">
+                  📝 {telemetry.notesGeneratedCount} Notes
+                </span>
+              )}
+              {telemetry.quizzesCompletedCount > 0 && (
+                <span className="px-2 py-1 rounded bg-white/5 text-[10px] text-white/60 font-mono">
+                  ❓ {telemetry.quizzesCompletedCount} Quizzes
+                </span>
+              )}
+              {telemetry.researchInvestigationsCount > 0 && (
+                <span className="px-2 py-1 rounded bg-white/5 text-[10px] text-white/60 font-mono">
+                  🔬 {telemetry.researchInvestigationsCount} Research
+                </span>
+              )}
+              {telemetry.notesGeneratedCount === 0 && telemetry.quizzesCompletedCount === 0 && telemetry.researchInvestigationsCount === 0 && (
+                <span className="text-[10px] text-white/30 font-mono">Start learning to see your activity</span>
+              )}
             </div>
-            <div className="space-y-0.5">
-              <div className="text-xs font-mono text-accent-cyan font-bold tracking-wider flex items-center gap-1.5">
-                <Award className="w-3.5 h-3.5" /> UNDERSTANDING SCORE
-              </div>
-              <p className="text-[10px] text-white/50">Adaptive competence based on questions & actions</p>
-            </div>
-          </div>
-
-          {/* Strengths and Weaknesses */}
-          <div className="flex flex-col justify-center border-t lg:border-t-0 lg:border-x border-white/5 px-2 lg:px-4 py-2 lg:py-0 gap-1">
-            <div className="flex items-center gap-1 text-[11px] font-semibold text-white/80">
-              <CheckCircle2 className="w-3.5 h-3.5 text-accent-green" /> 
-              <span className="text-[10px] text-white/40 uppercase font-mono mr-1">Strengths:</span>
-              <span className="truncate">{strengths[0] || "Active Questioning"}</span>
-            </div>
-            <div className="flex items-center gap-1 text-[11px] font-semibold text-white/80">
-              <AlertCircle className="w-3.5 h-3.5 text-accent-violet" /> 
-              <span className="text-[10px] text-white/40 uppercase font-mono mr-1">Focus Zone:</span>
-              <span className="truncate">{weaknesses[0] || "Advanced Formulation"}</span>
-            </div>
-          </div>
-
-          {/* Adaptive pathway */}
-          <div className="flex flex-col justify-center space-y-1">
-            <div className="text-[10px] font-mono tracking-wider text-accent-green font-bold uppercase flex items-center gap-1">
-              <Target className="w-3.5 h-3.5" /> ADAPTIVE MENTOR PATHWAY
-            </div>
-            <p className="text-[11px] text-white/70 leading-normal line-clamp-2 italic">
-              "{improvementPath}"
-            </p>
           </div>
         </div>
       )}
@@ -298,77 +280,58 @@ export function GlobalChat({
           
           <div className="flex-1 overflow-y-auto pr-2 space-y-6 pb-6">
             {messages.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-center max-w-xl mx-auto py-12 space-y-8">
-                <div className="w-16 h-16 rounded-full bg-accent-cyan/10 border border-accent-cyan/25 flex items-center justify-center text-accent-cyan animate-pulse">
-                  <Bot className="w-8 h-8" />
+              <div className="h-full flex flex-col items-center justify-center text-center max-w-lg mx-auto">
+                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#FF7A00]/20 to-[#FFB547]/10 border border-[#FF7A00]/20 flex items-center justify-center mb-6">
+                  <Bot className="w-10 h-10 text-[#FF7A00]" />
                 </div>
-                <div className="space-y-1.5">
-                  <p className="text-sm font-semibold text-white tracking-wide uppercase font-mono">
-                    Select a workspace to begin
-                  </p>
-                </div>
+                <h2 className="text-xl font-heading font-bold text-white mb-2">Let's Learn Together</h2>
+                <p className="text-sm text-white/50 mb-8 max-w-md">
+                  Ask me anything about science, math, or technology. I can also help you create notes, quizzes, and research projects.
+                </p>
                 
-                {/* Beautiful clean cards for selecting workspaces */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                  <button 
-                    onClick={() => {
-                      onToggleWorkspaceUINav?.(true);
-                      onRoute("chat");
-                    }}
-                    className="p-5 rounded-2xl bg-secondary-bg/25 border border-white/5 hover:border-accent-cyan/35 text-left transition-all hover:translate-y-[-2px] cursor-pointer"
-                  >
-                    <h3 className="text-xs font-mono font-bold text-accent-cyan uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                      <Bot className="w-4 h-4" /> Core Intelligence
-                    </h3>
-                    <p className="text-[11px] text-white/40 leading-snug">
-                      Collaborate on science topics, solve calculations, and access the adaptive STEM mentor.
-                    </p>
+                {/* Quick action buttons */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full">
+                  <button onClick={() => onRoute("notes")} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-[#FF7A00]/30 text-left transition-all cursor-pointer group">
+                    <span className="text-2xl mb-2 block">📝</span>
+                    <span className="text-xs font-bold text-white/70 group-hover:text-white">Notes</span>
                   </button>
+                  <button onClick={() => onRoute("quiz")} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-[#FF7A00]/30 text-left transition-all cursor-pointer group">
+                    <span className="text-2xl mb-2 block">❓</span>
+                    <span className="text-xs font-bold text-white/70 group-hover:text-white">Quizzes</span>
+                  </button>
+                  <button onClick={() => onRoute("scientist")} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-[#FF7A00]/30 text-left transition-all cursor-pointer group">
+                    <span className="text-2xl mb-2 block">🔬</span>
+                    <span className="text-xs font-bold text-white/70 group-hover:text-white">Research</span>
+                  </button>
+                  <button onClick={() => onRoute("scribble")} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-[#FF7A00]/30 text-left transition-all cursor-pointer group">
+                    <span className="text-2xl mb-2 block">✍️</span>
+                    <span className="text-xs font-bold text-white/70 group-hover:text-white">Scribble</span>
+                  </button>
+                </div>
 
-                  <button 
-                    onClick={() => {
-                      onToggleWorkspaceUINav?.(true);
-                      onRoute("scribble");
-                    }}
-                    className="p-5 rounded-2xl bg-secondary-bg/25 border border-white/5 hover:border-accent-violet/35 text-left transition-all hover:translate-y-[-2px] cursor-pointer"
-                  >
-                    <h3 className="text-xs font-mono font-bold text-accent-violet uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                      <GraduationCap className="w-4 h-4" /> Scribble Lab
-                    </h3>
-                    <p className="text-[11px] text-white/40 leading-snug">
-                      Validate equations, logic derivations, and isolate math and physical errors.
-                    </p>
-                  </button>
-
-                  <button 
-                    onClick={() => {
-                      onToggleWorkspaceUINav?.(true);
-                      onRoute("scientist");
-                    }}
-                    className="p-5 rounded-2xl bg-secondary-bg/25 border border-white/5 hover:border-accent-green/35 text-left transition-all hover:translate-y-[-2px] cursor-pointer"
-                  >
-                    <h3 className="text-xs font-mono font-bold text-accent-green uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                      <Atom className="w-4 h-4" /> Quantum Engine
-                    </h3>
-                    <p className="text-[11px] text-white/40 leading-snug">
-                      Produce detailed peer thesis papers, physical formulas, and deep scientific inquiries.
-                    </p>
-                  </button>
-
-                  <button 
-                    onClick={() => {
-                      onToggleWorkspaceUINav?.(true);
-                      onRoute("notes");
-                    }}
-                    className="p-5 rounded-2xl bg-secondary-bg/25 border border-white/5 hover:border-accent-cyan/35 text-left transition-all hover:translate-y-[-2px] cursor-pointer"
-                  >
-                    <h3 className="text-xs font-mono font-bold text-accent-cyan uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                      <BookOpen className="w-4 h-4" /> Notes Compiler
-                    </h3>
-                    <p className="text-[11px] text-white/40 leading-snug">
-                      Compile summaries, key vocabulary indexes, and interactive physical study guides.
-                    </p>
-                  </button>
+                {/* Example prompts */}
+                <div className="mt-8 space-y-2 w-full">
+                  <p className="text-[10px] text-white/30 uppercase font-mono tracking-wider">Try asking:</p>
+                  {[
+                    "Explain photosynthesis",
+                    "What is Newton's first law?",
+                    "Quiz me on DNA",
+                    "Make notes on thermodynamics"
+                  ].map((prompt, i) => (
+                    <button
+                      key={i}
+                      onClick={() => {
+                        const input = document.querySelector('textarea') as HTMLTextAreaElement;
+                        if (input) {
+                          input.value = prompt;
+                          input.focus();
+                        }
+                      }}
+                      className="w-full p-3 rounded-lg bg-white/[0.02] border border-white/5 hover:border-white/10 text-left text-xs text-white/50 hover:text-white/70 transition-all font-mono"
+                    >
+                      {prompt}
+                    </button>
+                  ))}
                 </div>
               </div>
             ) : (
