@@ -1,7 +1,139 @@
-import { Hexagon, X } from "lucide-react";
+import { X } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { ModuleType } from "../../types";
 import { motion } from "motion/react";
+
+// Premium Neural Nexus Logo - SciForge AI
+const NeuralNexusLogo = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 36 36" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="nexusGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#FF7A00" stopOpacity="0.9" />
+        <stop offset="100%" stopColor="#FFB547" stopOpacity="0.6" />
+      </linearGradient>
+      <linearGradient id="nexusGrad2" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#FFB547" stopOpacity="0.8" />
+        <stop offset="100%" stopColor="#FF7A00" stopOpacity="0.5" />
+      </linearGradient>
+      <filter id="nexusGlow">
+        <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="nodeGlow">
+        <feGaussianBlur stdDeviation="0.5" result="coloredBlur"/>
+        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    {/* Outer orbital ring */}
+    <ellipse cx="18" cy="18" rx="15" ry="6" stroke="url(#nexusGrad1)" strokeWidth="0.8" strokeOpacity="0.4" transform="rotate(-30 18 18)" />
+    <ellipse cx="18" cy="18" rx="15" ry="6" stroke="url(#nexusGrad2)" strokeWidth="0.8" strokeOpacity="0.4" transform="rotate(30 18 18)" />
+    <ellipse cx="18" cy="18" rx="15" ry="6" stroke="#FF7A00" strokeWidth="0.5" strokeOpacity="0.3" />
+    {/* Neural nodes */}
+    <circle cx="18" cy="10" r="2.5" fill="#FF7A00" filter="url(#nodeGlow)" />
+    <circle cx="24" cy="15" r="2" fill="#FFB547" filter="url(#nodeGlow)" />
+    <circle cx="22" cy="22" r="2" fill="#FF7A00" filter="url(#nodeGlow)" />
+    <circle cx="14" cy="22" r="2" fill="#FFB547" filter="url(#nodeGlow)" />
+    <circle cx="12" cy="15" r="2" fill="#FF7A00" filter="url(#nodeGlow)" />
+    <circle cx="18" cy="18" r="3" fill="#FF7A00" filter="url(#nexusGlow)" />
+    {/* Connection lines */}
+    <path d="M18 10L24 15M24 15L22 22M22 22L14 22M14 22L12 15M12 15L18 10" stroke="#FF7A00" strokeWidth="1" strokeOpacity="0.6" strokeLinecap="round" />
+    <path d="M18 10L18 18M24 15L18 18M22 22L18 18M14 22L18 18M12 15L18 18" stroke="#FFB547" strokeWidth="0.8" strokeOpacity="0.5" strokeLinecap="round" />
+    {/* Orbital electrons */}
+    <circle cx="28" cy="12" r="1" fill="#FF7A00" opacity="0.7" />
+    <circle cx="10" cy="26" r="1" fill="#FFB547" opacity="0.7" />
+    <circle cx="8" cy="10" r="0.8" fill="#FF7A00" opacity="0.5" />
+  </svg>
+);
+
+// Premium Neural Helix Logo - Adaptive Mentor
+const NeuralHelixLogo = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 36 36" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="helixGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#22C55E" stopOpacity="0.9" />
+        <stop offset="100%" stopColor="#4ADE80" stopOpacity="0.5" />
+      </linearGradient>
+      <linearGradient id="helixGrad2" x1="100%" y1="0%" x2="0%" y2="100%">
+        <stop offset="0%" stopColor="#4ADE80" stopOpacity="0.7" />
+        <stop offset="100%" stopColor="#22C55E" stopOpacity="0.4" />
+      </linearGradient>
+      <filter id="helixGlow">
+        <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    {/* DNA Helix strands */}
+    <path d="M12 6C16 10 20 14 24 18C20 22 16 26 12 30" stroke="url(#helixGrad1)" strokeWidth="1.5" strokeLinecap="round" filter="url(#helixGlow)" />
+    <path d="M24 6C20 10 16 14 12 18C16 22 20 26 24 30" stroke="url(#helixGrad2)" strokeWidth="1.5" strokeLinecap="round" filter="url(#helixGlow)" />
+    {/* Base pairs */}
+    <path d="M14 10H22M11 15H25M14 20H22M11 25H25M14 30" stroke="#22C55E" strokeWidth="1" strokeOpacity="0.4" strokeLinecap="round" />
+    {/* Neural nodes along helix */}
+    <circle cx="12" cy="6" r="1.5" fill="#4ADE80" />
+    <circle cx="24" cy="18" r="2" fill="#22C55E" filter="url(#helixGlow)" />
+    <circle cx="12" cy="30" r="1.5" fill="#4ADE80" />
+    <circle cx="18" cy="12" r="1" fill="#22C55E" opacity="0.6" />
+    <circle cx="18" cy="24" r="1" fill="#22C55E" opacity="0.6" />
+    {/* Central intelligence node */}
+    <circle cx="18" cy="18" r="2.5" fill="#22C55E" filter="url(#helixGlow)" />
+    <circle cx="18" cy="18" r="1" fill="#4ADE80" />
+  </svg>
+);
+
+// Premium Wireframe Flame - Learning Streak
+const WireframeFlameLogo = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="flameGrad" x1="0%" y1="100%" x2="0%" y2="0%">
+        <stop offset="0%" stopColor="#FF7A00" stopOpacity="0.8" />
+        <stop offset="50%" stopColor="#FFB547" stopOpacity="0.6" />
+        <stop offset="100%" stopColor="#FFB547" stopOpacity="0.3" />
+      </linearGradient>
+      <filter id="flameGlow">
+        <feGaussianBlur stdDeviation="0.5" result="coloredBlur"/>
+        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    {/* Outer flame wireframe */}
+    <path d="M12 2C8 6 6 10 6 13C6 17 8 20 12 22C16 20 18 17 18 13C18 10 16 6 12 2Z" stroke="url(#flameGrad)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" filter="url(#flameGlow)" />
+    {/* Inner flame layers */}
+    <path d="M12 5C10 8 9 10 9 12C9 14.5 10 16 12 17.5" stroke="#FF7A00" strokeWidth="0.8" strokeOpacity="0.5" strokeLinecap="round" />
+    <path d="M12 5C14 8 15 10 15 12C15 14.5 14 16 12 17.5" stroke="#FFB547" strokeWidth="0.8" strokeOpacity="0.5" strokeLinecap="round" />
+    {/* Core */}
+    <circle cx="12" cy="14" r="2" stroke="#FF7A00" strokeWidth="0.8" strokeOpacity="0.6" />
+    <circle cx="12" cy="14" r="0.8" fill="#FF7A00" />
+  </svg>
+);
+
+// Premium Wireframe Brain - Quick-Scan Lab
+const WireframeBrainLogo = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="brainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#22C55E" stopOpacity="0.8" />
+        <stop offset="100%" stopColor="#4ADE80" stopOpacity="0.4" />
+      </linearGradient>
+      <filter id="brainGlow">
+        <feGaussianBlur stdDeviation="0.5" result="coloredBlur"/>
+        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    {/* Brain outline */}
+    <path d="M12 3C8 3 5 5 4 8C3 10 4 12 4 12C3 14 4 16 5 17C4 19 6 21 8 21C9 21 10 20 11 19C11 20 12 21 12 21C12 21 13 20 13 19C14 20 15 21 16 21C18 21 20 19 19 17C20 16 21 14 20 12C20 12 21 10 20 8C19 5 16 3 12 3Z" stroke="url(#brainGrad)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" filter="url(#brainGlow)" />
+    {/* Neural pathways */}
+    <path d="M8 8C10 9 11 11 11 12" stroke="#22C55E" strokeWidth="0.8" strokeOpacity="0.5" strokeLinecap="round" />
+    <path d="M16 8C14 9 13 11 13 12" stroke="#22C55E" strokeWidth="0.8" strokeOpacity="0.5" strokeLinecap="round" />
+    <path d="M9 13C10 14 11 15 11 16" stroke="#4ADE80" strokeWidth="0.6" strokeOpacity="0.4" strokeLinecap="round" />
+    <path d="M15 13C14 14 13 15 13 16" stroke="#4ADE80" strokeWidth="0.6" strokeOpacity="0.4" strokeLinecap="round" />
+    {/* Neural nodes */}
+    <circle cx="9" cy="10" r="1" fill="#22C55E" opacity="0.6" />
+    <circle cx="15" cy="10" r="1" fill="#22C55E" opacity="0.6" />
+    <circle cx="12" cy="12" r="1.5" fill="#4ADE80" filter="url(#brainGlow)" />
+    <circle cx="10" cy="16" r="0.8" fill="#22C55E" opacity="0.5" />
+    <circle cx="14" cy="16" r="0.8" fill="#22C55E" opacity="0.5" />
+    {/* Center processing node */}
+    <circle cx="12" cy="12" r="0.5" fill="white" />
+  </svg>
+);
 
 // Premium Duo-Tone SVG Icons for Sidebar
 const PremiumSidebarIcons = {
@@ -232,8 +364,8 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
         {/* Logo Area */}
         <div className="h-16 flex items-center justify-between px-5 border-b border-white/8 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#FF7A00] to-[#FFB547] flex items-center justify-center shadow-lg shadow-[#FF7A00]/20">
-              <Hexagon className="w-5 h-5 text-white" fill="currentColor" />
+            <div className="w-9 h-9 flex items-center justify-center">
+              <NeuralNexusLogo className="w-9 h-9" />
             </div>
             <div>
               <span className="font-heading font-bold text-base text-white tracking-tight">SCI FORGE</span>
