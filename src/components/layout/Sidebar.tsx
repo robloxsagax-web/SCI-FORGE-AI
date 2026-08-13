@@ -90,19 +90,16 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
                   className={cn(
                     "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group relative",
                     isActive 
-                      ? "bg-[#FF7A00]/10 text-white" 
+                      ? "bg-[#FF7A00]/10 text-white border border-[#FF7A00]/20" 
                       : "text-[#A1A1AA] hover:text-white hover:bg-white/5"
                   )}
                 >
                   {isActive && (
-                    <>
-                      <motion.div
-                        layoutId="active-nav-indicator"
-                        className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#FF7A00] rounded-r-full"
-                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                      />
-                      <div className="absolute inset-0 rounded-xl border border-[#FF7A00]/20" />
-                    </>
+                    <motion.div
+                      layoutId="active-nav-indicator"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-[#FF7A00] rounded-r-full"
+                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    />
                   )}
                   <motion.div
                     whileHover={{ rotate: isActive ? 0 : 5 }}
