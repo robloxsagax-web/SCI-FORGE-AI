@@ -65,6 +65,7 @@ export default function App() {
   const [isLightMode, setIsLightMode] = useState(false);
 
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [pendingChatMessage, setPendingChatMessage] = useState<string | null>(null);
   const [systemAlert, setSystemAlert] = useState<string | null>(null);
 
   useEffect(() => {
@@ -117,22 +118,38 @@ export default function App() {
   const handleStartChat = (initialMessage?: string) => {
     setActiveModule("chat");
     if (initialMessage) {
-      // Add the initial message to chat
-      const userMsg: ChatMessage = {
-        id: crypto.randomUUID(),
-        sender: "user",
-        text: initialMessage,
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      };
-      setChatMessages(prev => [...prev, userMsg]);
+      setPendingChatMessage(initialMessage);
     }
   };
+
+  // Check for restored session on module change to chat
+  useEffect(() => {
+    if (activeModule === "chat") {
+      const restoredSession = localStorage.getItem("sciforge_restored_session");
+      if (restoredSession) {
+        try {
+          const parsed = JSON.parse(restoredSession);
+          if (parsed.module === "chat" && parsed.state) {
+            setChatMessages(parsed.state);
+          }
+          localStorage.removeItem("sciforge_restored_session");
+        } catch (err) {
+          console.error("Error restoring session:", err);
+        }
+      }
+    }
+  }, [activeModule]);
 
   // Transfer data to specific workspace
   const handleTransferToWorkspace = (workspace: ModuleType, data?: any) => {
     // Store transfer data for workspace to consume
     if (data) {
       localStorage.setItem("sciforge_workspace_transfer", JSON.stringify({ workspace, ...data }));
+      
+      // If restoring a chat session, load the messages
+      if (workspace === "chat" && data.restoredSession?.state) {
+        setChatMessages(data.restoredSession.state);
+      }
     }
   };
 
@@ -160,6 +177,8 @@ export default function App() {
             onSetStatusMessage={setSystemAlert}
             showWorkspaceUINav={showWorkspaceUINav}
             onToggleWorkspaceUINav={setShowWorkspaceUINav}
+            pendingMessage={pendingChatMessage}
+            onPendingMessageConsumed={() => setPendingChatMessage(null)}
           />
         );
       case "simulation":
@@ -273,7 +292,7 @@ export default function App() {
     }
   };
 
-  const showSidebar = activeModule !== "home" || showWorkspaceUINav;
+  const showSidebar = activeModule !== "home" || showWorkspaceUINav || true;
   const showTopBar = activeModule !== "home" && activeModule !== "settings" && activeModule !== "progress" && activeModule !== "portfolio";
 
   return (
