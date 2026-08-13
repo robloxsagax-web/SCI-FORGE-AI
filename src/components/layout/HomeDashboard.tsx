@@ -652,7 +652,7 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
             >
               <div className="flex items-center gap-3 mb-3">
                 <div 
-                  className="w-10 h-10 lg:w-12 lg:h-12 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:brightness-110"
+                  className="w-12 h-12 lg:w-20 lg:h-20 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:brightness-110 drop-shadow-[0_0_15px_rgba(255,181,71,0.4)]"
                   style={{ backgroundColor: `${stat.color}20` }}
                 >
                   {PremiumStatsIcons[stat.iconKey]({ className: "w-4 h-4 sm:w-5 sm:h-5" })}
