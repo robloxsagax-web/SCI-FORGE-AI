@@ -141,17 +141,17 @@ export function GlobalChat({
         sender: "ai",
         text: data.content || "I have compiled your adaptive STEM tutor module below.",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        type: data.type === "natural_conversation" ? "natural_conversation" : "explanation",
-        menuBlock: data.menuBlock || "",
-        topic: data.topic || (data.type === "explanation" ? "STEM Learning" : ""),
-        journey: data.journey,
-        explanationStyles: data.explanationStyles,
-        mission: data.mission,
-        scoreEstimation: data.scoreEstimation
+        type: "explanation",
+        menuBlock: "",
+        topic: "",
+        journey: null,
+        explanationStyles: null,
+        mission: null,
+        scoreEstimation: null
       };
 
       onAddMessage(aiMsg);
-      saveRecentSession("chat", `Interactive Inquiry: ${aiMsg.topic || "STEM Chat"}`, [...messages, userMsg, aiMsg]);
+      saveRecentSession("chat", `Interactive Inquiry: STEM Chat`, [...messages, userMsg, aiMsg]);
 
       // Workspace route triggers if appropriate
       let targetRoute: ModuleType | null = null;
@@ -380,24 +380,9 @@ export function GlobalChat({
                         </div>
                       ) : (
                         <div className="space-y-4">
-                          {/* Main introductory bubble */}
+                          {/* Main chat bubble with raw markdown content */}
                           <div className="p-5 rounded-2xl bg-secondary-bg/10 border border-white/5 rounded-tl-none relative shadow-sm">
-                            {msg.type === "explanation" && msg.menuBlock && (
-                              <div className="mb-3">
-                                <h3 className="text-xs font-mono text-[#FF7A00] uppercase tracking-widest mb-1.5 font-bold flex items-center gap-1">
-                                  <Bot className="w-3.5 h-3.5" /> SCI-FORGE ADAPTIVE INSTRUCTOR
-                                </h3>
-                                <pre className="text-xs text-white/70 font-mono whitespace-pre-wrap bg-[#FF7A00]/5 border border-[#FF7A00]/20 rounded-lg p-3">{msg.menuBlock}</pre>
-                              </div>
-                            )}
-                            <p className="text-sm text-white/90 leading-relaxed whitespace-pre-wrap">{msg.text}</p>
-                            
-                            {msg.topic && msg.type !== "natural_conversation" && (
-                              <div className="mt-3 inline-flex items-center gap-1.5 bg-[#FF7A00]/10 text-[#FF7A00] text-[10px] font-mono px-2.5 py-1 rounded-full border border-[#FF7A00]/25 font-bold uppercase">
-                                <Atom className="w-3 h-3" /> Core: {msg.topic}
-                              </div>
-                            )}
-
+                            <div className="text-sm text-white/90 leading-relaxed whitespace-pre-wrap font-sans">{msg.text}</div>
                             <span className="absolute bottom-1 right-2 text-[8px] text-white/20 font-mono">{msg.timestamp}</span>
                           </div>
 
