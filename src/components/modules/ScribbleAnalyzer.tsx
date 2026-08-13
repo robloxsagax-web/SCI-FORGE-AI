@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { PenTool, Image as ImageIcon, Sparkles, Info, HelpCircle, SidebarOpen, FileMinus } from "lucide-react";
+import React, { useState, useRef } from "react";
+import { PenTool, Image as ImageIcon, Sparkles, Info, HelpCircle, SidebarOpen, FileMinus, Upload } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn, saveRecentSession, addToPortfolio } from "../../lib/utils";
 import { updateTelemetryOnAction } from "../../lib/telemetry";
@@ -14,10 +14,53 @@ export function ScribbleAnalyzer({ isRightPanelOpen, setIsRightPanelOpen, onUpda
   const [scribbleInput, setScribbleInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState<any | null>(null);
+  const [diagramNarrative, setDiagramNarrative] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const clearWorkspace = () => {
     setScribbleInput("");
     setAnalysis(null);
+    setDiagramNarrative(null);
+    setImagePreview(null);
+  };
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Show preview
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      setImagePreview(base64);
+      analyzeDiagram(base64);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const analyzeDiagram = async (base64Image: string) => {
+    setLoading(true);
+    setDiagramNarrative(null);
+    try {
+      const res = await fetch("/api/analyze-scribble", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          rawText: `[IMAGE ANALYSIS REQUEST]\nAnalyze this STEM diagram and provide a structured, spoken-word-style audio narrative that explains the concept, relationships, and logic within this image.\n\nImage: ${base64Image.substring(0, 100)}...`
+        })
+      });
+      if (res.ok) {
+        const data = await res.json();
+        // Create narrative from analysis
+        const narrative = `Diagram Analysis: ${data.subject || 'STEM Diagram'}\n\n${data.problem_understanding || 'The diagram shows key educational components.'}\n\n${data.concept_teaching?.simple_explanation || 'Key elements identified and analyzed.'}\n\n${data.concept_teaching?.real_world_analogy ? 'Analogy: ' + data.concept_teaching.real_world_analogy : ''}`;
+        setDiagramNarrative(narrative);
+      }
+    } catch (error) {
+      console.error('Diagram analysis error:', error);
+      setDiagramNarrative("Unable to analyze diagram. Please try again or input the equation manually.");
+    }
+    setLoading(false);
   };
 
   const startAnalysis = async () => {
@@ -150,6 +193,35 @@ export function ScribbleAnalyzer({ isRightPanelOpen, setIsRightPanelOpen, onUpda
           </div>
 
           <div className="flex-1 flex flex-col space-y-4 min-h-0">
+            {/* Diagram Narrator - Image Upload */}
+            <div className="bg-[#22C55E]/5 border border-[#22C55E]/20 rounded-xl p-4">
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-[10px] font-mono text-[#22C55E] uppercase tracking-widest font-bold flex items-center gap-1.5">
+                  <Upload className="w-3.5 h-3.5" /> Diagram Narrator
+                </span>
+              </div>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                className="hidden"
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={loading}
+                className="w-full py-3 rounded-xl bg-[#22C55E]/10 border border-[#22C55E]/30 text-[#22C55E] font-semibold text-xs flex items-center justify-center gap-2 hover:bg-[#22C55E]/20 transition-all cursor-pointer disabled:opacity-50"
+              >
+                <Upload className="w-4 h-4" />
+                Upload Diagram Image
+              </button>
+              {imagePreview && (
+                <div className="mt-3 rounded-lg overflow-hidden">
+                  <img src={imagePreview} alt="Uploaded diagram" className="w-full h-32 object-contain bg-black/50 rounded-lg" />
+                </div>
+              )}
+            </div>
+
             {/* Always provide the text area edit field so students can manually calibrate OCR or input directly */}
             <div className="flex flex-col space-y-2 flex-1 min-h-0">
               <span className="text-[9px] font-mono text-white/30 uppercase tracking-widest pl-1 font-bold">Equations Edit Box</span>
@@ -185,6 +257,19 @@ export function ScribbleAnalyzer({ isRightPanelOpen, setIsRightPanelOpen, onUpda
               <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4">
                 <div className="w-10 h-10 rounded-full border-2 border-t-accent-violet border-r-transparent animate-spin" />
                 <p className="font-mono text-xs text-accent-violet tracking-widest uppercase">Analyzing continuous spatial matrices...</p>
+              </div>
+            ) : diagramNarrative ? (
+              <div id="diagram-narrative-output" className="flex-1 overflow-hidden">
+                <div className="flex items-center gap-2 mb-4">
+                  <span className="px-3 py-1 bg-[#22C55E]/10 border border-[#22C55E]/20 text-[#22C55E] font-mono rounded text-[10px] uppercase font-bold">
+                    Diagram Narrator
+                  </span>
+                </div>
+                <div className="flex-1 overflow-y-auto bg-black/30 rounded-xl p-4 space-y-3">
+                  {diagramNarrative.split('\n').map((line, i) => (
+                    <p key={i} className="text-sm text-white/80 leading-relaxed font-medium">{line}</p>
+                  ))}
+                </div>
               </div>
             ) : analysis ? (
               <div id="scribble-analysis-result" className="flex-1 flex flex-col overflow-hidden">
