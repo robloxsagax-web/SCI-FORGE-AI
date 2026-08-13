@@ -110,7 +110,7 @@ export function QuizGenerator() {
   const totalQuestions = quiz?.questions?.length || 0;
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-primary-bg p-6 overflow-hidden relative">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col h-full bg-primary-bg p-4 sm:p-6 overflow-hidden relative">
       {/* Background soft lighting */}
       <div className="absolute top-0 right-1/3 w-80 h-80 bg-accent-violet/5 blur-[120px] rounded-full pointer-events-none -none z-10" />
 

@@ -411,7 +411,7 @@ export function LoginPage() {
           </div>
 
           {/* Auth Card */}
-          <div className="bg-[#111111] border border-white/5 rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-10 shadow-2xl">
+          <div className="bg-[#111111] border border-white/5 rounded-2xl md:rounded-3xl p-6 md:p-8 lg:p-10 shadow-2xl flex flex-col gap-y-4">
             {/* Header */}
             <div className="text-center mb-4 md:mb-6">
               <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-gradient-to-br from-[#FF7A00]/20 to-[#FFB547]/10 border border-[#FF7A00]/30 flex items-center justify-center mx-auto mb-4 shadow-[0_0_30px_rgba(255,122,0,0.2)]">
@@ -465,7 +465,7 @@ export function LoginPage() {
             )}
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4 max-h-[92vh] overflow-y-auto pr-1 scrollbar-hide">
+            <form onSubmit={handleSubmit} className="gap-y-4 max-h-[92vh] overflow-y-auto pr-1 scrollbar-hide">
               {activeTab === 'signup' && (
                 <InputField
                   icon={User}

@@ -183,7 +183,7 @@ export function LearningProgress({
   };
 
   return (
-    <div id="academic-propulsion-module" className="flex-1 flex flex-col h-full bg-primary-bg p-6 overflow-hidden relative select-none">
+    <div id="academic-propulsion-module" className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col h-full bg-primary-bg p-4 sm:p-6 overflow-hidden relative select-none">
       <div className="absolute top-0 right-1/4 w-[400px] h-[400px] bg-accent-cyan/5 blur-[120px] rounded-full pointer-events-none -z-10" />
 
       {/* Header section with Study Timer Trigger */}

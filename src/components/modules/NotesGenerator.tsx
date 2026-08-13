@@ -133,7 +133,7 @@ export function NotesGenerator() {
   );
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-primary-bg p-6 overflow-hidden relative">
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex-1 flex flex-col h-full bg-primary-bg p-4 sm:p-6 overflow-hidden relative">
       {/* Glow */}
       <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-accent-cyan/5 blur-[120px] rounded-full pointer-events-none -z-10" />
 
