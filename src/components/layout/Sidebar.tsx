@@ -2,7 +2,6 @@ import { X } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { ModuleType } from "../../types";
 import { motion } from "motion/react";
-import LogoImage from "/image.png";
 
 // Premium Neural Nexus Logo - SciForge AI
 const NeuralNexusLogo = ({ className }: { className?: string }) => (
@@ -378,7 +377,7 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
         <div className="h-16 flex items-center justify-between px-5 border-b border-white/8 shrink-0">
           <div className="flex items-center gap-3">
             <a href="/" className="w-9 h-9 flex items-center justify-center">
-              <img src={LogoImage} alt="SCI-FORGE AI Logo" className="w-9 h-9 object-contain" style={{ height: '32px', maxHeight: '40px', width: 'auto' }} />
+              <img src="/image.png" alt="SCI-FORGE AI Logo" className="w-9 h-9 object-contain" style={{ height: '32px', maxHeight: '40px', width: 'auto' }} onError={(e) => { e.currentTarget.style.display = "none"; }} />
             </a>
             <span className="font-heading font-bold text-base text-white tracking-tight">SCI-FORGE AI</span>
           </div>
