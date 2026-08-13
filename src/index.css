@@ -283,78 +283,190 @@ input[data-scribble] {
 
 /* Light mode enhancements for Settings */
 .light-mode .bg-\[\#111111\] {
-  background-color: #F8FAFC !important;
+  background-color: #FFFFFF !important;
 }
 
 .light-mode .bg-\[\#1a1a1a\] {
-  background-color: #F1F5F9 !important;
+  background-color: #F8FAFC !important;
 }
 
 .light-mode .bg-\[\#050505\] {
   background-color: #FFFFFF !important;
 }
 
-.light-mode .border-white\/5 {
-  border-color: rgba(17, 17, 17, 0.1) !important;
+.light-mode .bg-\[\#0a0a0a\] {
+  background-color: #F8FAFC !important;
 }
 
-.light-mode .border-white\/8 {
-  border-color: rgba(17, 17, 17, 0.08) !important;
+.light-mode .bg-black\/40,
+.light-mode .bg-black\/30,
+.light-mode .bg-black\/50 {
+  background-color: rgba(0, 0, 0, 0.05) !important;
 }
 
+.light-mode .bg-black\/60 {
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.light-mode .bg-secondary-bg\/25,
+.light-mode .bg-secondary-bg\/50,
+.light-mode .bg-secondary-bg\/95 {
+  background-color: rgba(255, 255, 255, 0.9) !important;
+}
+
+.light-mode .bg-primary-bg {
+  background-color: #FFFFFF !important;
+}
+
+.light-mode .bg-\[\#FF7A00\]\/10,
+.light-mode .bg-\[\#FF7A00\]\/5 {
+  background-color: rgba(255, 122, 0, 0.1) !important;
+}
+
+.light-mode .glass-panel {
+  background-color: rgba(255, 255, 255, 0.8) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.light-mode .border-white\/5,
+.light-mode .border-white\/8,
 .light-mode .border-white\/10 {
-  border-color: rgba(17, 17, 17, 0.1) !important;
+  border-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.light-mode .border-white\/20 {
+  border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+.light-mode .border-glass-border {
+  border-color: rgba(0, 0, 0, 0.1) !important;
 }
 
 .light-mode .shadow-lg {
-  box-shadow: 0 10px 15px -3px rgba(17, 17, 17, 0.1) !important;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05) !important;
 }
 
 .light-mode .shadow-xl {
-  box-shadow: 0 20px 25px -5px rgba(17, 17, 17, 0.1) !important;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05) !important;
+}
+
+.light-mode .shadow-2xl {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1) !important;
+}
+
+.light-mode .text-white\/50,
+.light-mode .text-white\/40 {
+  color: rgba(0, 0, 0, 0.4) !important;
+}
+
+.light-mode .text-white\/60 {
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.light-mode .text-white\/70 {
+  color: rgba(0, 0, 0, 0.6) !important;
+}
+
+.light-mode .text-white\/80 {
+  color: rgba(0, 0, 0, 0.7) !important;
 }
 
 .light-mode .text-\[\#71717A\] {
   color: #71717A !important;
 }
 
-.light-mode .text-white\/40 {
-  color: rgba(17, 17, 17, 0.4) !important;
+.light-mode .text-\[\#A1A1AA\] {
+  color: #A1A1AA !important;
 }
 
-.light-mode .text-white\/60 {
-  color: rgba(17, 17, 17, 0.6) !important;
+.light-mode .text-white {
+  color: #111111 !important;
 }
 
-.light-mode .text-white\/70 {
-  color: rgba(17, 17, 17, 0.7) !important;
+.light-mode .text-black {
+  color: #FFFFFF !important;
 }
 
-.light-mode .bg-white\/5 {
-  background-color: rgba(17, 17, 17, 0.05) !important;
-}
-
+.light-mode .bg-white\/5,
 .light-mode .bg-white\/10 {
-  background-color: rgba(17, 17, 17, 0.1) !important;
+  background-color: rgba(0, 0, 0, 0.05) !important;
 }
 
 .light-mode .hover\:bg-white\/10:hover {
-  background-color: rgba(17, 17, 17, 0.1) !important;
+  background-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+.light-mode .bg-white\/20 {
+  background-color: rgba(0, 0, 0, 0.1) !important;
+}
+
+.light-mode .bg-white\/30 {
+  background-color: rgba(0, 0, 0, 0.15) !important;
 }
 
 .light-mode .ring-white\/10 {
-  --tw-ring-color: rgba(17, 17, 17, 0.1) !important;
+  --tw-ring-color: rgba(0, 0, 0, 0.1) !important;
 }
 
 .light-mode .ring-white\/20 {
-  --tw-ring-color: rgba(17, 17, 17, 0.2) !important;
-}
-
-/* Light mode sidebar */
-.light-mode .bg-\[\#0a0a0a\] {
-  background-color: #F1F5F9 !important;
+  --tw-ring-color: rgba(0, 0, 0, 0.15) !important;
 }
 
 .light-mode .bg-gradient-to-b {
   background: linear-gradient(to bottom, #FFFFFF, #F8FAFC) !important;
+}
+
+.light-mode .bg-gradient-to-br {
+  background: linear-gradient(to bottom right, #FFFFFF, #F8FAFC) !important;
+}
+
+.light-mode .backdrop-blur-xl,
+.light-mode .backdrop-blur-md,
+.light-mode .backdrop-blur-sm {
+  backdrop-filter: blur(8px) !important;
+}
+
+.light-mode .bg-black\/70 {
+  background-color: rgba(0, 0, 0, 0.7) !important;
+}
+
+/* Fix hover on workspaces title in light mode */
+.light-mode .hover\:text-\[\\#FFB547\]\:hover {
+  color: #FF7A00 !important;
+}
+
+/* Fix workspace cards hover in light mode */
+.light-mode .group:hover .group-hover\:text-white\/70 {
+  color: rgba(0, 0, 0, 0.5) !important;
+}
+
+.light-mode .group:hover .group-hover\:border-opacity-100 {
+  border-color: rgba(255, 122, 0, 0.3) !important;
+}
+
+/* Fix sidebar active state in light mode */
+.light-mode .bg-\[\#FF7A00\]\/10 {
+  background-color: rgba(255, 122, 0, 0.1) !important;
+}
+
+.light-mode .border-\[\#FF7A00\]\/20 {
+  border-color: rgba(255, 122, 0, 0.2) !important;
+}
+
+/* Fix navigation hover in light mode */
+.light-mode .hover\:bg-white\/5:hover {
+  background-color: rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Fix input backgrounds in light mode */
+.light-mode input,
+.light-mode textarea,
+.light-mode select {
+  background-color: rgba(0, 0, 0, 0.03) !important;
+  color: #111111 !important;
+}
+
+.light-mode input::placeholder,
+.light-mode textarea::placeholder {
+  color: rgba(0, 0, 0, 0.3) !important;
 }

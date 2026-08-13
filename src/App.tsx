@@ -278,18 +278,6 @@ export default function App() {
               </div>
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
-                  <span className="text-sm font-bold text-white block">Adaptive Text-To-Speech (TTS)</span>
-                  <span className="text-xs text-[#71717A] block">Automatically synthesized speech on AI formulas output.</span>
-                </div>
-                <button 
-                  onClick={() => saveAccessibility(dyslexiaMode, highContrast, !tts, isLightMode)}
-                  className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${tts ? "bg-[#FF7A00]" : "bg-white/10"}`}
-                >
-                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${tts ? "left-7" : "left-1"}`} />
-                </button>
-              </div>
-              <div className="flex items-center justify-between">
-                <div className="space-y-1">
                   <span className="text-sm font-bold text-white block">SciForge Theme Selection</span>
                   <span className="text-xs text-[#71717A] block">Toggle between Space Dark and clean light layouts.</span>
                 </div>
