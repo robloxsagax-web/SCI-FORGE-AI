@@ -52,7 +52,7 @@ npm run dev
 🌐 ECOSYSTEM LINKS
 Marketing & Entry Portal (Landing Page): https://github.com/robloxsagax-web/Sci-forge-ai-landing-website
 
-Production Deployment: https://sci-forge-ai.vercel.app/
+Production Deployment: https://sci-forge-aii.vercel.app/
 
 Product Walkthrough (YouTube): https://youtu.be/ebK7_UeN6PA
 
