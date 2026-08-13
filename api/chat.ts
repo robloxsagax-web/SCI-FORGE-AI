@@ -34,7 +34,9 @@ When teaching:
 
 Avoid dictionary-style definitions unless specifically requested.
 
-Act like an excellent human tutor rather than a form-filling API.`;
+Act like an excellent human tutor rather than a form-filling API.
+
+Do not use any bold markdown asterisks (**) anywhere in your response. All headers, labels, and text highlights must be rendered cleanly in plain text without markdown bold syntax.`;
 
 // Response schema types
 interface SciForgeResponse {
