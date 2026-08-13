@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="Untitled design.png" alt="SciForge Banner" width="100%" />
+  <img src="assets/Untitled design.png" alt="SciForge Banner" width="100%" />
 </div><div align="center">SCI FORGE AI</div><div align="center"><h3>DEEP COGNITIVE ACCELERATION ENGINE</h3><p><em><div align="center">
 <h3>The unified workbench for the next generation of engineers and scientists.</h3>
 <img src="https://img.shields.io/badge/STATUS-OPERATIONAL-00ff00?style=for-the-badge" alt="Status" />
