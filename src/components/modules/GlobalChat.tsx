@@ -3,11 +3,13 @@ import {
   MessageSquare, Sparkles, Send, Bot, Play, GraduationCap, Atom, 
   CheckCircle2, AlertCircle, ArrowRight, RotateCcw, Award, Target, 
   HelpCircle, BookOpen, Lightbulb, Check, X, ShieldAlert, BadgeCheck,
-  FileText, BrainCircuit, FlaskConical, Pencil
+  FileText, BrainCircuit, FlaskConical, Pencil, Sparkle, Map, Rocket, FlaskRound, BookMarked, Brain, Zap
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { ChatMessage, ModuleType, LearningJourney, ExplanationStyles } from "../../types";
 import { saveRecentSession } from "../../lib/utils";
+import { classifyIntent, getStudyTopic, setStudyTopic, generateRecommendations } from "../../lib/intelligence";
+import { getTelemetry, updateTelemetryOnAction } from "../../lib/telemetry";
 import { cn } from "../../lib/utils";
 
 // Premium Neural Nexus Logo - SciForge Core System
@@ -114,6 +116,8 @@ export function GlobalChat({
 }: GlobalChatProps) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isOrchestrating, setIsOrchestrating] = useState(false);
+  const [orchestrationPhase, setOrchestrationPhase] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
 
   // Handle pending message from homepage
@@ -191,6 +195,26 @@ export function GlobalChat({
     onAddMessage(userMsg);
     setInput("");
     setLoading(true);
+        
+        // Intelligent Orchestration Layer
+        const detectedIntent = classifyIntent(textToSend);
+        setIsOrchestrating(true);
+        
+        // Extract and set study topic
+        const words = textToSend.split(" ").slice(0, 5).join(" ");
+        setStudyTopic(words);
+        
+        // Set orchestration phase based on intent
+        const intentPhases: Record<string, string> = {
+          mentor: "Synthesizing academic knowledge...",
+          notes: "Activating Documentation Lab...",
+          quiz: "Preparing Assessment Engine...",
+          research: "Launching Research Engine...",
+          scribble: "Calibrating Analysis Lab...",
+          dependencymap: "Mapping Concept Dependencies...",
+          propulsion: "Building Study Trajectory..."
+        };
+        setOrchestrationPhase(intentPhases[detectedIntent] || "Processing request...");
 
     try {
       const chatHistory = messages.map(m => ({
@@ -248,7 +272,14 @@ export function GlobalChat({
       };
 
       onAddMessage(aiMsg);
-      saveRecentSession("chat", `Interactive Inquiry: STEM Chat`, [...messages, userMsg, aiMsg]);
+      
+      // End orchestration
+      setIsOrchestrating(false);
+      setOrchestrationPhase("");
+      
+      // Track questions asked for telemetry
+      updateTelemetryOnAction("quiz_answer", { topic: words, isCorrect: false });
+            saveRecentSession("chat", `Interactive Inquiry: STEM Chat`, [...messages, userMsg, aiMsg]);
 
       // Workspace route triggers if appropriate
       let targetRoute: ModuleType | null = null;
@@ -485,6 +516,46 @@ export function GlobalChat({
                               onUpdateScore={updateUnderstandingScore}
                             />
                           )}
+                          
+                          {/* Intelligent Workspace Recommendations */}
+                          {msg.sender === "ai" && (
+                            <div className="p-4 rounded-xl bg-gradient-to-r from-[#FF7A00]/5 to-[#22C55E]/5 border border-[#FF7A00]/10">
+                              <div className="flex items-center gap-2 mb-3">
+                                <Brain className="w-4 h-4 text-[#FF7A00]" />
+                                <span className="text-xs font-bold text-white/70 uppercase tracking-wider">Recommended Next Actions</span>
+                              </div>
+                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                <button
+                                  onClick={() => onRoute("notes")}
+                                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 hover:border-[#FFB547]/30 text-left transition-all cursor-pointer group"
+                                >
+                                  <BookMarked className="w-4 h-4 text-[#FFB547] shrink-0" />
+                                  <span className="text-[10px] text-white/70 group-hover:text-white font-medium">Create Notes</span>
+                                </button>
+                                <button
+                                  onClick={() => onRoute("quiz")}
+                                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 hover:border-[#FF7A00]/30 text-left transition-all cursor-pointer group"
+                                >
+                                  <Target className="w-4 h-4 text-[#FF7A00] shrink-0" />
+                                  <span className="text-[10px] text-white/70 group-hover:text-white font-medium">Test Knowledge</span>
+                                </button>
+                                <button
+                                  onClick={() => onRoute("dependencymap")}
+                                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 hover:border-[#8B5CF6]/30 text-left transition-all cursor-pointer group"
+                                >
+                                  <Map className="w-4 h-4 text-[#8B5CF6] shrink-0" />
+                                  <span className="text-[10px] text-white/70 group-hover:text-white font-medium">Concept Map</span>
+                                </button>
+                                <button
+                                  onClick={() => onRoute("simulation")}
+                                  className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/5 hover:border-[#22C55E]/30 text-left transition-all cursor-pointer group"
+                                >
+                                  <Rocket className="w-4 h-4 text-[#22C55E] shrink-0" />
+                                  <span className="text-[10px] text-white/70 group-hover:text-white font-medium">Study Plan</span>
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       )}
                     </div>
@@ -494,10 +565,10 @@ export function GlobalChat({
                 {loading && (
                   <div className="flex gap-4 max-w-xl mr-auto">
                     <div className="w-9 h-9 rounded-full bg-accent-cyan/10 border border-accent-cyan/20 flex items-center justify-center text-accent-cyan animate-spin shrink-0">
-                      <Atom className="w-4 h-4" />
+                      <Zap className="w-4 h-4" />
                     </div>
                     <div className="p-4 rounded-xl text-xs italic text-white/50 bg-secondary-bg/20 border border-white/5 rounded-tl-none font-mono">
-                      Compiling customized STEM learning journey steps...
+                      {orchestrationPhase || "Core Intelligence Orchestrating..."}
                     </div>
                   </div>
                 )}

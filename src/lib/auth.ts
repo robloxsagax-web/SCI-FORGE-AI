@@ -1,5 +1,8 @@
 // LocalStorage-based Authentication Module - SciForge AI
 // Persistent user registry with localStorage synchronization
+// Now integrated with Firebase for Google OAuth
+
+import { onAuthStateChange as firebaseAuthStateChange, getAuthRedirectResult, User as FirebaseUser } from './firebase';
 
 const AUTH_STORAGE_KEY = 'sciforge_auth';
 const USER_STORAGE_KEY = 'sciforge_user';
@@ -11,6 +14,8 @@ export interface User {
   password?: string;
   grade?: string;
   createdAt?: string;
+  firebaseUid?: string;
+  isFirebaseUser?: boolean;
 }
 
 export interface AuthState {
@@ -207,6 +212,13 @@ export function demoLogin(): void {
 
 // Sign out - Clear auth state
 export function signOut(): void {
+  // Sign out from Firebase if user is a Firebase user
+  const currentUser = getUser();
+  if (currentUser?.isFirebaseUser) {
+    import('./firebase').then(({ signOut: firebaseSignOut }) => {
+      firebaseSignOut();
+    });
+  }
   setAuthState({ isAuthenticated: false, user: null });
   // Keep user in vault for re-login without account loss
 }
@@ -243,4 +255,54 @@ export function clearAuthData(): void {
   localStorage.removeItem(USER_STORAGE_KEY);
   localStorage.removeItem(ACCOUNTS_VAULT_KEY);
   localStorage.removeItem('sciforge_recent_sessions');
+}
+
+// Firebase Auth State Synchronization
+// Listens to Firebase auth state and syncs with localStorage
+let firebaseSyncInitialized = false;
+
+export function initializeFirebaseAuthSync(): void {
+  if (firebaseSyncInitialized) return;
+  firebaseSyncInitialized = true;
+
+  // Listen to Firebase auth state changes
+  firebaseAuthStateChange(async (firebaseUser: FirebaseUser | null) => {
+    if (firebaseUser) {
+      // User signed in via Firebase (Google OAuth)
+      const user: User = {
+        name: firebaseUser.displayName || 'User',
+        email: firebaseUser.email || '',
+        firebaseUid: firebaseUser.uid,
+        isFirebaseUser: true,
+        createdAt: new Date().toISOString()
+      };
+      setUser(user);
+      setAuthState({ isAuthenticated: true, user });
+      initializeMockChats();
+      // Dispatch event for App.tsx to pick up
+      window.dispatchEvent(new Event('authStateChange'));
+    } else {
+      // Check for pending redirect result
+      const result = await getAuthRedirectResult();
+      if (result?.user) {
+        const firebaseUser = result.user;
+        const user: User = {
+          name: firebaseUser.displayName || 'User',
+          email: firebaseUser.email || '',
+          firebaseUid: firebaseUser.uid,
+          isFirebaseUser: true,
+          createdAt: new Date().toISOString()
+        };
+        setUser(user);
+        setAuthState({ isAuthenticated: true, user });
+        initializeMockChats();
+        window.dispatchEvent(new Event('authStateChange'));
+      }
+    }
+  });
+}
+
+// Auto-initialize on import
+if (typeof window !== 'undefined') {
+  initializeFirebaseAuthSync();
 }
