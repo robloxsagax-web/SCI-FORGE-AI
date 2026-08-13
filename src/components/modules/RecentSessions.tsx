@@ -48,7 +48,7 @@ export function RecentSessions({ onResumeSession }: RecentSessionsProps) {
       case "scientist":
         return "Quantum Research Engine";
       case "quiz":
-        return "Quiz Generator";
+        return "Mastery Assessment Engine";
       case "notes":
         return "Notes Textbook Generator";
       default:

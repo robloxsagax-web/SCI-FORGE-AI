@@ -196,7 +196,7 @@ const FEATURES = [
   { iconKey: "chat", title: "Core Intelligence Console", desc: "Multi-model collaborative STEM mentor", color: "#FF7A00" },
   { iconKey: "scribble", title: "Scribble Analysis Lab", desc: "Real-time reasoning and hand-drawn canvas processing", color: "#22C55E" },
   { iconKey: "scientist", title: "Quantum Research Engine", desc: "In-depth academic investigations", color: "#22C55E" },
-  { iconKey: "notes", title: "Notes & Quiz Generator", desc: "Dynamic revision compilation and personalized roadmaps", color: "#FFB547" },
+  { iconKey: "notes", title: "Documentation & Assessment", desc: "Dynamic revision compilation and personalized roadmaps", color: "#FFB547" },
 ];
 
 // Input Field Component

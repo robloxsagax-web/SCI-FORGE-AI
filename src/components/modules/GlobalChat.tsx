@@ -152,8 +152,8 @@ export function GlobalChat({
 
   // Workspace launcher items
   const workspaceItems = [
-    { id: "notes", label: "Notes Generator", icon: "📝", color: "#FFB547" },
-    { id: "quiz", label: "Quiz Generator", icon: "❓", color: "#FFB547" },
+    { id: "notes", label: "Scientific Documentation Lab", icon: "📝", color: "#FFB547" },
+    { id: "quiz", label: "Mastery Assessment Engine", icon: "❓", color: "#FFB547" },
     { id: "scribble", label: "Scribble Analysis Lab", icon: "✍️", color: "#22C55E" },
     { id: "scientist", label: "Quantum Research Engine", icon: "🔬", color: "#22C55E" },
     { id: "dependencymap", label: "Concept Dependency Map", icon: "🗺️", color: "#FF7A00" },

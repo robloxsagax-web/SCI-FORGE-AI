@@ -121,7 +121,7 @@ export function QuizGenerator() {
             <HelpCircle className="w-5 h-5 animate-pulse" />
           </div>
           <div>
-            <h1 className="text-xl font-heading font-semibold text-white tracking-tight">QUIZ GENERATOR WORKSPACE</h1>
+            <h1 className="text-xl font-heading font-semibold text-white tracking-tight">MASTERY ASSESSMENT ENGINE</h1>
             <p className="text-xs text-white/40 font-mono">Convert physical, mechanical, and bio topics into real-time interactive challenges</p>
           </div>
         </div>
