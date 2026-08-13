@@ -146,12 +146,30 @@ export function AIScientist({ isRightPanelOpen, setIsRightPanelOpen, onUpdateInt
         </div>
       ) : !insight ? (
         <div className="flex-1 flex flex-col items-center justify-center text-center space-y-4 glass-panel rounded-3xl bg-black/30 p-8 max-w-lg mx-auto my-12 shrink-0">
-          <div className="w-16 h-16 rounded-full bg-accent-green/5 border border-accent-green/10 flex items-center justify-center text-accent-green mb-2">
+          <div className="w-16 h-16 rounded-full bg-[#FF7A00]/5 border border-[#FF7A00]/10 flex items-center justify-center text-[#FF7A00] mb-2">
             <Atom className="w-8 h-8 animate-spin-slow" />
           </div>
-          <p className="text-xs text-white/50 leading-relaxed font-mono">
-            Nothing generated yet. Start by entering a topic.
+          <h3 className="text-sm font-heading font-semibold text-[#FF7A00] uppercase tracking-widest">RESEARCH INSIGHT IDLE</h3>
+          <p className="text-[10px] text-white/50 font-mono leading-relaxed">
+            Enter a research topic to generate deep academic insights.
           </p>
+          <div className="w-full relative">
+            <textarea
+              value={topicInput}
+              onChange={(e) => setTopicInput(e.target.value)}
+              placeholder="Enter your research topic here..."
+              className="w-full bg-black/40 text-xs pl-4 pr-4 pt-3 pb-12 rounded-xl border border-white/10 text-white outline-none font-mono focus:border-[#FF7A00]/50 transition-all resize-none"
+              rows={3}
+            />
+            <button
+              onClick={() => generateResearchInsight()}
+              disabled={loading || !topicInput.trim()}
+              className="absolute bottom-2 right-2 px-4 py-1.5 bg-[#FF7A00]/20 hover:bg-[#FF7A00]/35 border border-[#FF7A00]/35 text-[#FF7A00] text-[10px] font-bold font-mono rounded-lg transition-all flex items-center gap-1 cursor-pointer"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              GENERATE
+            </button>
+          </div>
         </div>
       ) : (
         <div className="flex-1 flex flex-col lg:flex-row gap-6 min-h-0 overflow-hidden text-xs">

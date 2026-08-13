@@ -64,7 +64,7 @@ export default function App() {
   const [highContrast, setHighContrast] = useState(false);
   const [tts, setTts] = useState(false);
   const [isLightMode, setIsLightMode] = useState(false);
-  const [customCursor, setCustomCursor] = useState(false);
+  const [customCursor, setCustomCursor] = useState(true); // Default ON
 
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [pendingChatMessage, setPendingChatMessage] = useState<string | null>(null);

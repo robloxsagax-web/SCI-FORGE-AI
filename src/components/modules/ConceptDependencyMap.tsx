@@ -498,7 +498,7 @@ export function ConceptDependencyMap({ onRoute, onUpdateIntelligence }: ConceptD
             <Network className="w-10 h-10" />
           </div>
           <div className="space-y-1.5">
-            <h3 className="text-base font-heading font-semibold text-white uppercase tracking-wider">Concept Dependency Map Idle</h3>
+            <h3 className="text-base font-heading font-semibold text-[#FF7A00] uppercase tracking-widest">CONCEPT DEPENDENCY MAP IDLE</h3>
             <p className="text-xs text-white/50 font-sans leading-relaxed">
               Enter a concept to begin plotting its dependency structure.
             </p>
@@ -518,7 +518,7 @@ export function ConceptDependencyMap({ onRoute, onUpdateIntelligence }: ConceptD
             <button
               onClick={() => generateNewMap(newConceptInput)}
               disabled={loading || !newConceptInput.trim()}
-              className="absolute right-1.5 top-1.5 px-4 py-1.5 bg-accent-violet/20 hover:bg-accent-violet/35 border border-accent-violet/35 text-accent-violet text-[10px] font-bold font-mono rounded-lg transition-all flex items-center gap-1 cursor-pointer"
+              className="absolute right-1.5 top-1.5 px-4 py-1.5 bg-[#FF7A00]/20 hover:bg-[#FF7A00]/35 border border-[#FF7A00]/35 text-[#FF7A00] text-[10px] font-bold font-mono rounded-lg transition-all flex items-center gap-1 cursor-pointer"
             >
               <Plus className="w-3.5 h-3.5" />
               CREATE

@@ -97,9 +97,9 @@ export function RightPanel({
 
   return (
     <div className="w-full sm:max-w-xs lg:w-80 lg:relative fixed inset-y-0 right-0 z-50 border-l border-glass-border bg-secondary-bg/95 lg:bg-secondary-bg/50 backdrop-blur-xl flex flex-col h-full shrink-0 shadow-2xl lg:shadow-none transition-all">
-      {/* Header & Modes */}
+      {/* Header */}
       <div className="p-4 border-b border-glass-border shrink-0">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-accent-cyan">
             <Brain className="w-5 h-5 text-accent-violet animate-pulse" />
             <h2 className="font-heading font-medium tracking-tight text-sm text-white">{getNicheHeader()}</h2>
@@ -113,28 +113,6 @@ export function RightPanel({
               <X className="w-4 h-4" />
             </button>
           )}
-        </div>
-        
-        <div className="flex bg-black/40 rounded-lg p-1 relative">
-          {(["beginner", "analogy", "advanced"] as const).map((mode) => (
-            <button
-              key={mode}
-              onClick={() => onChangeLearningMode(mode)}
-              className={cn(
-                "flex-1 relative py-1.5 text-xs font-medium capitalize rounded-md transition-colors z-10",
-                learningMode === mode ? "text-white" : "text-white/40 hover:text-white/80"
-              )}
-            >
-              {learningMode === mode && (
-                <motion.div
-                  layoutId="active-mode"
-                  className="absolute inset-0 bg-white/10 rounded-md -z-10 shadow-sm"
-                  transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
-                />
-              )}
-              {mode}
-            </button>
-          ))}
         </div>
       </div>
 
