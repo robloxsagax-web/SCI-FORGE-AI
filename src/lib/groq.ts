@@ -15,6 +15,17 @@ export interface GroqRequest {
   max_tokens?: number;
 }
 
+/**
+ * Text-processing middleware filter that strips markdown-style double asterisks
+ * from AI response text to prevent unpolished bold formatting in user-facing chat.
+ * @param text - Raw response text from Groq AI model
+ * @returns Cleaned text with all ** markers removed
+ */
+function stripMarkdownBoldFormatting(text: string): string {
+  // Remove all double-asterisk markdown bold markers
+  return text.replace(/\*\*/g, '');
+}
+
 // Diagram Narrator System Prompt - Forced narrative format
 export const DIAGRAM_NARRATOR_SYSTEM_PROMPT = `You are an expert STEM educator. The user has uploaded a scientific diagram. Perform a deep-dive analysis and provide a clear, structured, spoken-word-style audio narrative (200-300 words). Explain the scientific concept depicted, the relationships between the parts, and the logic of the system. Speak to the user as if you are a mentor guiding them through the diagram. Do not provide a status report; provide the actual explanation.`;
 
@@ -99,10 +110,10 @@ export async function analyzeImageWithGroq(
     }
 
     const data = await response.json();
-    return data.choices?.[0]?.message?.content || "Analysis complete.";
+    return stripMarkdownBoldFormatting(data.choices?.[0]?.message?.content || "Analysis complete.");
   } catch (error) {
     console.error("Groq API error:", error);
-    return generateDemoNarrative();
+    return stripMarkdownBoldFormatting(generateDemoNarrative());
   }
 }
 
@@ -153,10 +164,10 @@ export async function analyzeTextWithGroq(
     }
 
     const data = await response.json();
-    return data.choices?.[0]?.message?.content || "Analysis complete.";
+    return stripMarkdownBoldFormatting(data.choices?.[0]?.message?.content || "Analysis complete.");
   } catch (error) {
     console.error("Groq API error:", error);
-    return generateDemoTextAnalysis(userQuery);
+    return stripMarkdownBoldFormatting(generateDemoTextAnalysis(userQuery));
   }
 }
 
@@ -204,10 +215,10 @@ export async function crossAnalyzeWithGroq(
     }
 
     const data = await response.json();
-    return data.choices?.[0]?.message?.content || "Cross-analysis complete.";
+    return stripMarkdownBoldFormatting(data.choices?.[0]?.message?.content || "Cross-analysis complete.");
   } catch (error) {
     console.error("Groq cross-analysis error:", error);
-    return `Based on the uploaded diagram and your question about "${userQuery}": The diagram depicts key STEM concepts that relate to your query. Connecting these elements, we can see...`;
+    return stripMarkdownBoldFormatting(`Based on the uploaded diagram and your question about "${userQuery}": The diagram depicts key STEM concepts that relate to your query. Connecting these elements, we can see...`);
   }
 }
 
