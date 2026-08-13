@@ -2,8 +2,8 @@
 // Persistent user registry with localStorage synchronization
 
 const AUTH_STORAGE_KEY = 'sciforge_auth';
-const USER_REGISTRY_KEY = 'sciforge_user_registry';
 const USER_STORAGE_KEY = 'sciforge_user';
+const ACCOUNTS_VAULT_KEY = 'sciforge_accounts_vault';
 
 export interface User {
   name: string;
@@ -62,33 +62,34 @@ export const MOCK_CHATS = [
 export const DEMO_USER: User = {
   name: 'Guest Scholar',
   email: 'guest@sciforge.ai',
+  grade: 'undergrad',
   createdAt: new Date().toISOString()
 };
 
-// User Registry Management
-function getUserRegistry(): User[] {
+// Account Vault Management (persistent storage)
+function getAccountsVault(): User[] {
   try {
-    const stored = localStorage.getItem(USER_REGISTRY_KEY);
+    const stored = localStorage.getItem(ACCOUNTS_VAULT_KEY);
     if (stored) {
       return JSON.parse(stored);
     }
   } catch (error) {
-    console.error('Error reading user registry:', error);
+    console.error('Error reading accounts vault:', error);
   }
   return [];
 }
 
-function saveUserToRegistry(user: User): void {
-  const registry = getUserRegistry();
-  // Remove existing user with same email (for updates)
-  const filteredRegistry = registry.filter(u => u.email !== user.email);
-  filteredRegistry.push(user);
-  localStorage.setItem(USER_REGISTRY_KEY, JSON.stringify(filteredRegistry));
+function saveAccountToVault(user: User): void {
+  const accounts = getAccountsVault();
+  // Remove existing account with same email (for updates)
+  const filteredAccounts = accounts.filter(u => u.email !== user.email);
+  filteredAccounts.push(user);
+  localStorage.setItem(ACCOUNTS_VAULT_KEY, JSON.stringify(filteredAccounts));
 }
 
-function findUserInRegistry(email: string): User | null {
-  const registry = getUserRegistry();
-  return registry.find(u => u.email === email.toLowerCase()) || null;
+function findAccountInVault(email: string): User | null {
+  const accounts = getAccountsVault();
+  return accounts.find(u => u.email === email.toLowerCase()) || null;
 }
 
 // Get current auth state from localStorage
@@ -135,7 +136,7 @@ export function setUser(user: User): void {
   }
 }
 
-// Sign up - Create new account and persist to registry
+// Sign up - Create new account and persist to vault
 export function signUp(name: string, email: string, password: string, grade?: string): { success: boolean; error?: string } {
   // Validate inputs first
   if (!name.trim()) {
@@ -148,13 +149,13 @@ export function signUp(name: string, email: string, password: string, grade?: st
     return { success: false, error: 'Password must be at least 6 characters' };
   }
 
-  // Check if email already exists in persistent registry
-  const existingUser = findUserInRegistry(email);
+  // Check if email already exists in vault
+  const existingUser = findAccountInVault(email);
   if (existingUser) {
     return { success: false, error: 'An account with this email already exists' };
   }
 
-  // Create user and persist to registry
+  // Create user and persist to vault
   const user: User = {
     name: name.trim(),
     email: email.trim().toLowerCase(),
@@ -163,8 +164,8 @@ export function signUp(name: string, email: string, password: string, grade?: st
     createdAt: new Date().toISOString()
   };
 
-  // Save to registry AND set as current user
-  saveUserToRegistry(user);
+  // Save to vault AND set as current user
+  saveAccountToVault(user);
   setUser(user);
   setAuthState({ isAuthenticated: true, user });
 
@@ -174,10 +175,10 @@ export function signUp(name: string, email: string, password: string, grade?: st
   return { success: true };
 }
 
-// Sign in - Validate credentials against registry
+// Sign in - Validate credentials against vault
 export function signIn(email: string, password: string): { success: boolean; error?: string } {
-  // Always check registry first for persistent account recognition
-  const user = findUserInRegistry(email);
+  // Always check vault first for persistent account recognition
+  const user = findAccountInVault(email);
 
   if (!user) {
     return { success: false, error: 'No account found. Please sign up first.' };
@@ -207,7 +208,7 @@ export function demoLogin(): void {
 // Sign out - Clear auth state
 export function signOut(): void {
   setAuthState({ isAuthenticated: false, user: null });
-  // Keep user in registry for re-login without account loss
+  // Keep user in vault for re-login without account loss
 }
 
 // Check if user is authenticated
@@ -240,6 +241,6 @@ export function getMockChats() {
 export function clearAuthData(): void {
   localStorage.removeItem(AUTH_STORAGE_KEY);
   localStorage.removeItem(USER_STORAGE_KEY);
-  localStorage.removeItem(USER_REGISTRY_KEY);
+  localStorage.removeItem(ACCOUNTS_VAULT_KEY);
   localStorage.removeItem('sciforge_recent_sessions');
 }

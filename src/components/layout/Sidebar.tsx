@@ -406,7 +406,7 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: idx * 0.03, duration: 0.2 }}
-                  whileHover={{ x: 4 }}
+                  whileHover={{ x: 4, backgroundColor: isActive ? 'rgba(255,122,0,0.15)' : 'rgba(255,255,255,0.05)' }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleItemClick(item.id as ModuleType)}
                   className={cn(
@@ -424,7 +424,7 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
                     />
                   )}
                   <motion.div
-                    whileHover={{ rotate: isActive ? 0 : 5 }}
+                    whileHover={{ rotate: isActive ? 0 : 5, scale: 1.1 }}
                     transition={{ duration: 0.2 }}
                     className="w-5 h-5"
                   >
