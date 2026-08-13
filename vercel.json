@@ -1,0 +1,1 @@
+{"version": 2,"builds": [{"src": "server.ts","use": "@vercel/node"}],"routes": [{"src": "/api/(.*)","dest": "server.ts"},{"src": "/(.*)","dest": "server.ts"}],"env": {"GROQ_API_KEY": "@groq_api_key"}}
