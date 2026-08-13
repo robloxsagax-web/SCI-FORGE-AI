@@ -405,7 +405,7 @@ export default function App() {
   }
 
   return (
-    <div className={`flex h-screen w-full bg-[#050505] text-white relative ${isLightMode ? "light-mode" : ""} ${highContrast ? "contrast-125 saturate-150" : ""}`}>
+    <div className={`flex h-screen w-full bg-[#050505] text-white relative ${isLightMode ? "light-mode" : ""} ${highContrast ? "contrast-125 saturate-150" : ""} ${dyslexiaMode ? "font-dyslexic" : ""} ${customCursor ? "custom-pen-cursor" : ""}`}>
       
       {systemAlert && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 px-6 py-3 rounded-full bg-[#FF7A00]/10 border border-[#FF7A00]/40 backdrop-blur-md shadow-[0_0_20px_rgba(255,122,0,0.25)] flex items-center gap-2.5 text-xs font-mono font-bold text-[#FF7A00] z-50 animate-bounce">

@@ -143,7 +143,7 @@ const InputField = ({
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-[#FF7A00]/50 focus:bg-white/[0.07] transition-all"
+      className="w-full pl-12 pr-4 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-[#FF7A00]/70 focus:bg-white/[0.07] focus:shadow-[0_0_15px_rgba(255,122,0,0.15)] transition-all duration-300"
     />
   </div>
 );
@@ -212,7 +212,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen w-full bg-[#050505] overflow-y-auto lg:overflow-hidden">
+    <div className="flex flex-col lg:flex-row min-h-screen w-full bg-[#050505] overflow-y-auto lg:overflow-hidden font-dyslexic custom-pen-cursor">
       {/* Left Pane - Feature Showcase */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-[#0a0a0a] via-[#111111] to-[#0a0a0a] relative overflow-hidden">
         {/* Background Effects */}
@@ -393,9 +393,9 @@ export function LoginPage() {
               
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.02, y: -2 }}
+                whileHover={{ scale: 1.05, y: -3, filter: 'brightness(1.1)' }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-[#FF7A00] to-[#FFB547] text-white font-semibold flex items-center justify-center gap-2 hover:shadow-lg hover:shadow-[#FF7A00]/30 transition-all"
+                className="w-full py-4 px-6 rounded-xl bg-gradient-to-r from-[#FF7A00] to-[#FFB547] text-white font-semibold flex items-center justify-center gap-2 shadow-lg shadow-[#FF7A00]/30 hover:shadow-xl hover:shadow-[#FF7A00]/40 transition-all duration-300"
               >
                 <Sparkles className="w-5 h-5" />
                 {activeTab === 'signin' ? 'Sign In' : 'Create Account'}
@@ -412,10 +412,10 @@ export function LoginPage() {
             {/* Demo Login Button - Priority for Hackathon */}
             <motion.button
               type="button"
-              whileHover={{ scale: 1.02, y: -2 }}
+              whileHover={{ scale: 1.05, y: -3, filter: 'brightness(1.1)' }}
               whileTap={{ scale: 0.98 }}
               onClick={handleDemoLogin}
-              className="w-full py-4 px-6 rounded-xl bg-[#22C55E]/10 border border-[#22C55E]/30 text-[#22C55E] font-semibold flex items-center justify-center gap-2 hover:bg-[#22C55E]/20 hover:border-[#22C55E]/50 transition-all"
+              className="w-full py-4 px-6 rounded-xl bg-[#22C55E]/10 border border-[#22C55E]/30 text-[#22C55E] font-semibold flex items-center justify-center gap-2 shadow-lg shadow-[#22C55E]/20 hover:shadow-xl hover:shadow-[#22C55E]/30 hover:bg-[#22C55E]/20 hover:border-[#22C55E]/50 transition-all duration-300"
             >
               <Zap className="w-5 h-5" />
               Demo Login - Guest Scholar

@@ -639,7 +639,7 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.1 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6 sm:mb-8"
+          className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full p-4 justify-center items-center"
         >
           {stats.map((stat, idx) => (
             <motion.div
@@ -648,7 +648,7 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
               animate={{ opacity: 1, scale: 1 }}
               whileHover={{ scale: 1.015 }}
               transition={{ duration: 0.3, ease: "easeInOut", delay: 0.1 + idx * 0.05 }}
-              className="flex flex-col items-center justify-center text-center p-4 bg-white/5 border border-white/10 rounded-xl hover:border-[#FF7A00]/40 hover:shadow-[0_0_20px_rgba(255,122,0,0.15)] transition-all duration-300 group cursor-pointer space-y-2"
+              className="flex flex-col items-center justify-center text-center p-5 bg-white/5 border border-white/10 rounded-xl transition-all duration-300 hover:scale-105 hover:bg-white/10"
             >
               <div 
                 className="w-12 h-12 lg:w-14 lg:h-14 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:brightness-110"
