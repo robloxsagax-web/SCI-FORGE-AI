@@ -3,7 +3,7 @@ import { Sidebar } from "./components/layout/Sidebar";
 import { TopBar } from "./components/layout/TopBar";
 import { RightPanel } from "./components/layout/RightPanel";
 import { HomeDashboard } from "./components/layout/HomeDashboard";
-import { LoginPage, AuthLoadingScreen } from "./components/layout/LoginPage";
+import { LoginPage } from "./components/layout/LoginPage";
 import { ProjectMate } from "./components/modules/ProjectMate";
 import { ScribbleAnalyzer } from "./components/modules/ScribbleAnalyzer";
 import { AIScientist } from "./components/modules/AIScientist";
@@ -17,6 +17,40 @@ import { ModuleType, LearningMode, ChatMessage } from "./types";
 import { Settings as SettingsIcon, Sparkles, Menu } from "lucide-react";
 import { updateTelemetryOnAction } from "./lib/telemetry";
 import { cn } from "./lib/utils";
+import { onAuthStateChange, signOut as firebaseSignOut, User } from "./firebase";
+
+// Premium loading screen while auth state resolves
+const AuthLoadingScreen = () => (
+  <div className="flex h-screen w-full bg-[#050505] items-center justify-center">
+    <div className="flex flex-col items-center">
+      <div className="w-24 h-24 rounded-2xl bg-[#1a0f00] border-2 border-[#FF7A00]/30 flex items-center justify-center shadow-[0_0_40px_rgba(255,122,0,0.2)] mb-6">
+        <svg viewBox="0 0 36 36" className="w-16 h-16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="loadGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#FF7A00" stopOpacity="0.9" />
+              <stop offset="100%" stopColor="#FFB547" stopOpacity="0.6" />
+            </linearGradient>
+            <filter id="loadGlow">
+              <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+              <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+            </filter>
+          </defs>
+          <ellipse cx="18" cy="18" rx="15" ry="6" stroke="url(#loadGrad1)" strokeWidth="0.8" strokeOpacity="0.4" transform="rotate(-30 18 18)" />
+          <ellipse cx="18" cy="18" rx="15" ry="6" stroke="url(#loadGrad1)" strokeWidth="0.8" strokeOpacity="0.4" transform="rotate(30 18 18)" />
+          <circle cx="18" cy="10" r="2.5" fill="#FF7A00" filter="url(#loadGlow)" />
+          <circle cx="24" cy="15" r="2" fill="#FFB547" />
+          <circle cx="22" cy="22" r="2" fill="#FF7A00" />
+          <circle cx="14" cy="22" r="2" fill="#FFB547" />
+          <circle cx="12" cy="15" r="2" fill="#FF7A00" />
+          <circle cx="18" cy="18" r="3.5" fill="#FF7A00" filter="url(#loadGlow)" />
+          <path d="M18 10L24 15M24 15L22 22M22 22L14 22M14 22L12 15M12 15L18 10" stroke="#FF7A00" strokeWidth="1" strokeOpacity="0.6" strokeLinecap="round" />
+          <path d="M18 10L18 18M24 15L18 18M22 22L18 18M14 22L18 18M12 15L18 18" stroke="#FFB547" strokeWidth="0.8" strokeOpacity="0.5" strokeLinecap="round" />
+        </svg>
+      </div>
+      <p className="text-white/50 text-sm font-mono tracking-wider">Synchronizing STEM Engine...</p>
+    </div>
+  </div>
+);
 
 export default function App() {
   // All state definitions - MUST be before any conditionals (React Rules of Hooks)
@@ -46,76 +80,31 @@ export default function App() {
   const [pendingChatMessage, setPendingChatMessage] = useState<string | null>(null);
   const [systemAlert, setSystemAlert] = useState<string | null>(null);
 
-  // Auth state with strict guards
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    if (typeof window === 'undefined') return false;
-    return localStorage.getItem("sciforge_auth") === "true" && 
-           localStorage.getItem("sciforge_user") !== null;
-  });
-  const [userData, setUserData] = useState<{ name: string; email: string } | null>(() => {
-    if (typeof window === 'undefined') return null;
-    const stored = localStorage.getItem("sciforge_user");
-    if (stored) {
-      try {
-        return JSON.parse(stored);
-      } catch {
-        return null;
-      }
-    }
-    return null;
-  });
+  // Firebase Auth State - using proper onAuthStateChanged
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [isAuthLoading, setIsAuthLoading] = useState(true);
 
-  // Strict auth check on mount - no bypass allowed
+  // Subscribe to Firebase auth state changes
   useEffect(() => {
-    const checkAuth = () => {
-      try {
-        const storedAuth = localStorage.getItem("sciforge_auth");
-        const storedUser = localStorage.getItem("sciforge_user");
-        
-        if (storedAuth === "true" && storedUser) {
-          const user = JSON.parse(storedUser);
-          setUserData(user);
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-        }
-      } catch (err) {
-        console.error('Auth check failed:', err);
-        setIsAuthenticated(false);
-      }
-    };
+    const unsubscribe = onAuthStateChange((user) => {
+      setCurrentUser(user);
+      setIsAuthLoading(false);
+    });
     
-    checkAuth();
+    return () => unsubscribe();
   }, []);
 
-  // Strict route guard handlers
-  const handleLogin = (user?: { name: string; email: string }) => {
-    if (user) {
-      localStorage.setItem("sciforge_user", JSON.stringify(user));
-      setUserData(user);
-    }
-    localStorage.setItem("sciforge_auth", "true");
-    setIsAuthenticated(true);
-  };
-
-  const handleLogout = () => {
-    localStorage.removeItem("sciforge_auth");
-    localStorage.removeItem("sciforge_user");
-    setIsAuthenticated(false);
-    setUserData(null);
-  };
-
-  // Early returns AFTER all hooks are called
-  if (!isAuthenticated) {
-    return (
-      <LoginPage 
-        onLogin={handleLogin}
-        onLogout={handleLogout}
-      />
-    );
+  // Route guard - if loading, show loading screen
+  if (isAuthLoading) {
+    return <AuthLoadingScreen />;
   }
 
-  // Main app continues here...
+  // Route guard - if not authenticated, show login page
+  if (!currentUser) {
+    return <LoginPage />;
+  }
+
+  // User is authenticated - continue with main app
 
   useEffect(() => {
     const savedRunning = localStorage.getItem("sciforge_core_running") === "true";

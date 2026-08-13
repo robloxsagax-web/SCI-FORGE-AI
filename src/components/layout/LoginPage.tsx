@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { motion } from "motion/react";
-import { cn } from "../../lib/utils";
-import { 
-  MessageSquare, Pencil, FlaskConical, FileText, Target, 
-  BrainCircuit, Sparkles, ChevronRight, Shield
-} from "lucide-react";
+import { Shield, ChevronRight } from "lucide-react";
+import { signInWithGoogle } from "../../firebase";
 
 // Premium Neural Nexus Logo
 const NeuralNexusLogo = ({ className }: { className?: string }) => (
@@ -111,12 +108,8 @@ const FEATURES = [
   { iconKey: "notes", title: "Notes & Quiz Generator", desc: "Dynamic revision compilation and personalized roadmaps", color: "#FFB547" },
 ];
 
-interface LoginPageProps {
-  onLogin: (userData?: { name: string; email: string }) => void;
-  onLogout: () => void;
-}
-
-export function LoginPage({ onLogin, onLogout }: LoginPageProps) {
+// LoginPage - No props needed, Firebase handles auth automatically
+export function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -125,46 +118,9 @@ export function LoginPage({ onLogin, onLogout }: LoginPageProps) {
     setError(null);
     
     try {
-      // Check for Firebase config
-      const firebaseConfig = import.meta.env.VITE_FIREBASE_API_KEY;
-      
-      if (firebaseConfig) {
-        // Real Firebase Google OAuth
-        const { getAuth, signInWithPopup, GoogleAuthProvider } = await import("firebase/auth");
-        const { initializeApp } = await import("firebase/app");
-        
-        // Initialize Firebase with env config
-        const app = initializeApp({
-          apiKey: firebaseConfig,
-          authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-          projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-        });
-        
-        const auth = getAuth(app);
-        const provider = new GoogleAuthProvider();
-        
-        // Force account selection
-        provider.setCustomParameters({ prompt: 'select_account' });
-        
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
-        
-        // Success - hydrate user data
-        onLogin({
-          name: user.displayName || 'User',
-          email: user.email || ''
-        });
-      } else {
-        // Demo mode - simulate OAuth flow for development
-        // This shows the proper UX flow without real Firebase
-        await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Show a more realistic demo login
-        onLogin({
-          name: 'Demo User',
-          email: 'demo@sciforge.ai'
-        });
-      }
+      // Use centralized Firebase auth module
+      await signInWithGoogle();
+      // onAuthStateChanged in App.tsx will handle the state update
     } catch (err: any) {
       console.error('Auth error:', err);
       
@@ -172,6 +128,8 @@ export function LoginPage({ onLogin, onLogout }: LoginPageProps) {
         setError('Sign-in cancelled. Please try again.');
       } else if (err.code === 'auth/account-exists-with-different-credential') {
         setError('An account already exists with a different sign-in method.');
+      } else if (err.code === 'auth/network-request-failed') {
+        setError('Network error. Please check your connection.');
       } else {
         setError('Authentication failed. Please try again.');
       }
@@ -332,40 +290,6 @@ export function LoginPage({ onLogin, onLogout }: LoginPageProps) {
           </p>
         </motion.div>
       </div>
-    </div>
-  );
-}
-
-// Loading Screen Component
-export function AuthLoadingScreen() {
-  return (
-    <div className="flex h-screen w-full bg-[#050505] items-center justify-center">
-      <motion.div 
-        className="flex flex-col items-center"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        <div className="w-24 h-24 rounded-2xl bg-[#1a0f00] border-2 border-[#FF7A00]/30 flex items-center justify-center shadow-[0_0_40px_rgba(255,122,0,0.2)] mb-6">
-          <NeuralNexusLogo className="w-16 h-16" />
-        </div>
-        <motion.div
-          animate={{ 
-            boxShadow: [
-              "0 0 20px rgba(255,122,0,0.2)",
-              "0 0 40px rgba(255,122,0,0.4)",
-              "0 0 20px rgba(255,122,0,0.2)"
-            ]
-          }}
-          transition={{ 
-            duration: 2, 
-            repeat: Infinity, 
-            ease: "easeInOut" 
-          }}
-          className="text-white/50 text-sm font-mono tracking-wider"
-        >
-          Synchronizing STEM Engine...
-        </motion.div>
-      </motion.div>
     </div>
   );
 }
