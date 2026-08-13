@@ -17,7 +17,7 @@ import { ModuleType, LearningMode, ChatMessage } from "./types";
 import { Settings as SettingsIcon, Sparkles, Menu } from "lucide-react";
 import { updateTelemetryOnAction } from "./lib/telemetry";
 import { cn } from "./lib/utils";
-import { onAuthStateChange, getAuthRedirectResult, User } from "./firebase";
+import { onAuthStateChange, User } from "./firebase";
 
 // Premium loading screen while auth state resolves
 const AuthLoadingScreen = () => (
@@ -97,31 +97,6 @@ export default function App() {
     
     return () => unsubscribe();
   }, []);
-
-  // Handle redirect result on initial mount (for redirect auth flow)
-  useEffect(() => {
-    const handleRedirectResult = async () => {
-      try {
-        const user = await getAuthRedirectResult();
-        if (user) {
-          setCurrentUser(user);
-          // Update URL to dashboard after successful auth
-          window.history.pushState({}, '', '/dashboard');
-        }
-      } catch (err) {
-        console.error('Redirect result error:', err);
-      }
-    };
-    
-    handleRedirectResult();
-  }, []);
-
-  // Update URL when user is authenticated and on login page
-  useEffect(() => {
-    if (currentUser && window.location.pathname === '/login') {
-      window.history.pushState({}, '', '/dashboard');
-    }
-  }, [currentUser]);
 
   // Route guard - if loading, show loading screen
   if (isAuthLoading) {
