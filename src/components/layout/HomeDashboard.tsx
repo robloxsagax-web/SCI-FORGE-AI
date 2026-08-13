@@ -260,12 +260,12 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
   };
 
   return (
-    <div className="flex-1 flex flex-col relative bg-[#050505]">
+    <div className="flex flex-col relative bg-[#050505] h-full w-full">
       {/* Scrollable Content */}
       <div 
         ref={scrollContainerRef}
         onScroll={handleScroll}
-        className="flex-1 overflow-y-auto scroll-smooth"
+        className="flex-1 overflow-y-auto scroll-smooth overscroll-contain"
       >
         {/* Main Content Container */}
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
