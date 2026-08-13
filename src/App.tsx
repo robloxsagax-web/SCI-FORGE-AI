@@ -3,6 +3,7 @@ import { Sidebar } from "./components/layout/Sidebar";
 import { TopBar } from "./components/layout/TopBar";
 import { RightPanel } from "./components/layout/RightPanel";
 import { HomeDashboard } from "./components/layout/HomeDashboard";
+import { LoginPage } from "./components/layout/LoginPage";
 import { ProjectMate } from "./components/modules/ProjectMate";
 import { ScribbleAnalyzer } from "./components/modules/ScribbleAnalyzer";
 import { AIScientist } from "./components/modules/AIScientist";
@@ -18,6 +19,12 @@ import { updateTelemetryOnAction } from "./lib/telemetry";
 import { cn } from "./lib/utils";
 
 export default function App() {
+  // Auth state must be defined before any conditional returns
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem("sciforge_auth") === "true";
+  });
+
+  // All state definitions
   const [activeModule, setActiveModule] = useState<ModuleType>("home");
   const [showWorkspaceUINav, setShowWorkspaceUINav] = useState(false);
   const [learningMode, setLearningMode] = useState<LearningMode>("beginner");
@@ -25,6 +32,71 @@ export default function App() {
   
   const [isCoreRunning, setIsCoreRunning] = useState(false);
   const [coreTime, setCoreTime] = useState(0);
+
+  const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
+  const [simIntel, setSimIntel] = useState<any>(null);
+  const [scribbleIntel, setScribbleIntel] = useState<any>(null);
+  const [scientistIntel, setScientistIntel] = useState<any>(null);
+  const [dependIntel, setDependIntel] = useState<any>(null);
+
+  const [dyslexiaMode, setDyslexiaMode] = useState(true); // Default ON
+  const [highContrast, setHighContrast] = useState(true); // Default ON
+  const [tts, setTts] = useState(false);
+  const [isLightMode, setIsLightMode] = useState(false);
+  const [customCursor, setCustomCursor] = useState(true); // Default ON
+  const [hapticResponses, setHapticResponses] = useState(true); // Default ON
+  const [autonomousMemory, setAutonomousMemory] = useState(true); // Default ON
+
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [pendingChatMessage, setPendingChatMessage] = useState<string | null>(null);
+  const [systemAlert, setSystemAlert] = useState<string | null>(null);
+
+  // Auth handlers
+  const handleLogin = () => {
+    localStorage.setItem("sciforge_auth", "true");
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("sciforge_auth");
+    setIsAuthenticated(false);
+  };
+
+  // Inline handlers for login page accessibility toggles
+  const toggleLoginDyslexia = () => {
+    const newValue = !dyslexiaMode;
+    setDyslexiaMode(newValue);
+    const stored = localStorage.getItem("sciforge_accessibility");
+    const parsed = stored ? JSON.parse(stored) : {};
+    localStorage.setItem("sciforge_accessibility", JSON.stringify({
+      ...parsed,
+      dyslexiaFont: newValue
+    }));
+  };
+
+  const toggleLoginHighContrast = () => {
+    const newValue = !highContrast;
+    setHighContrast(newValue);
+    const stored = localStorage.getItem("sciforge_accessibility");
+    const parsed = stored ? JSON.parse(stored) : {};
+    localStorage.setItem("sciforge_accessibility", JSON.stringify({
+      ...parsed,
+      highContrast: newValue
+    }));
+  };
+
+  // Show login page if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <LoginPage 
+        onLogin={handleLogin}
+        dyslexiaMode={dyslexiaMode}
+        highContrast={highContrast}
+        onToggleDyslexia={toggleLoginDyslexia}
+        onToggleHighContrast={toggleLoginHighContrast}
+      />
+    );
+  }
 
   useEffect(() => {
     const savedRunning = localStorage.getItem("sciforge_core_running") === "true";
@@ -54,32 +126,18 @@ export default function App() {
     };
   }, [isCoreRunning]);
 
-  const [isRightPanelOpen, setIsRightPanelOpen] = useState(false);
-  const [simIntel, setSimIntel] = useState<any>(null);
-  const [scribbleIntel, setScribbleIntel] = useState<any>(null);
-  const [scientistIntel, setScientistIntel] = useState<any>(null);
-  const [dependIntel, setDependIntel] = useState<any>(null);
-
-  const [dyslexiaMode, setDyslexiaMode] = useState(false);
-  const [highContrast, setHighContrast] = useState(false);
-  const [tts, setTts] = useState(false);
-  const [isLightMode, setIsLightMode] = useState(false);
-  const [customCursor, setCustomCursor] = useState(true); // Default ON
-
-  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
-  const [pendingChatMessage, setPendingChatMessage] = useState<string | null>(null);
-  const [systemAlert, setSystemAlert] = useState<string | null>(null);
-
   useEffect(() => {
     const stored = localStorage.getItem("sciforge_accessibility");
     if (stored) {
       try {
         const parsed = JSON.parse(stored);
-        setDyslexiaMode(parsed.dyslexiaFont || false);
-        setHighContrast(parsed.highContrast || false);
-        setTts(parsed.tts || false);
-        setIsLightMode(parsed.isLightMode || false);
-        setCustomCursor(parsed.customCursor || false);
+        setDyslexiaMode(parsed.dyslexiaFont ?? true);
+        setHighContrast(parsed.highContrast ?? true);
+        setTts(parsed.tts ?? false);
+        setIsLightMode(parsed.isLightMode ?? false);
+        setCustomCursor(parsed.customCursor ?? true);
+        setHapticResponses(parsed.hapticResponses ?? true);
+        setAutonomousMemory(parsed.autonomousMemory ?? true);
       } catch (err) {
         console.error(err);
       }
@@ -95,7 +153,15 @@ export default function App() {
     }
   }, [customCursor]);
 
-  const saveAccessibility = (updatedDyslexia: boolean, updatedContrast: boolean, updatedTts: boolean, updatedLight: boolean, updatedCursor?: boolean) => {
+  const saveAccessibility = (
+    updatedDyslexia: boolean, 
+    updatedContrast: boolean, 
+    updatedTts: boolean, 
+    updatedLight: boolean, 
+    updatedCursor?: boolean,
+    updatedHaptic?: boolean,
+    updatedAutonomous?: boolean
+  ) => {
     setDyslexiaMode(updatedDyslexia);
     setHighContrast(updatedContrast);
     setTts(updatedTts);
@@ -103,12 +169,20 @@ export default function App() {
     if (updatedCursor !== undefined) {
       setCustomCursor(updatedCursor);
     }
+    if (updatedHaptic !== undefined) {
+      setHapticResponses(updatedHaptic);
+    }
+    if (updatedAutonomous !== undefined) {
+      setAutonomousMemory(updatedAutonomous);
+    }
     localStorage.setItem("sciforge_accessibility", JSON.stringify({
       dyslexiaFont: updatedDyslexia,
       highContrast: updatedContrast,
       tts: updatedTts,
       isLightMode: updatedLight,
-      customCursor: updatedCursor ?? customCursor
+      customCursor: updatedCursor ?? customCursor,
+      hapticResponses: updatedHaptic ?? hapticResponses,
+      autonomousMemory: updatedAutonomous ?? autonomousMemory
     }));
   };
 
@@ -119,6 +193,32 @@ export default function App() {
       document.body.classList.remove("dyslexia-mode");
     }
   }, [dyslexiaMode]);
+
+  useEffect(() => {
+    if (highContrast) {
+      document.body.classList.add("high-contrast-mode");
+    } else {
+      document.body.classList.remove("high-contrast-mode");
+    }
+  }, [highContrast]);
+
+  // Apply haptic feedback class
+  useEffect(() => {
+    if (hapticResponses) {
+      document.body.classList.add("haptic-enabled");
+    } else {
+      document.body.classList.remove("haptic-enabled");
+    }
+  }, [hapticResponses]);
+
+  // Apply autonomous memory class
+  useEffect(() => {
+    if (autonomousMemory) {
+      document.body.classList.add("autonomous-memory-enabled");
+    } else {
+      document.body.classList.remove("autonomous-memory-enabled");
+    }
+  }, [autonomousMemory]);
 
   const handleGlobalSearchMessage = (userQuery: string) => {
     const userMsg: ChatMessage = {
@@ -295,10 +395,36 @@ export default function App() {
                   <span className="text-xs text-[#71717A] block">Stylish pen cursor for interactive elements.</span>
                 </div>
                 <button 
-                  onClick={() => saveAccessibility(dyslexiaMode, highContrast, tts, isLightMode, !customCursor)}
+                  onClick={() => saveAccessibility(dyslexiaMode, highContrast, tts, isLightMode, !customCursor, hapticResponses, autonomousMemory)}
                   className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${customCursor ? "bg-[#FF7A00]" : "bg-white/10"}`}
                 >
                   <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${customCursor ? "left-7" : "left-1"}`} />
+                </button>
+              </div>
+              {/* Haptic Interaction Responses */}
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <span className="text-sm font-bold text-white block">Haptic Interaction Responses</span>
+                  <span className="text-xs text-[#71717A] block">Micro-vibrations and spring physics sounds on clicks.</span>
+                </div>
+                <button 
+                  onClick={() => saveAccessibility(dyslexiaMode, highContrast, tts, isLightMode, customCursor, !hapticResponses, autonomousMemory)}
+                  className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${hapticResponses ? "bg-[#FF7A00]" : "bg-white/10"}`}
+                >
+                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${hapticResponses ? "left-7" : "left-1"}`} />
+                </button>
+              </div>
+              {/* Autonomous Background Memory */}
+              <div className="flex items-center justify-between">
+                <div className="space-y-1">
+                  <span className="text-sm font-bold text-white block">Autonomous Background Memory</span>
+                  <span className="text-xs text-[#71717A] block">Proactive concept linkage during mentor idle intervals.</span>
+                </div>
+                <button 
+                  onClick={() => saveAccessibility(dyslexiaMode, highContrast, tts, isLightMode, customCursor, hapticResponses, !autonomousMemory)}
+                  className={`w-12 h-6 rounded-full transition-colors relative cursor-pointer ${autonomousMemory ? "bg-[#FF7A00]" : "bg-white/10"}`}
+                >
+                  <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${autonomousMemory ? "left-7" : "left-1"}`} />
                 </button>
               </div>
             </div>
