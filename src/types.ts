@@ -54,6 +54,7 @@ export interface ChatMessage {
   text: string;
   timestamp: string;
   type?: "learning_journey" | "general_chat" | "natural_conversation" | "explanation";
+  menuBlock?: string;
   topic?: string;
   journey?: LearningJourney;
   explanationStyles?: ExplanationStyles;

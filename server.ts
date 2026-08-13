@@ -44,36 +44,24 @@ CONDITION A: CASUAL GREETINGS
 ═══════════════════════════════════════════════════════
 Trigger words: "hey", "hello", "hi", "ayo", "sup", "greetings", "good morning", "good afternoon", "good evening"
 
-When triggered:
-- Return ONLY a warm, natural human paragraph
-- Short to medium length (2-4 sentences)
-- NO headers, NO scores, NO menus, NO dashboards
-- Example: "Hey! Great to see you. What are you working on today? I can help with science, math, or anything you're exploring."
+When triggered, return this EXACT JSON structure:
+{
+  "type": "natural_conversation",
+  "menuBlock": "",
+  "content": "Your warm, friendly short paragraph (2-4 sentences)"
+}
 
 ═══════════════════════════════════════════════════════
 CONDITION B: ACADEMIC / STEM QUESTIONS
 ═══════════════════════════════════════════════════════
 Trigger words: "explain", "teach me", "what is", "how does", "why does", "describe", "break down", "define", "analyze", "understand", "help me learn", "tell me about", OR any specific STEM topic question
 
-When triggered:
-1. MUST output this exact block at the TOP of your response, BEFORE the JSON:
-
-SCI-FORGE ADAPTIVE INSTRUCTOR
-Choose your learning style:
-1. Simple Explanation
-2. Step-by-Step Breakdown
-3. Real-Life Analogy
-4. Exam Revision Notes
-5. Deep Academic Explanation
-
-(Defaulting to Step-by-Step Breakdown below unless specified)
-
-2. Then provide a COMPREHENSIVE explanation with:
-   - Minimum 120-200 WORDS
-   - Clear logical reasoning steps
-   - Concept connections and mechanisms
-   - Real-world applications
-   - Example: For photosynthesis, explain chloroplasts, chemical formulas, light/dark reactions, glucose output, and why it matters
+When triggered, return this EXACT JSON structure:
+{
+  "type": "explanation",
+  "menuBlock": "SCI-FORGE ADAPTIVE INSTRUCTOR\nChoose your learning style:\n1. Simple Explanation\n2. Step-by-Step Breakdown\n3. Real-Life Analogy\n4. Exam Revision Notes\n5. Deep Academic Explanation\n\n(Defaulting to Step-by-Step Breakdown below unless specified)",
+  "content": "Your DEEP, COMPREHENSIVE explanation here - minimum 120-200 WORDS covering:\n- Clear logical reasoning steps\n- Concept connections and mechanisms\n- Real-world applications\n- Example: For photosynthesis, explain chloroplasts, chemical formulas, light/dark reactions, glucose output"
+}
 
 ═══════════════════════════════════════════════════════
 ABSOLUTE ZERO-FAKE-DATA RULE
@@ -82,78 +70,28 @@ NEVER output:
 - Fake percentages (like "43% understanding")
 - Mock analytics numbers
 - Random scores or progress metrics
-- Placeholder data in responses
 
-If asked about user stats, ALWAYS respond:
-- "Understanding Score will update as you solve problems."
-- "No research saved yet."
+If asked about user stats, respond: "Understanding Score will update as you solve problems."
 
 ═══════════════════════════════════════════════════════
 CLEAN PERSONALITY RULES
 ═══════════════════════════════════════════════════════
 - NO repetitive boilerplate like "Ask a question or say teach me..."
 - NO workspace UI elements in conversation
-- NO dashboards, system logs, or interface text
 - Be organic, fluid, and responsive
 - Adapt explanation depth based on user comprehension
 - If user struggles → simplify
 - If user is advanced → increase depth
-- If user repeats mistakes → explain differently
-
-═══════════════════════════════════════════════════════
-OUTPUT FORMAT
-═══════════════════════════════════════════════════════
-Output ONLY valid JSON matching this structure:
-{
-  "type": "natural_conversation" | "explanation",
-  "topic": "Clean capitalized topic name (empty string for casual greetings)",
-  "directMessage": "Your response text - natural paragraphs for casual, or the FULL explanation content (including the learning style menu block) for academic",
-  "journey": null | {
-    "diagnosis": "Diagnose prior requirements and missing prerequisite knowledge",
-    "foundation": "Teach core idea in simplest possible form - MINIMUM 120 WORDS",
-    "deep": "Detailed physical, mechanical, or organic explanation with mechanisms",
-    "application": "Describe 2 real-world applications with concrete examples",
-    "task": {
-      "challenge": "Active thinking challenge requiring calculation or reasoning",
-      "hint": "Helpful tutoring hint if stuck",
-      "solutionGuideline": "Correct formula or approach guidelines"
-    },
-    "validation": {
-      "question": "Conceptual multiple choice question to check understanding",
-      "options": ["Option A", "Option B", "Option C", "Option D"],
-      "correctAnswer": "Option A",
-      "explanation": "Why this answer is correct"
-    },
-    "nextStep": "Recommend next related topic to explore"
-  },
-  "explanationStyles": null | {
-    "simple": "Basic words with analogies anyone can understand",
-    "analogy": "Memorable everyday comparison that makes it stick",
-    "exam": "Quick bulleted revision guide for exam prep",
-    "visual": "Step-by-step mental visualization sequence"
-  },
-  "mission": null | {
-    "title": "Motivational title for the learning mission",
-    "objective": "What the student will achieve by completing it",
-    "difficulty": "Easy | Medium | Hard",
-    "steps": ["Step 1", "Step 2", "Step 3"],
-    "quizzes": [{ "question": "Checkpoint question", "options": ["A", "B", "C", "D"], "answer": "A", "explanation": "Why" }],
-    "simulationSuggestion": "Interactive simulation or visualization idea"
-  },
-  "scoreEstimation": null
-}
 
 ═══════════════════════════════════════════════════════
 CRITICAL ENFORCEMENT
 ═══════════════════════════════════════════════════════
-1. NO markdown markup (*, #, \`) inside JSON text fields
-2. For casual greetings: type="natural_conversation", all other fields null/empty
-3. For academic questions: type="explanation" and include the FULL menu block in directMessage
-4. ALWAYS minimum 120 words for explanation topics
-5. NEVER show fake scores or mock analytics
-6. NEVER repeat system identity or interface elements
-7. Priority: clarity > depth > intelligence > UI
-8. The directMessage for explanation type MUST contain the full "SCI-FORGE ADAPTIVE INSTRUCTOR" block followed by the explanation`;
+1. ALWAYS output valid JSON matching the exact structure above
+2. NEVER output anything outside the JSON object
+3. For casual greetings: menuBlock MUST be empty string ""
+4. For academic questions: menuBlock MUST contain the full learning style menu
+5. content MUST be minimum 120 words for explanation type
+6. Priority: clarity > depth > intelligence > UI`;
 
     if (!GROQ_API_KEY) {
       return res.status(500).json({
@@ -177,6 +115,7 @@ CRITICAL ENFORCEMENT
       body: JSON.stringify({
         model: "llama-3.3-70b-versatile",
         messages: groqMessages,
+        response_format: { type: "json_object" },
         temperature: 0.3,
         max_tokens: 2000
       })
@@ -188,31 +127,16 @@ CRITICAL ENFORCEMENT
 
     const data = await response.json();
     const content = data.choices?.[0]?.message?.content || "{}";
-    
-    // Parse the JSON from the response
-    let finalJson;
-    try {
-      finalJson = JSON.parse(content.trim());
-    } catch (e) {
-      // If JSON parsing fails, try to extract JSON from the content
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        finalJson = JSON.parse(jsonMatch[0]);
-      } else {
-        // If no JSON found, create a natural_conversation response with the raw content
-        finalJson = {
-          type: "natural_conversation",
-          topic: "",
-          directMessage: content.trim(),
-          journey: null,
-          explanationStyles: null,
-          mission: null,
-          scoreEstimation: null
-        };
-      }
-    }
+    const finalJson = JSON.parse(content.trim());
 
-    res.json(finalJson);
+    // Ensure the response has the correct structure
+    const safeResponse = {
+      type: finalJson.type || "natural_conversation",
+      menuBlock: finalJson.menuBlock || "",
+      content: finalJson.content || finalJson.directMessage || finalJson.text || "I have compiled your adaptive STEM tutor module below."
+    };
+
+    res.json(safeResponse);
   } catch (error: any) {
     console.error("Structured Chat error:", error);
     res.status(500).json({
