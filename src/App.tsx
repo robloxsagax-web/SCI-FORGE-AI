@@ -19,71 +19,7 @@ import { updateTelemetryOnAction } from "./lib/telemetry";
 import { cn } from "./lib/utils";
 
 export default function App() {
-  // Auth state with strict guards
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAuthLoading, setIsAuthLoading] = useState(true);
-  const [userData, setUserData] = useState<{ name: string; email: string } | null>(null);
-
-  // Strict auth check on mount - no bypass allowed
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const storedAuth = localStorage.getItem("sciforge_auth");
-        const storedUser = localStorage.getItem("sciforge_user");
-        
-        if (storedAuth === "true" && storedUser) {
-          const user = JSON.parse(storedUser);
-          setUserData(user);
-          setIsAuthenticated(true);
-        } else {
-          setIsAuthenticated(false);
-        }
-      } catch (err) {
-        console.error('Auth check failed:', err);
-        setIsAuthenticated(false);
-      } finally {
-        setIsAuthLoading(false);
-      }
-    };
-    
-    checkAuth();
-  }, []);
-
-  // Strict route guard - redirect to login if not authenticated
-  const handleLogin = (user?: { name: string; email: string }) => {
-    if (user) {
-      localStorage.setItem("sciforge_user", JSON.stringify(user));
-    }
-    localStorage.setItem("sciforge_auth", "true");
-    setUserData(user || null);
-    setIsAuthenticated(true);
-  };
-
-  const handleLogout = () => {
-    // Clear ALL auth data
-    localStorage.removeItem("sciforge_auth");
-    localStorage.removeItem("sciforge_user");
-    setIsAuthenticated(false);
-    setUserData(null);
-  };
-
-  // Loading state - show premium loading screen
-  if (isAuthLoading) {
-    return <AuthLoadingScreen />;
-  }
-
-  // Route Guard - If not authenticated, render login page
-  // This prevents black screens and ensures proper redirect
-  if (!isAuthenticated) {
-    return (
-      <LoginPage 
-        onLogin={handleLogin}
-        onLogout={handleLogout}
-      />
-    );
-  }
-
-  // All state definitions (only when authenticated)
+  // All state definitions - MUST be before any conditionals (React Rules of Hooks)
   const [activeModule, setActiveModule] = useState<ModuleType>("home");
   const [showWorkspaceUINav, setShowWorkspaceUINav] = useState(false);
   const [learningMode, setLearningMode] = useState<LearningMode>("beginner");
@@ -109,6 +45,77 @@ export default function App() {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [pendingChatMessage, setPendingChatMessage] = useState<string | null>(null);
   const [systemAlert, setSystemAlert] = useState<string | null>(null);
+
+  // Auth state with strict guards
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return localStorage.getItem("sciforge_auth") === "true" && 
+           localStorage.getItem("sciforge_user") !== null;
+  });
+  const [userData, setUserData] = useState<{ name: string; email: string } | null>(() => {
+    if (typeof window === 'undefined') return null;
+    const stored = localStorage.getItem("sciforge_user");
+    if (stored) {
+      try {
+        return JSON.parse(stored);
+      } catch {
+        return null;
+      }
+    }
+    return null;
+  });
+
+  // Strict auth check on mount - no bypass allowed
+  useEffect(() => {
+    const checkAuth = () => {
+      try {
+        const storedAuth = localStorage.getItem("sciforge_auth");
+        const storedUser = localStorage.getItem("sciforge_user");
+        
+        if (storedAuth === "true" && storedUser) {
+          const user = JSON.parse(storedUser);
+          setUserData(user);
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+        }
+      } catch (err) {
+        console.error('Auth check failed:', err);
+        setIsAuthenticated(false);
+      }
+    };
+    
+    checkAuth();
+  }, []);
+
+  // Strict route guard handlers
+  const handleLogin = (user?: { name: string; email: string }) => {
+    if (user) {
+      localStorage.setItem("sciforge_user", JSON.stringify(user));
+      setUserData(user);
+    }
+    localStorage.setItem("sciforge_auth", "true");
+    setIsAuthenticated(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("sciforge_auth");
+    localStorage.removeItem("sciforge_user");
+    setIsAuthenticated(false);
+    setUserData(null);
+  };
+
+  // Early returns AFTER all hooks are called
+  if (!isAuthenticated) {
+    return (
+      <LoginPage 
+        onLogin={handleLogin}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
+  // Main app continues here...
 
   useEffect(() => {
     const savedRunning = localStorage.getItem("sciforge_core_running") === "true";
