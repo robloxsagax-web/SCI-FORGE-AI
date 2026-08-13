@@ -2,7 +2,7 @@
 // Production Firebase configuration
 
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithPopup, signOut as firebaseSignOut, onAuthStateChanged, User } from "firebase/auth";
+import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut as firebaseSignOut, onAuthStateChanged, User } from "firebase/auth";
 
 // Firebase configuration from project dashboard
 const firebaseConfig = {
@@ -24,10 +24,15 @@ export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 googleProvider.setCustomParameters({ prompt: 'select_account' });
 
-// Sign in with Google popup
-export async function signInWithGoogle(): Promise<User> {
-  const result = await signInWithPopup(auth, googleProvider);
-  return result.user;
+// Sign in with Google redirect (avoids cross-origin popup issues)
+export async function signInWithGoogle(): Promise<void> {
+  await signInWithRedirect(auth, googleProvider);
+}
+
+// Get redirect result (call on app mount to handle returning users)
+export async function getAuthRedirectResult(): Promise<User | null> {
+  const result = await getRedirectResult(auth);
+  return result?.user || null;
 }
 
 // Sign out
