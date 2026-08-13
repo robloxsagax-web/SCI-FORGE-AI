@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "motion/react";
-import { ChevronRight, User, Mail, Lock, Sparkles, Zap, Type, Contrast } from "lucide-react";
+import { ChevronDown, ChevronRight, User, Mail, Lock, Sparkles, Zap, Type, Contrast } from "lucide-react";
 import { signIn, signUp, demoLogin } from "../../lib/auth";
 import { LoadingScreen } from "./LoadingScreen";
 
@@ -10,6 +10,7 @@ interface FormData {
   name: string;
   email: string;
   password: string;
+  grade: string;
 }
 
 // Premium Neural Nexus Logo
@@ -237,10 +238,11 @@ export function LoginPage() {
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
-    password: ''
+    password: '',
+    grade: 'grade11'
   });
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
     setError(null);
   };
@@ -248,7 +250,7 @@ export function LoginPage() {
   const handleTabSwitch = (tab: AuthTab) => {
     setActiveTab(tab);
     setError(null);
-    setFormData({ name: '', email: '', password: '' });
+    setFormData({ name: '', email: '', password: '', grade: 'grade11' });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -265,7 +267,7 @@ export function LoginPage() {
           return;
         }
       } else {
-        const result = signUp(formData.name, formData.email, formData.password);
+        const result = signUp(formData.name, formData.email, formData.password, formData.grade);
         if (!result.success) {
           setError(result.error || 'Sign up failed');
           setIsLoading(false);
@@ -444,7 +446,7 @@ export function LoginPage() {
             )}
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-3 md:space-y-4 max-h-[92vh] overflow-y-auto pr-1 scrollbar-hide">
               {activeTab === 'signup' && (
                 <InputField
                   icon={User}
@@ -463,6 +465,26 @@ export function LoginPage() {
                 value={formData.email}
                 onChange={handleInputChange}
               />
+              {activeTab === 'signup' && (
+                <div className="relative">
+                  <div className="absolute left-4 top-1/2 -translate-y-1/2 text-white/30">
+                    <Type className="w-4 h-4" />
+                  </div>
+                  <select
+                    name="grade"
+                    value={formData.grade}
+                    onChange={handleInputChange}
+                    className="w-full pl-12 pr-10 py-3.5 bg-white/5 border border-white/10 rounded-xl text-white appearance-none focus:outline-none focus:border-[#FF7A00]/70 focus:bg-white/[0.07] focus:shadow-[0_0_15px_rgba(255,122,0,0.15)] transition-all duration-300 cursor-pointer hover:bg-white/[0.07]"
+                  >
+                    <option value="grade9" className="bg-[#111111]">Grade 9 / Freshman</option>
+                    <option value="grade10" className="bg-[#111111]">Grade 10 / Sophomore</option>
+                    <option value="grade11" className="bg-[#111111]">Grade 11 / Junior</option>
+                    <option value="grade12" className="bg-[#111111]">Grade 12 / Senior</option>
+                    <option value="undergrad" className="bg-[#111111]">Undergraduate / University Scholar</option>
+                  </select>
+                  <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
+                </div>
+              )}
               <InputField
                 icon={Lock}
                 type="password"
