@@ -1,4 +1,4 @@
-import { Database, Activity, FilePenLine, GraduationCap, Settings, Hexagon, MessageSquare, HelpCircle, BookOpen, Network, FolderArchive, X, Sparkles } from "lucide-react";
+import { Database, Activity, FilePenLine, GraduationCap, Settings, Hexagon, MessageSquare, HelpCircle, BookOpen, Network, FolderArchive, X, Sparkles, LogOut } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { ModuleType } from "../../types";
 import { motion } from "motion/react";
@@ -31,6 +31,12 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
     }
   };
 
+  const handleSignOut = () => {
+    // Clear user session and redirect
+    localStorage.removeItem("sciforge_google_session");
+    window.location.reload();
+  };
+
   return (
     <>
       {/* Mobile Backdrop Overlay */}
@@ -48,7 +54,7 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
         {/* Logo Area */}
         <div className="h-16 flex items-center justify-between px-5 border-b border-white/8 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#FF7A00] to-[#FFB547] flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#FF7A00] to-[#FFB547] flex items-center justify-center shadow-lg shadow-[#FF7A00]/20">
               <Hexagon className="w-5 h-5 text-white" fill="currentColor" />
             </div>
             <div>
@@ -100,8 +106,9 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
           </div>
         </div>
 
-        {/* Settings at Bottom */}
-        <div className="p-3 border-t border-white/8">
+        {/* Bottom Actions */}
+        <div className="p-3 border-t border-white/8 space-y-1">
+          {/* Settings */}
           <button
             onClick={() => handleItemClick("settings")}
             className={cn(
@@ -120,6 +127,15 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
             )}
             <Settings className="w-5 h-5 shrink-0" />
             <span>Settings</span>
+          </button>
+
+          {/* Sign Out */}
+          <button
+            onClick={handleSignOut}
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#71717A] hover:text-[#EF4444] hover:bg-[#EF4444]/5 transition-all duration-200 group"
+          >
+            <LogOut className="w-5 h-5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+            <span>Sign Out</span>
           </button>
         </div>
       </div>
