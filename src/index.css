@@ -200,7 +200,29 @@ body.dyslexia-mode {
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='none' stroke='%23FFB547' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3E%3Cpath d='m15 5 4 4'/%3E%3C/svg%3E") 0 24, auto;
 }
 
-/* Global Custom Cursor */
+/* Global Custom Cursor - Default for SciForge AI */
+body * {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='%23FF7A00' stroke='%23FF7A00' stroke-width='1'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3C/svg%3E") 12 12, auto;
+}
+
+body a,
+body button,
+body [role="button"],
+body input,
+body textarea,
+body select,
+body [contenteditable="true"] {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23FF7A00' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3E%3Cpath d='m15 5 4 4'/%3E%3C/svg%3E") 0 24, pointer;
+}
+
+body a:hover,
+body button:hover,
+body [role="button"]:hover,
+body [contenteditable="true"]:hover {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='none' stroke='%23FFB547' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3E%3Cpath d='m15 5 4 4'/%3E%3C/svg%3E") 0 24, pointer;
+}
+
+/* Legacy custom-cursor-enabled class still works for toggle */
 body.custom-cursor-enabled * {
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='%23FF7A00' stroke='%23FF7A00' stroke-width='1'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3C/svg%3E") 12 12, auto;
 }
@@ -208,17 +230,9 @@ body.custom-cursor-enabled * {
 body.custom-cursor-enabled a,
 body.custom-cursor-enabled button,
 body.custom-cursor-enabled [role="button"],
-body.custom-cursor-enabled [onClick],
 body.custom-cursor-enabled input,
 body.custom-cursor-enabled textarea {
   cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23FF7A00' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3E%3Cpath d='m15 5 4 4'/%3E%3C/svg%3E") 0 24, pointer;
-}
-
-body.custom-cursor-enabled a:hover,
-body.custom-cursor-enabled button:hover,
-body.custom-cursor-enabled [role="button"]:hover,
-body.custom-cursor-enabled [onClick]:hover {
-  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='none' stroke='%23FFB547' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z'/%3E%3Cpath d='m15 5 4 4'/%3E%3C/svg%3E") 0 24, pointer;
 }
 
 /* Scribble Analysis Lab Canvas - Sharp Pen Cursor */
