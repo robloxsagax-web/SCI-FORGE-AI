@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { motion } from "motion/react";
 import { Shield, ChevronRight } from "lucide-react";
-import { signInWithGoogle } from "../../firebase";
+import { signInWithGoogle } from "../../lib/firebase";
 
 // Premium Neural Nexus Logo
 const NeuralNexusLogo = ({ className }: { className?: string }) => (
