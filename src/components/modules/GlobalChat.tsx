@@ -124,15 +124,27 @@ export function GlobalChat({
       }));
       chatHistory.push({ role: "user", content: textToSend });
 
+      console.log("[Chat] Sending request to /api/chat with", chatHistory.length, "messages");
+
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: chatHistory })
       });
 
-      if (!response.ok) throw new Error("Could not deliver chat update to workstation backend.");
+      console.log("[Chat] Received response status:", response.status);
+
+      if (!response.ok) {
+        throw new Error(`Server returned status ${response.status}`);
+      }
 
       const data = await response.json();
+      console.log("[Chat] API Response:", JSON.stringify(data, null, 2));
+      
+      // Validate response schema
+      if (!data || typeof data !== 'object') {
+        throw new Error("Invalid response format from server");
+      }
       
       // Note: Understanding Score is NOT updated from chat messages
       // Scores only increase from real workspace actions (notes, quizzes, etc.)
@@ -149,15 +161,15 @@ export function GlobalChat({
       const aiMsg: ChatMessage = {
         id: crypto.randomUUID(),
         sender: "ai",
-        text: data.content || "I have compiled your adaptive STEM tutor module below.",
+        text: data.directMessage || data.content || "Sorry, I couldn't generate a response right now. Please try again.",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        type: data.type === "greeting" ? "natural_conversation" : "explanation",
-        menuBlock: "",
-        topic: "",
-        journey: null,
-        explanationStyles: null,
-        mission: null,
-        scoreEstimation: null
+        type: (data.type === "natural_conversation" || data.type === "greeting") ? "natural_conversation" : "explanation",
+        menuBlock: data.menuBlock || "",
+        topic: data.topic || "",
+        journey: data.journey || null,
+        explanationStyles: data.explanationStyles || null,
+        mission: data.mission || null,
+        scoreEstimation: data.scoreEstimation || null
       };
 
       onAddMessage(aiMsg);
@@ -190,11 +202,11 @@ export function GlobalChat({
       }
 
     } catch (err) {
-      console.error(err);
+      console.error("[Chat] Error:", err);
       const errMsg: ChatMessage = {
         id: crypto.randomUUID(),
         sender: "ai",
-        text: "Localized telemetry collision on neural processors. Let me reboot my active tutor state.",
+        text: "Sorry, I couldn't generate a response right now. Please try again.",
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       };
       onAddMessage(errMsg);

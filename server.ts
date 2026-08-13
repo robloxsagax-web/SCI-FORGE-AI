@@ -177,19 +177,54 @@ ABSOLUTE RULES
     else if (wantsDependencyMap) routeTo = "dependencymap";
     else if (wantsStudyPlan) routeTo = "progress";
 
+    // Determine response type and content
+    let responseType = "chat";
+    let directMessage = content;
+    
+    if (isGreeting) {
+      responseType = "natural_conversation";
+      // For greetings, the content is already a natural response
+      directMessage = content;
+    } else if (isAcademic && !routeTo) {
+      responseType = "explanation";
+      directMessage = content;
+    }
+
+    // Return structured response
     res.json({ 
-      content: content,
-      routeTo: routeTo,
-      isAcademic: isAcademic && !routeTo
+      type: responseType,
+      topic: isAcademic ? extractTopic(lastUserMessage) : "",
+      directMessage: directMessage,
+      journey: null,
+      explanationStyles: null,
+      mission: null,
+      scoreEstimation: null,
+      routeTo: routeTo
     });
   } catch (error: any) {
     console.error("Chat error:", error);
     res.status(500).json({
-      error: error.message || "Failed to process query.",
-      fallback: true
+      type: "error",
+      topic: "",
+      directMessage: "Sorry, I couldn't generate a response right now. Please try again.",
+      journey: null,
+      explanationStyles: null,
+      mission: null,
+      scoreEstimation: null,
+      routeTo: null
     });
   }
 });
+
+// Helper function to extract topic from user message
+function extractTopic(message: string): string {
+  // Simple topic extraction - take the main noun/term from the message
+  const cleaned = message
+    .replace(/^(explain|teach me|what is|how does|why does|describe|break down|help me understand|simplify|study|revision|exam notes about|learn about|tell me about|analyze|define|how do i|can you explain)\s+/i, '')
+    .replace(/[?!.,]/g, '')
+    .trim();
+  return cleaned.split(' ').slice(0, 3).join(' ') || "STEM Topic";
+}
 
 // Route: Simulation engine with JSON configuration
 app.post("/api/simulate", async (req, res) => {
