@@ -1,9 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { 
   MessageSquare, BookOpen, HelpCircle, Database, Activity, Network, 
   GraduationCap, FolderArchive, Sparkles, ChevronRight, Clock, 
-  FileText, BrainCircuit, ArrowRight, Mic, Paperclip, LogOut,
-  Target, TrendingUp, BookMarked, FlaskConical
+  FileText, BrainCircuit, ArrowRight, Target, TrendingUp, BookMarked, 
+  FlaskConical, Zap, Activity as ActivityIcon, Flame, Check, Upload,
+  PanelLeft, Clock3, DoorOpen
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "../../lib/utils";
@@ -12,9 +13,10 @@ import { updateTelemetryOnAction, getTelemetry } from "../../lib/telemetry";
 
 interface HomeDashboardProps {
   onRoute: (module: ModuleType) => void;
-  onStartChat: () => void;
+  onStartChat: (initialMessage?: string) => void;
   chatMessages: ChatMessage[];
   onViewConversations: () => void;
+  onTransferToWorkspace: (workspace: ModuleType, data?: any) => void;
 }
 
 interface WorkspaceCard {
@@ -93,11 +95,24 @@ const WORKSPACE_CARDS: WorkspaceCard[] = [
   },
 ];
 
-export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConversations }: HomeDashboardProps) {
+const SUGGESTIONS = [
+  { text: "Teach me Photosynthesis", icon: "🌿" },
+  { text: "Create a quiz on Physics", icon: "⚡" },
+  { text: "Generate study notes", icon: "📝" },
+  { text: "Explain Newton's Laws", icon: "🔬" },
+];
+
+export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConversations, onTransferToWorkspace }: HomeDashboardProps) {
   const [telemetry, setTelemetry] = useState(getTelemetry());
   const [recentSessions, setRecentSessions] = useState<any[]>([]);
   const [chatInput, setChatInput] = useState("");
   const [isInputFocused, setIsInputFocused] = useState(false);
+  const [streak, setStreak] = useState(() => {
+    return parseInt(localStorage.getItem("sciforge_streak") || "0", 10);
+  });
+  const [showStreakBurst, setShowStreakBurst] = useState(false);
+  const [clipboardText, setClipboardText] = useState("");
+  const [isDragOver, setIsDragOver] = useState(false);
   
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -125,17 +140,75 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
     return () => clearInterval(interval);
   }, []);
 
-  const handleSendMessage = () => {
+  // Handle suggestion click - fill input and route to chat
+  const handleSuggestionClick = useCallback((text: string) => {
+    setChatInput(text);
+    onStartChat(text);
+    onRoute("chat");
+    inputRef.current?.focus();
+  }, [onStartChat, onRoute]);
+
+  // Handle send message - route to chat with input
+  const handleSendMessage = useCallback(() => {
     if (chatInput.trim()) {
-      onStartChat();
-      // The chat will handle the input via global state
+      onStartChat(chatInput.trim());
+      onRoute("chat");
     }
-  };
+  }, [chatInput, onStartChat, onRoute]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
+    }
+  };
+
+  // Handle streak check-in with particle burst
+  const handleStreakCheckIn = () => {
+    const newStreak = streak + 1;
+    setStreak(newStreak);
+    localStorage.setItem("sciforge_streak", newStreak.toString());
+    setShowStreakBurst(true);
+    updateTelemetryOnAction("streak_checkin");
+    setTimeout(() => setShowStreakBurst(false), 1000);
+  };
+
+  // Handle recent chat click - resume conversation
+  const handleRecentChatClick = useCallback((session: any) => {
+    const moduleMap: Record<string, ModuleType> = {
+      'chat': 'chat', 'notes': 'notes', 'quiz': 'quiz',
+      'scribble': 'scribble', 'scientist': 'scientist',
+      'simulation': 'simulation', 'dependencymap': 'dependencymap'
+    };
+    const targetModule = moduleMap[session.type] || 'chat';
+    
+    // Restore conversation state and route
+    if (session.state) {
+      onTransferToWorkspace(targetModule, { restoredSession: session });
+    }
+    onRoute(targetModule);
+  }, [onRoute, onTransferToWorkspace]);
+
+  // Handle clipboard paste - auto-route to scribble or notes
+  const handleClipboardPaste = useCallback((text: string) => {
+    setClipboardText(text);
+    if (text.length > 100) {
+      // Long text - route to notes generator
+      onTransferToWorkspace("notes", { preloadedTopic: text.substring(0, 200) });
+      onRoute("notes");
+    } else {
+      // Short text - route to scribble analysis
+      onTransferToWorkspace("scribble", { rawText: text });
+      onRoute("scribble");
+    }
+  }, [onTransferToWorkspace, onRoute]);
+
+  const handlePaste = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      handleClipboardPaste(text);
+    } catch (err) {
+      console.error("Failed to read clipboard:", err);
     }
   };
 
@@ -253,13 +326,13 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
               </div>
             </div>
 
-            {/* Search Input Area */}
-            <div className="relative">
+            {/* Clean Input Area - Send Button Outside */}
+            <div className="flex items-center gap-3">
               <div 
                 className={cn(
-                  "flex items-center gap-3 bg-[#1a1a1a] rounded-full px-6 py-4 border transition-all duration-300",
+                  "flex-1 bg-[#1a1a1a] rounded-full px-6 py-4 border transition-all duration-300",
                   isInputFocused 
-                    ? "border-[#FF7A00]/50 shadow-lg shadow-[#FF7A00]/10" 
+                    ? "border-[#FF7A00]/50 shadow-[0_0_20px_rgba(255,122,0,0.15)]" 
                     : "border-white/5 hover:border-white/10"
                 )}
               >
@@ -272,40 +345,20 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                   onBlur={() => setIsInputFocused(false)}
                   onKeyDown={handleKeyDown}
                   placeholder="Ask a question, request notes, generate quizzes, or say 'teach me Kepler's laws'..."
-                  className="flex-1 bg-transparent text-white placeholder:text-[#71717A] text-sm outline-none"
+                  className="w-full bg-transparent text-white placeholder:text-[#71717A] text-sm outline-none"
                 />
-                
-                {/* Microphone & Attachment Icons */}
-                <div className="flex items-center gap-2">
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="p-2 hover:bg-white/5 rounded-full text-[#71717A] hover:text-[#A1A1AA] transition-colors"
-                    title="Voice input"
-                  >
-                    <Mic className="w-4 h-4" />
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="p-2 hover:bg-white/5 rounded-full text-[#71717A] hover:text-[#A1A1AA] transition-colors"
-                    title="Attach or scan"
-                  >
-                    <Paperclip className="w-4 h-4" />
-                  </motion.button>
-                </div>
               </div>
 
-              {/* Send Button */}
+              {/* Send Button - Outside, Sharp Circular */}
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleSendMessage}
                 disabled={!chatInput.trim()}
                 className={cn(
-                  "absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300",
+                  "w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 shrink-0",
                   chatInput.trim() 
-                    ? "bg-gradient-to-br from-[#FF7A00] to-[#FF8C1A] shadow-lg shadow-[#FF7A00]/30 text-white" 
+                    ? "bg-[#FF7A00] hover:bg-[#FF8C1A] shadow-lg shadow-[#FF7A00]/30 text-white" 
                     : "bg-white/5 text-[#71717A] cursor-not-allowed"
                 )}
               >
@@ -313,31 +366,188 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
               </motion.button>
             </div>
 
-            {/* Quick Actions */}
+            {/* Quick Action Suggestion Pills */}
             <div className="flex flex-wrap gap-2 mt-4">
-              {["Teach me Photosynthesis", "Create a quiz on Physics", "Generate study notes"].map((suggestion, i) => (
+              {SUGGESTIONS.map((suggestion, i) => (
                 <motion.button
                   key={i}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.3 + i * 0.05 }}
-                  onClick={() => setChatInput(suggestion)}
+                  onClick={() => handleSuggestionClick(suggestion.text)}
                   whileHover={{ scale: 1.02 }}
-                  className="px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/5 rounded-full text-xs text-[#A1A1AA] hover:text-white transition-all duration-200"
+                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center gap-2 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/5 hover:border-[#FF7A00]/30 rounded-full text-xs text-[#A1A1AA] hover:text-white transition-all duration-200"
                 >
-                  {suggestion}
+                  <span>{suggestion.icon}</span>
+                  <span>{suggestion.text}</span>
                 </motion.button>
               ))}
             </div>
           </div>
         </motion.div>
 
+        {/* Two Column Layout for Widgets */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          
+          {/* System Status & Streak Tracker Column */}
+          <div className="space-y-6">
+            
+            {/* System Latency Panel */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.25 }}
+              className="bg-[#111111] border border-white/5 rounded-2xl p-5"
+            >
+              <h3 className="text-sm font-heading font-semibold text-white mb-4 flex items-center gap-2">
+                <Zap className="w-4 h-4 text-[#FF7A00]" />
+                System Status
+              </h3>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-center">
+                  <p className="text-xs text-[#71717A] mb-1">Model</p>
+                  <p className="text-sm font-mono text-white">Llama 3.3</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-[#71717A] mb-1">Latency</p>
+                  <div className="flex items-center justify-center gap-1">
+                    <span className="w-2 h-2 bg-[#22C55E] rounded-full animate-pulse" />
+                    <span className="text-sm font-mono text-white">42ms</span>
+                  </div>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-[#71717A] mb-1">Tokens/s</p>
+                  <p className="text-sm font-mono text-white">85 t/s</p>
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Academic Streak Tracker */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="bg-[#111111] border border-white/5 rounded-2xl p-5 relative overflow-hidden"
+            >
+              <h3 className="text-sm font-heading font-semibold text-white mb-4 flex items-center gap-2">
+                <Flame className="w-4 h-4 text-[#FF7A00]" />
+                Learning Streak
+              </h3>
+              
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#FF7A00]/20 to-[#FFB547]/10 flex items-center justify-center">
+                    <span className="text-2xl">🔥</span>
+                  </div>
+                  <div>
+                    <motion.p 
+                      className="text-2xl font-heading font-bold text-white"
+                      key={streak}
+                      initial={{ scale: 1.2 }}
+                      animate={{ scale: 1 }}
+                    >
+                      {streak} Day{streak !== 1 ? 's' : ''}
+                    </motion.p>
+                    <p className="text-xs text-[#71717A]">Keep it going!</p>
+                  </div>
+                </div>
+                
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={handleStreakCheckIn}
+                  className="relative px-4 py-2 bg-[#FF7A00]/10 hover:bg-[#FF7A00]/20 border border-[#FF7A00]/30 rounded-xl text-sm text-[#FF7A00] font-medium transition-all duration-200 flex items-center gap-2"
+                >
+                  <Check className="w-4 h-4" />
+                  Check In
+                  
+                  {/* Particle Burst Animation */}
+                  <AnimatePresence>
+                    {showStreakBurst && (
+                      <>
+                        {[...Array(8)].map((_, i) => (
+                          <motion.div
+                            key={i}
+                            initial={{ opacity: 1, scale: 0 }}
+                            animate={{ 
+                              opacity: 0, 
+                              scale: 1,
+                              x: Math.cos(i * 45 * Math.PI / 180) * 40,
+                              y: Math.sin(i * 45 * Math.PI / 180) * 40
+                            }}
+                            exit={{ opacity: 0 }}
+                            transition={{ duration: 0.6, ease: "easeOut" }}
+                            className="absolute inset-0 flex items-center justify-center"
+                          >
+                            <div className="w-2 h-2 rounded-full bg-[#FF7A00]" />
+                          </motion.div>
+                        ))}
+                      </>
+                    )}
+                  </AnimatePresence>
+                </motion.button>
+              </div>
+            </motion.div>
+          </div>
+
+          {/* Quick-Scan Clipboard Dropper */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
+            className="bg-[#111111] border border-white/5 rounded-2xl p-5"
+          >
+            <h3 className="text-sm font-heading font-semibold text-white mb-4 flex items-center gap-2">
+              <Upload className="w-4 h-4 text-[#FFB547]" />
+              Quick-Scan Input Lab
+            </h3>
+            
+            <motion.div
+              animate={{ borderColor: isDragOver ? "#FF7A00" : "rgba(255,255,255,0.05)" }}
+              className={cn(
+                "border-2 border-dashed rounded-2xl p-6 text-center transition-colors duration-300 min-h-[120px] flex flex-col items-center justify-center gap-3",
+                isDragOver ? "bg-[#FF7A00]/5" : "bg-[#1a1a1a]/50"
+              )}
+              onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
+              onDragLeave={() => setIsDragOver(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setIsDragOver(false);
+                const text = e.dataTransfer.getData("text/plain");
+                if (text) handleClipboardPaste(text);
+              }}
+            >
+              <div className="w-10 h-10 rounded-xl bg-[#FFB547]/10 flex items-center justify-center">
+                <BrainCircuit className="w-5 h-5 text-[#FFB547]" />
+              </div>
+              
+              {clipboardText ? (
+                <div className="w-full text-left">
+                  <p className="text-xs text-[#71717A] mb-1">Pasted content ({clipboardText.length} chars)</p>
+                  <p className="text-sm text-white/80 line-clamp-2">{clipboardText.substring(0, 100)}...</p>
+                </div>
+              ) : (
+                <p className="text-sm text-[#71717A]">
+                  Drop text here or{" "}
+                  <button 
+                    onClick={handlePaste}
+                    className="text-[#FF7A00] hover:underline"
+                  >
+                    paste from clipboard
+                  </button>
+                </p>
+              )}
+            </motion.div>
+          </motion.div>
+        </div>
+
         {/* Recent Conversations */}
         {recentSessions.length > 0 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
             className="mb-8"
           >
             <div className="flex items-center justify-between mb-4">
@@ -355,16 +565,9 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                   key={idx}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + idx * 0.05 }}
-                  onClick={() => {
-                    const moduleMap: Record<string, ModuleType> = {
-                      'chat': 'chat', 'notes': 'notes', 'quiz': 'quiz',
-                      'scribble': 'scribble', 'scientist': 'scientist',
-                      'simulation': 'simulation', 'dependencymap': 'dependencymap'
-                    };
-                    onRoute(moduleMap[session.type] || 'chat');
-                  }}
-                  className="group flex-shrink-0 flex items-center gap-3 p-3 bg-[#111111] hover:bg-[#1a1a1a] border border-white/5 hover:border-white/10 rounded-xl transition-all duration-200"
+                  transition={{ delay: 0.4 + idx * 0.05 }}
+                  onClick={() => handleRecentChatClick(session)}
+                  className="group flex-shrink-0 flex items-center gap-3 p-3 bg-[#111111] hover:bg-[#1a1a1a] border border-white/5 hover:border-[#FF7A00]/30 rounded-xl transition-all duration-200"
                 >
                   <div className="w-8 h-8 rounded-lg bg-[#FF7A00]/10 flex items-center justify-center">
                     <MessageSquare className="w-4 h-4 text-[#FF7A00]" />
@@ -373,6 +576,7 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                     <p className="text-sm text-white font-medium truncate max-w-[120px]">{session.title}</p>
                     <p className="text-[10px] text-[#71717A]">{formatTimeAgo(session.timestamp)}</p>
                   </div>
+                  <ChevronRight className="w-4 h-4 text-[#71717A] group-hover:text-[#FF7A00] transition-colors shrink-0" />
                 </motion.button>
               ))}
             </div>
@@ -383,7 +587,7 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
+          transition={{ duration: 0.6, delay: 0.5 }}
         >
           <h3 className="text-sm font-heading font-semibold text-white mb-4">Workspace Hub</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -392,14 +596,13 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                 key={card.id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.4 + idx * 0.05 }}
+                transition={{ duration: 0.4, delay: 0.5 + idx * 0.05 }}
                 onClick={() => onRoute(card.id)}
                 className={cn(
                   "group relative bg-[#111111] border border-white/5 rounded-2xl p-5 text-left overflow-hidden transition-all duration-300",
                   card.hoverColor
                 )}
               >
-                {/* Hover Glow Effect */}
                 <div 
                   className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   style={{ 
@@ -423,7 +626,6 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                   </p>
                 </div>
                 
-                {/* Arrow Indicator */}
                 <motion.div
                   initial={{ opacity: 0, x: -5 }}
                   whileHover={{ opacity: 1, x: 0 }}
@@ -432,7 +634,6 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
                   <ChevronRight className="w-4 h-4" style={{ color: card.color }} />
                 </motion.div>
                 
-                {/* Active Border Line on Hover */}
                 <div 
                   className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-current to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"
                   style={{ color: card.color }}
