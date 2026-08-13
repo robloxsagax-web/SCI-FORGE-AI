@@ -35,6 +35,18 @@ export interface TelemetryState {
   adaptiveMentorPathway: string;
 }
 
+// Computed stats for dashboard
+export interface DashboardStats {
+  questionsAnswered: number;
+  notesGenerated: number;
+  quizzesCompleted: number;
+  researchProjects: number;
+  scribbleAnalyzed: number;
+  simulationsRun: number;
+  streakDays: number;
+  focusScore: number;
+}
+
 const DEFAULT_TELEMETRY: TelemetryState = {
   focusScore: 0,
   streakDays: 0,
@@ -70,6 +82,20 @@ export function getTelemetry(): TelemetryState {
   } catch (err) {
     return DEFAULT_TELEMETRY;
   }
+}
+
+export function getDashboardStats(): DashboardStats {
+  const t = getTelemetry();
+  return {
+    questionsAnswered: t.quizCorrectAnswers,
+    notesGenerated: t.notesGeneratedCount,
+    quizzesCompleted: t.quizzesCompletedCount,
+    researchProjects: t.researchInvestigationsCount,
+    scribbleAnalyzed: t.scribbleAnalysisCount,
+    simulationsRun: t.simulationsExecutedCount,
+    streakDays: t.streakDays,
+    focusScore: t.focusScore
+  };
 }
 
 export function saveTelemetry(telemetry: TelemetryState) {
