@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from "react";
-import { User } from "firebase/auth";
 import { Sidebar } from "./components/layout/Sidebar";
 import { TopBar } from "./components/layout/TopBar";
 import { RightPanel } from "./components/layout/RightPanel";
@@ -19,12 +18,12 @@ import { ModuleType, LearningMode, ChatMessage } from "./types";
 import { Settings as SettingsIcon, Sparkles, Menu } from "lucide-react";
 import { updateTelemetryOnAction } from "./lib/telemetry";
 import { cn } from "./lib/utils";
-import { onAuthStateChange, signOut } from "./lib/firebase";
+import { getAuthState, signOut as authSignOut, getUser, User } from "./lib/auth";
 
 type AppPage = 'login' | 'dashboard';
 
 export default function App() {
-  // Auth state - managed by Firebase
+  // Auth state - managed by localStorage
   const [user, setUser] = useState<User | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState<AppPage>('dashboard');
@@ -34,33 +33,46 @@ export default function App() {
   const [learningMode, setLearningMode] = useState<LearningMode>("beginner");
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
-  // Firebase Auth - Listen to authentication state changes
+  // LocalStorage Auth - Check auth state on mount and listen for changes
   useEffect(() => {
-    // onAuthStateChange in firebase.ts handles redirect result processing
-    const unsubscribe = onAuthStateChange((firebaseUser) => {
-      setUser(firebaseUser);
+    // Initial auth check
+    const checkAuth = () => {
+      const authState = getAuthState();
+      const currentUser = getUser();
+      setUser(currentUser);
       setIsAuthLoading(false);
-      
-      // Route guard: Update page based on auth state
-      if (firebaseUser) {
-        setCurrentPage('dashboard');
-      } else {
-        setCurrentPage('login');
-      }
-    });
+      setCurrentPage(authState.isAuthenticated ? 'dashboard' : 'login');
+    };
 
-    return () => unsubscribe();
+    // Check auth immediately
+    checkAuth();
+
+    // Listen for storage changes (for multi-tab support)
+    const handleStorageChange = () => {
+      checkAuth();
+    };
+    window.addEventListener('storage', handleStorageChange);
+
+    // Custom event listener for auth changes within same tab
+    const handleAuthChange = () => {
+      checkAuth();
+    };
+    window.addEventListener('authStateChange', handleAuthChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('authStateChange', handleAuthChange);
+    };
   }, []);
 
   // Handle sign out
-  const handleSignOut = useCallback(async () => {
-    try {
-      await signOut();
-      setActiveModule("home");
-      setCurrentPage('login');
-    } catch (error) {
-      console.error('Sign out error:', error);
-    }
+  const handleSignOut = useCallback(() => {
+    authSignOut();
+    setUser(null);
+    setActiveModule("home");
+    setCurrentPage('login');
+    // Dispatch event for multi-tab support
+    window.dispatchEvent(new Event('authStateChange'));
   }, []);
   
   const [isCoreRunning, setIsCoreRunning] = useState(false);
@@ -434,10 +446,10 @@ export default function App() {
               {/* User Profile Display */}
               <div className="flex items-center gap-2 px-2.5 py-1.5 bg-white/5 border border-white/10 rounded-lg shrink-0">
                 <div className="w-6 h-6 rounded-full bg-gradient-to-br from-[#FF7A00] to-[#FFB547] flex items-center justify-center text-white text-[10px] font-bold">
-                  {user?.displayName?.charAt(0).toUpperCase() || 'U'}
+                  {user?.name?.charAt(0).toUpperCase() || 'U'}
                 </div>
                 <div className="hidden sm:block">
-                  <p className="text-[10px] font-semibold text-white leading-none">{user?.displayName || 'User'}</p>
+                  <p className="text-[10px] font-semibold text-white leading-none">{user?.name || 'User'}</p>
                   <p className="text-[8px] text-white/40 font-mono mt-0.5">{user?.email || ''}</p>
                 </div>
               </div>
