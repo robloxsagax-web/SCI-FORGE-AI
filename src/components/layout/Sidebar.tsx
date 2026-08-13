@@ -1,7 +1,185 @@
-import { Database, Activity, FilePenLine, GraduationCap, Settings, Hexagon, MessageSquare, HelpCircle, BookOpen, Network, FolderArchive, X, Sparkles, LogOut } from "lucide-react";
+import { Hexagon, X } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { ModuleType } from "../../types";
 import { motion } from "motion/react";
+
+// Premium Duo-Tone SVG Icons for Sidebar
+const PremiumSidebarIcons = {
+  home: ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="homeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FF7A00" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#FF7A00" stopOpacity="0.05" />
+        </linearGradient>
+      </defs>
+      <rect x="3" y="10" width="18" height="11" rx="2" fill="url(#homeGrad)" />
+      <path d="M12 3L3 10H5V17H9V13H15V17H19V10H21L12 3Z" stroke="#FF7A00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="12" cy="7" r="2" fill="#FF7A00" fillOpacity="0.3" />
+    </svg>
+  ),
+  chat: ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="chatSidebarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FF7A00" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#FF7A00" stopOpacity="0" />
+        </linearGradient>
+        <filter id="chatGlow">
+          <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+          <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <rect x="2" y="4" width="20" height="14" rx="3" fill="url(#chatSidebarGrad)" />
+      <path d="M6 8h12M6 12h8" stroke="#FF7A00" strokeWidth="1.5" strokeLinecap="round" filter="url(#chatGlow)" />
+      <circle cx="18" cy="10" r="1" fill="#FF7A00" />
+      <path d="M20 16l2 2-2 2" stroke="#FF7A00" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" filter="url(#chatGlow)" />
+    </svg>
+  ),
+  notes: ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="notesSidebarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFB547" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#FFB547" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <rect x="4" y="2" width="16" height="18" rx="2" fill="url(#notesSidebarGrad)" />
+      <path d="M8 7h8M8 11h6M8 15h4" stroke="#FFB547" strokeWidth="1.5" strokeLinecap="round" />
+      <path d="M16 2V6H20" stroke="#FFB547" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <circle cx="19" cy="4" r="1" fill="#FFB547" />
+    </svg>
+  ),
+  quiz: ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="quizSidebarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFB547" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#FFB547" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="12" r="9" fill="url(#quizSidebarGrad)" />
+      <text x="12" y="16" textAnchor="middle" fill="#FFB547" fontSize="11" fontWeight="bold">?</text>
+      <circle cx="12" cy="12" r="9" stroke="#FFB547" strokeWidth="1" strokeOpacity="0.5" />
+    </svg>
+  ),
+  scribble: ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="brainSidebarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#22C55E" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#22C55E" stopOpacity="0.05" />
+        </linearGradient>
+      </defs>
+      <rect x="3" y="3" width="18" height="18" rx="3" fill="url(#brainSidebarGrad)" />
+      <path d="M12 6C9 6 7 8 7 10.5c0 1.5.5 2.5 1.5 3.5l-1 4 2.5-2c.5.5 1 .5 2 .5s1.5 0 2-.5l2.5 2-1-4c1-1 1.5-2 1.5-3.5 0-2.5-2-4.5-5-4.5z" stroke="#22C55E" strokeWidth="1.2" />
+      <path d="M17 3L21 7M19 1L23 5" stroke="#FF7A00" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  ),
+  scientist: ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="atomSidebarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#22C55E" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#22C55E" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="12" r="3" fill="#22C55E" fillOpacity="0.3" />
+      <ellipse cx="12" cy="12" rx="9" ry="4" stroke="#22C55E" strokeWidth="1.2" strokeOpacity="0.6" />
+      <ellipse cx="12" cy="12" rx="9" ry="4" stroke="#22C55E" strokeWidth="1.2" strokeOpacity="0.6" transform="rotate(60 12 12)" />
+      <ellipse cx="12" cy="12" rx="9" ry="4" stroke="#22C55E" strokeWidth="1.2" strokeOpacity="0.6" transform="rotate(120 12 12)" />
+      <circle cx="12" cy="12" r="2" fill="#22C55E" />
+    </svg>
+  ),
+  simulation: ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="simSidebarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FF7A00" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#FF7A00" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <rect x="2" y="2" width="20" height="20" rx="4" fill="url(#simSidebarGrad)" />
+      <circle cx="8" cy="8" r="2" fill="#FF7A00" />
+      <circle cx="16" cy="8" r="2" fill="#FF7A00" />
+      <circle cx="8" cy="16" r="2" fill="#FF7A00" />
+      <circle cx="16" cy="16" r="2" fill="#FF7A00" />
+      <path d="M10 8h4M8 10v4M16 10v4M10 16h4" stroke="#FF7A00" strokeWidth="1" strokeOpacity="0.5" />
+      <circle cx="12" cy="12" r="3" stroke="#FF7A00" strokeWidth="1.5" />
+    </svg>
+  ),
+  dependencymap: ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="mapSidebarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FFB547" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#FFB547" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <rect x="2" y="2" width="20" height="20" rx="3" fill="url(#mapSidebarGrad)" />
+      <circle cx="12" cy="6" r="2" fill="#FFB547" />
+      <circle cx="6" cy="12" r="2" fill="#FFB547" />
+      <circle cx="18" cy="12" r="2" fill="#FFB547" />
+      <circle cx="9" cy="18" r="2" fill="#FFB547" />
+      <circle cx="15" cy="18" r="2" fill="#FFB547" />
+      <path d="M12 8v2M10 12l-2-2M14 12l2-2M9 14v2M15 14v2M11 16l-1 1M13 16l1 1" stroke="#FFB547" strokeWidth="1" strokeLinecap="round" />
+    </svg>
+  ),
+  progress: ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="progressSidebarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#FF7A00" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#FF7A00" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d="M4 21V10L12 3L20 10V21H14V14H10V21H4Z" fill="url(#progressSidebarGrad)" stroke="#FF7A00" strokeWidth="1.2" />
+      <path d="M12 3L12 10" stroke="#FF7A00" strokeWidth="1.5" strokeLinecap="round" />
+      <circle cx="12" cy="8" r="2" fill="#FF7A00" />
+    </svg>
+  ),
+  portfolio: ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="portfolioSidebarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#A1A1AA" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#A1A1AA" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d="M3 7C3 5.89543 3.89543 5 5 5H9L11 7H19C20.1046 7 21 7.89543 21 9V17C21 18.1046 20.1046 19 19 19H5C3.89543 19 3 18.1046 3 17V7Z" fill="url(#portfolioSidebarGrad)" stroke="#A1A1AA" strokeWidth="1.2" />
+      <path d="M8 7V5C8 3.89543 8.89543 3 10 3H14C15.1046 3 16 3.89543 16 5V7" stroke="#A1A1AA" strokeWidth="1.2" />
+      <path d="M3 12H21" stroke="#A1A1AA" strokeWidth="1" opacity="0.5" />
+    </svg>
+  ),
+  settings: ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="settingsSidebarGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#A1A1AA" stopOpacity="0.4" />
+          <stop offset="100%" stopColor="#A1A1AA" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <circle cx="12" cy="12" r="9" fill="url(#settingsSidebarGrad)" stroke="#A1A1AA" strokeWidth="1.2" />
+      <circle cx="12" cy="12" r="4" stroke="#A1A1AA" strokeWidth="1.5" />
+      <path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.64 5.64l1.41 1.41M16.95 16.95l1.41 1.41M5.64 18.36l1.41-1.41M16.95 7.05l1.41-1.41" stroke="#A1A1AA" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  ),
+  logout: ({ className }: { className?: string }) => (
+    <svg viewBox="0 0 24 24" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="logoutGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stopColor="#EF4444" stopOpacity="0.3" />
+          <stop offset="100%" stopColor="#EF4444" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="#EF4444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M16 17L21 12L16 7" stroke="#EF4444" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M21 12H9" stroke="#EF4444" strokeWidth="1.5" strokeLinecap="round" />
+    </svg>
+  ),
+} as const;
+
+type SidebarIconKey = keyof typeof PremiumSidebarIcons;
 
 interface SidebarProps {
   activeModule: ModuleType;
@@ -11,17 +189,17 @@ interface SidebarProps {
 }
 
 const NAV_ITEMS = [
-  { id: "home", label: "Home", icon: Sparkles, color: "text-[#FF7A00]" },
-  { id: "chat", label: "Core Intelligence Console", icon: MessageSquare, color: "text-[#FF7A00]" },
-  { id: "notes", label: "Notes Generator", icon: BookOpen, color: "text-[#FFB547]" },
-  { id: "quiz", label: "Quiz Generator", icon: HelpCircle, color: "text-[#FFB547]" },
-  { id: "scribble", label: "Scribble Analysis Lab", icon: FilePenLine, color: "text-[#22C55E]" },
-  { id: "scientist", label: "Quantum Research Engine", icon: Database, color: "text-[#22C55E]" },
-  { id: "simulation", label: "ProjectMate AI", icon: Activity, color: "text-[#FF7A00]" },
-  { id: "dependencymap", label: "Concept Dependency Map", icon: Network, color: "text-[#FFB547]" },
-  { id: "progress", label: "Academic Propulsion", icon: GraduationCap, color: "text-[#FF7A00]" },
-  { id: "portfolio", label: "Research Portfolio", icon: FolderArchive, color: "text-[#A1A1AA]" },
-  { id: "settings", label: "Settings", icon: Settings, color: "text-[#A1A1AA]" },
+  { id: "home", label: "Home", iconKey: "home" as SidebarIconKey, color: "#FF7A00" },
+  { id: "chat", label: "Core Intelligence Console", iconKey: "chat" as SidebarIconKey, color: "#FF7A00" },
+  { id: "notes", label: "Notes Generator", iconKey: "notes" as SidebarIconKey, color: "#FFB547" },
+  { id: "quiz", label: "Quiz Generator", iconKey: "quiz" as SidebarIconKey, color: "#FFB547" },
+  { id: "scribble", label: "Scribble Analysis Lab", iconKey: "scribble" as SidebarIconKey, color: "#22C55E" },
+  { id: "scientist", label: "Quantum Research Engine", iconKey: "scientist" as SidebarIconKey, color: "#22C55E" },
+  { id: "simulation", label: "ProjectMate AI", iconKey: "simulation" as SidebarIconKey, color: "#FF7A00" },
+  { id: "dependencymap", label: "Concept Dependency Map", iconKey: "dependencymap" as SidebarIconKey, color: "#FFB547" },
+  { id: "progress", label: "Academic Propulsion", iconKey: "progress" as SidebarIconKey, color: "#FF7A00" },
+  { id: "portfolio", label: "Research Portfolio", iconKey: "portfolio" as SidebarIconKey, color: "#A1A1AA" },
+  { id: "settings", label: "Settings", iconKey: "settings" as SidebarIconKey, color: "#A1A1AA" },
 ] as const;
 
 export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseMobile }: SidebarProps) {
@@ -33,7 +211,6 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
   };
 
   const handleSignOut = () => {
-    // Clear user session and redirect
     localStorage.removeItem("sciforge_google_session");
     window.location.reload();
   };
@@ -78,6 +255,7 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
           <div className="space-y-1">
             {NAV_ITEMS.map((item, idx) => {
               const isActive = activeModule === item.id;
+              const IconComponent = PremiumSidebarIcons[item.iconKey];
               return (
                 <motion.button
                   key={item.id}
@@ -104,8 +282,9 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
                   <motion.div
                     whileHover={{ rotate: isActive ? 0 : 5 }}
                     transition={{ duration: 0.2 }}
+                    className="w-5 h-5"
                   >
-                    <item.icon className={cn("w-5 h-5 shrink-0", isActive ? item.color : "text-current group-hover:text-white")} />
+                    <IconComponent className="w-5 h-5" />
                   </motion.div>
                   <span className={cn(isActive ? "text-white font-medium" : "")}>{item.label}</span>
                 </motion.button>
@@ -124,7 +303,9 @@ export function Sidebar({ activeModule, onChangeModule, isOpenOnMobile, onCloseM
             onClick={handleSignOut}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-[#71717A] hover:text-[#EF4444] hover:bg-[#EF4444]/5 transition-all duration-200 group"
           >
-            <LogOut className="w-5 h-5 shrink-0 group-hover:translate-x-0.5 transition-transform" />
+            <div className="w-5 h-5">
+              {PremiumSidebarIcons.logout({ className: "w-5 h-5" })}
+            </div>
             <span>Sign Out</span>
           </motion.button>
         </div>
