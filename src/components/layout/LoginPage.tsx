@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion } from "motion/react";
 import { Shield, ChevronRight } from "lucide-react";
 import { signInWithGoogle } from "../../lib/firebase";
+import { LoadingScreen } from "./LoadingScreen";
 
 // Premium Neural Nexus Logo
 const NeuralNexusLogo = ({ className }: { className?: string }) => (
@@ -113,16 +114,23 @@ export function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Show loading screen when sign-in is in progress
+  if (isLoading) {
+    return <LoadingScreen message="Synchronizing STEM Engine..." />;
+  }
+
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     setError(null);
     
     try {
       // Use centralized Firebase auth module
+      // This triggers the redirect to Google OAuth
       await signInWithGoogle();
-      // onAuthStateChanged in App.tsx will handle the state update
+      // onAuthStateChanged in App.tsx will handle the state update after redirect
     } catch (err: any) {
       console.error('Auth error:', err);
+      setIsLoading(false);
       
       if (err.code === 'auth/popup-closed-by-user') {
         setError('Sign-in cancelled. Please try again.');
@@ -133,8 +141,6 @@ export function LoginPage() {
       } else {
         setError('Authentication failed. Please try again.');
       }
-      
-      setIsLoading(false);
     }
   };
 
