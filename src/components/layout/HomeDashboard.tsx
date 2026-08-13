@@ -143,12 +143,11 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
   }, []);
 
   // Handle scroll for back-to-top button visibility
-  const handleScroll = useCallback(() => {
-    if (scrollContainerRef.current) {
-      const { scrollTop, scrollHeight, clientHeight } = scrollContainerRef.current;
-      // Show button when scrolled more than 300px
-      setShowBackToTop(scrollTop > 300);
-    }
+  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLDivElement;
+    const scrollTop = target.scrollTop;
+    // Show button when scrolled more than 300px
+    setShowBackToTop(scrollTop > 300);
   }, []);
 
   // Scroll to top function
@@ -710,7 +709,7 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={scrollToTop}
-            className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#FF7A00] text-white flex items-center justify-center shadow-lg shadow-[#FF7A00]/30 z-50 cursor-pointer"
+            className="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-[#FF7A00] text-white flex items-center justify-center shadow-lg shadow-[#FF7A00]/30 z-[100] cursor-pointer"
             aria-label="Scroll to top"
           >
             <ArrowUp className="w-5 h-5" />
