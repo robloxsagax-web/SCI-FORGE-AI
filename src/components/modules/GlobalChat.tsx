@@ -2,11 +2,86 @@ import { useState, useEffect, useRef } from "react";
 import { 
   MessageSquare, Sparkles, Send, Bot, Play, GraduationCap, Atom, 
   CheckCircle2, AlertCircle, ArrowRight, RotateCcw, Award, Target, 
-  HelpCircle, BookOpen, Lightbulb, Check, X, ShieldAlert, BadgeCheck
+  HelpCircle, BookOpen, Lightbulb, Check, X, ShieldAlert, BadgeCheck,
+  FileText, BrainCircuit, FlaskConical, Pencil
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { ChatMessage, ModuleType, LearningJourney, ExplanationStyles } from "../../types";
 import { saveRecentSession } from "../../lib/utils";
+import { cn } from "../../lib/utils";
+
+// Premium Neural Nexus Logo - SciForge Core System
+const NeuralNexusLogo = ({ className }: { className?: string }) => (
+  <svg viewBox="0 0 36 36" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="nexusGrad1" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stopColor="#FF7A00" stopOpacity="0.9" />
+        <stop offset="100%" stopColor="#FFB547" stopOpacity="0.6" />
+      </linearGradient>
+      <linearGradient id="nexusGrad2" x1="0%" y1="100%" x2="100%" y2="0%">
+        <stop offset="0%" stopColor="#FFB547" stopOpacity="0.8" />
+        <stop offset="100%" stopColor="#FF7A00" stopOpacity="0.5" />
+      </linearGradient>
+      <filter id="nexusGlow">
+        <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+      <filter id="nodeGlow">
+        <feGaussianBlur stdDeviation="0.5" result="coloredBlur"/>
+        <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+      </filter>
+    </defs>
+    {/* Outer orbital rings */}
+    <ellipse cx="18" cy="18" rx="15" ry="6" stroke="url(#nexusGrad1)" strokeWidth="0.8" strokeOpacity="0.4" transform="rotate(-30 18 18)" />
+    <ellipse cx="18" cy="18" rx="15" ry="6" stroke="url(#nexusGrad2)" strokeWidth="0.8" strokeOpacity="0.4" transform="rotate(30 18 18)" />
+    <ellipse cx="18" cy="18" rx="15" ry="6" stroke="#FF7A00" strokeWidth="0.5" strokeOpacity="0.3" />
+    {/* Neural nodes */}
+    <circle cx="18" cy="10" r="2.5" fill="#FF7A00" filter="url(#nodeGlow)" />
+    <circle cx="24" cy="15" r="2" fill="#FFB547" filter="url(#nodeGlow)" />
+    <circle cx="22" cy="22" r="2" fill="#FF7A00" filter="url(#nodeGlow)" />
+    <circle cx="14" cy="22" r="2" fill="#FFB547" filter="url(#nodeGlow)" />
+    <circle cx="12" cy="15" r="2" fill="#FF7A00" filter="url(#nodeGlow)" />
+    <circle cx="18" cy="18" r="3" fill="#FF7A00" filter="url(#nexusGlow)" />
+    {/* Connection lines */}
+    <path d="M18 10L24 15M24 15L22 22M22 22L14 22M14 22L12 15M12 15L18 10" stroke="#FF7A00" strokeWidth="1" strokeOpacity="0.6" strokeLinecap="round" />
+    <path d="M18 10L18 18M24 15L18 18M22 22L18 18M14 22L18 18M12 15L18 18" stroke="#FFB547" strokeWidth="0.8" strokeOpacity="0.5" strokeLinecap="round" />
+    {/* Orbital electrons */}
+    <circle cx="28" cy="12" r="1" fill="#FF7A00" opacity="0.7" />
+    <circle cx="10" cy="26" r="1" fill="#FFB547" opacity="0.7" />
+    <circle cx="8" cy="10" r="0.8" fill="#FF7A00" opacity="0.5" />
+  </svg>
+);
+
+// Feature card component
+const FeatureCard = ({ icon: Icon, label, color, onClick }: { icon: any; label: string; color: string; onClick: () => void }) => (
+  <motion.button
+    whileHover={{ scale: 1.03, y: -2 }}
+    whileTap={{ scale: 0.98 }}
+    onClick={onClick}
+    className={cn(
+      "p-4 rounded-xl bg-white/5 border border-white/5 text-left transition-all duration-300 cursor-pointer group relative overflow-hidden"
+    )}
+    style={{
+      '--hover-border-color': color,
+    } as React.CSSProperties}
+  >
+    <div 
+      className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+      style={{ background: `radial-gradient(circle at center, ${color}10 0%, transparent 70%)` }}
+    />
+    <div 
+      className="w-10 h-10 rounded-lg flex items-center justify-center mb-3 transition-all duration-300 group-hover:scale-110"
+      style={{ backgroundColor: `${color}20`, borderColor: `${color}40` }}
+    >
+      <Icon className="w-5 h-5" style={{ color }} />
+    </div>
+    <span className="text-xs font-bold text-white/70 group-hover:text-white transition-colors duration-200">{label}</span>
+    <div 
+      className="absolute bottom-0 left-0 right-0 h-0.5 opacity-0 group-hover:opacity-100 transition-all duration-300"
+      style={{ background: `linear-gradient(90deg, transparent, ${color}, transparent)` }}
+    />
+  </motion.button>
+);
 
 interface GlobalChatProps {
   onRoute: (target: ModuleType) => void;
@@ -293,56 +368,87 @@ export function GlobalChat({
           <div className="flex-1 overflow-y-auto pr-2 space-y-6 pb-6">
             {messages.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center max-w-lg mx-auto">
-                <div className="w-20 h-20 rounded-full bg-gradient-to-br from-[#FF7A00]/20 to-[#FFB547]/10 border border-[#FF7A00]/20 flex items-center justify-center mb-6">
-                  <Bot className="w-10 h-10 text-[#FF7A00]" />
-                </div>
+                {/* Central Hub Logo with Pulse Animation */}
+                <motion.div 
+                  className="w-24 h-24 rounded-full bg-[#1a0f00] border-2 border-[#FF7A00]/30 flex items-center justify-center mb-6 relative cursor-pointer"
+                  whileHover={{ scale: 1.05 }}
+                  animate={{ 
+                    boxShadow: [
+                      "0 0 20px rgba(255,122,0,0.2)",
+                      "0 0 40px rgba(255,122,0,0.4)",
+                      "0 0 20px rgba(255,122,0,0.2)"
+                    ]
+                  }}
+                  transition={{ 
+                    duration: 2, 
+                    repeat: Infinity, 
+                    ease: "easeInOut" 
+                  }}
+                >
+                  <NeuralNexusLogo className="w-16 h-16" />
+                  {/* Glowing ring effect */}
+                  <div className="absolute inset-0 rounded-full border border-[#FF7A00]/20 animate-ping" />
+                </motion.div>
                 <h2 className="text-xl font-heading font-bold text-white mb-2">Let's Learn Together</h2>
                 <p className="text-sm text-white/50 mb-8 max-w-md">
                   Ask me anything about science, math, or technology. I can also help you create notes, quizzes, and research projects.
                 </p>
                 
-                {/* Quick action buttons */}
+                {/* Quick action buttons - Premium Feature Cards */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full">
-                  <button onClick={() => onRoute("notes")} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-[#FF7A00]/30 text-left transition-all cursor-pointer group">
-                    <span className="text-2xl mb-2 block">📝</span>
-                    <span className="text-xs font-bold text-white/70 group-hover:text-white">Notes</span>
-                  </button>
-                  <button onClick={() => onRoute("quiz")} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-[#FF7A00]/30 text-left transition-all cursor-pointer group">
-                    <span className="text-2xl mb-2 block">❓</span>
-                    <span className="text-xs font-bold text-white/70 group-hover:text-white">Quizzes</span>
-                  </button>
-                  <button onClick={() => onRoute("scientist")} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-[#FF7A00]/30 text-left transition-all cursor-pointer group">
-                    <span className="text-2xl mb-2 block">🔬</span>
-                    <span className="text-xs font-bold text-white/70 group-hover:text-white">Research</span>
-                  </button>
-                  <button onClick={() => onRoute("scribble")} className="p-4 rounded-xl bg-white/5 border border-white/5 hover:border-[#FF7A00]/30 text-left transition-all cursor-pointer group">
-                    <span className="text-2xl mb-2 block">✍️</span>
-                    <span className="text-xs font-bold text-white/70 group-hover:text-white">Scribble</span>
-                  </button>
+                  <FeatureCard 
+                    icon={FileText} 
+                    label="Notes" 
+                    color="#FFB547" 
+                    onClick={() => onRoute("notes")} 
+                  />
+                  <FeatureCard 
+                    icon={Target} 
+                    label="Quizzes" 
+                    color="#FF7A00" 
+                    onClick={() => onRoute("quiz")} 
+                  />
+                  <FeatureCard 
+                    icon={FlaskConical} 
+                    label="Research" 
+                    color="#22C55E" 
+                    onClick={() => onRoute("scientist")} 
+                  />
+                  <FeatureCard 
+                    icon={Pencil} 
+                    label="Scribble" 
+                    color="#8B5CF6" 
+                    onClick={() => onRoute("scribble")} 
+                  />
                 </div>
 
-                {/* Example prompts */}
+                {/* Example prompts - Instantly Clickable */}
                 <div className="mt-8 space-y-2 w-full">
-                  <p className="text-[10px] text-white/30 uppercase font-mono tracking-wider">Try asking:</p>
+                  <p className="text-[10px] text-white/30 uppercase font-mono tracking-wider">Quick Start:</p>
                   {[
                     "Explain photosynthesis",
                     "What is Newton's first law?",
                     "Quiz me on DNA",
                     "Make notes on thermodynamics"
                   ].map((prompt, i) => (
-                    <button
+                    <motion.button
                       key={i}
+                      whileHover={{ scale: 1.02, x: 4 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => {
-                        const input = document.querySelector('textarea') as HTMLTextAreaElement;
-                        if (input) {
-                          input.value = prompt;
-                          input.focus();
-                        }
+                        setInput(prompt);
+                        setTimeout(() => {
+                          const sendBtn = document.querySelector('[data-send-btn]') as HTMLButtonElement;
+                          if (sendBtn && !sendBtn.disabled) {
+                            handleSend(prompt);
+                          }
+                        }, 50);
                       }}
-                      className="w-full p-3 rounded-lg bg-white/[0.02] border border-white/5 hover:border-white/10 text-left text-xs text-white/50 hover:text-white/70 transition-all font-mono"
+                      className="w-full p-3 rounded-lg bg-white/[0.02] border border-white/5 hover:border-[#FF7A00]/30 text-left text-xs text-white/50 hover:text-white/70 transition-all font-mono flex items-center gap-2 group"
                     >
+                      <ArrowRight className="w-3 h-3 text-[#FF7A00]/0 group-hover:text-[#FF7A00] transition-all" />
                       {prompt}
-                    </button>
+                    </motion.button>
                   ))}
                 </div>
               </div>
@@ -420,6 +526,7 @@ export function GlobalChat({
                 />
                 <button
                   type="submit"
+                  data-send-btn
                   disabled={loading || !input.trim()}
                   className="w-8 h-8 rounded-full bg-accent-cyan/20 text-accent-cyan hover:bg-accent-cyan/30 flex items-center justify-center transition-colors disabled:opacity-40 cursor-pointer"
                 >
