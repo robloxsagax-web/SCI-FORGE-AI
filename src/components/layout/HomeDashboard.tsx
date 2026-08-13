@@ -648,18 +648,16 @@ export function HomeDashboard({ onRoute, onStartChat, chatMessages, onViewConver
               animate={{ opacity: 1, scale: 1 }}
               whileHover={{ scale: 1.015 }}
               transition={{ duration: 0.3, ease: "easeInOut", delay: 0.1 + idx * 0.05 }}
-              className="bg-[#111111] border border-white/5 rounded-2xl p-4 sm:p-5 hover:border-[#FF7A00]/40 hover:shadow-[0_0_20px_rgba(255,122,0,0.15)] transition-all duration-300 group cursor-pointer"
+              className="flex flex-col items-center justify-center text-center p-4 bg-white/5 border border-white/10 rounded-xl hover:border-[#FF7A00]/40 hover:shadow-[0_0_20px_rgba(255,122,0,0.15)] transition-all duration-300 group cursor-pointer space-y-2"
             >
-              <div className="flex items-center gap-3 mb-3">
-                <div 
-                  className="w-12 h-12 lg:w-20 lg:h-20 rounded-2xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:brightness-110 drop-shadow-[0_0_15px_rgba(255,181,71,0.4)]"
-                  style={{ backgroundColor: `${stat.color}20` }}
-                >
-                  {PremiumStatsIcons[stat.iconKey]({ className: "w-4 h-4 sm:w-5 sm:h-5" })}
-                </div>
+              <div 
+                className="w-12 h-12 lg:w-14 lg:h-14 rounded-xl flex items-center justify-center transition-all duration-300 group-hover:scale-110 group-hover:brightness-110"
+                style={{ backgroundColor: `${stat.color}20` }}
+              >
+                {PremiumStatsIcons[stat.iconKey]({ className: "w-5 h-5 lg:w-6 lg:h-6" })}
               </div>
               <motion.div 
-                className="text-2xl sm:text-3xl font-heading font-bold text-white mb-1"
+                className="text-2xl sm:text-3xl font-heading font-bold text-white"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
